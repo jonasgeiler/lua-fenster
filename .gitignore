@@ -1,0 +1,11 @@
+# IDE
+.idea
+
+# Output
+*.o
+*.so
+*.dll
+*.exp
+*.lib
+*.obj
+*.def
