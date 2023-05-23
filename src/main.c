@@ -2,12 +2,17 @@
 #include "fenster.h"
 #include "lua-compat-5.3.h"
 
-static int open(lua_State* L) {
-	const char* title = luaL_checklstring(L, 1, NULL);
-	double width = luaL_checknumber(L, 2);
-	double height = luaL_checknumber(L, 3);
+typedef struct lua_fenster {
+	struct fenster *f;
+} lua_fenster;
 
-	uint32_t* buf = (uint32_t*) calloc(width * height, sizeof(uint32_t));
+static int open(lua_State *L) {
+	const char *title = luaL_checklstring(L, 1, NULL);
+	const int width = luaL_checknumber(L, 2);
+	const int height = luaL_checknumber(L, 3);
+
+	uint32_t *buf = (uint32_t *) calloc(width * height, sizeof(uint32_t));
+	if (buf == NULL) return luaL_error(L, "failed to allocate frame buffer of size %d", width * height);
 
 	struct fenster f = {
 		.title = title,
@@ -16,27 +21,21 @@ static int open(lua_State* L) {
 		.buf = buf
 	};
 
-	fenster_open(&f);
+	int res = fenster_open(&f);
+	if (res != 0) return luaL_error(L, "failed to open window (%d)", res);
 
-	while (fenster_loop(&f) == 0) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				fenster_pixel(&f, i, j) = rand();
-			}
-		}
-	}
+	lua_fenster *lf = lua_newuserdata(L, sizeof(lua_fenster));
+	lf->f = &f;
 
-	fenster_close(&f);
-
-	return 0;
+	return 1;
 }
 
-static const struct luaL_Reg mylib[] = {
+static const struct luaL_Reg fenster_funcs[] = {
 	{"open", open},
-	{NULL,   NULL}  /* sentinel */
+	{NULL, NULL}  /* sentinel */
 };
 
-FENSTER_EXPORT int luaopen_fenster(lua_State* L) {
-	luaL_newlib(L, mylib);
+FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
+	luaL_newlib(L, fenster_funcs);
 	return 1;
 }
