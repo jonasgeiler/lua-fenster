@@ -4,6 +4,8 @@
 
 typedef struct lua_fenster {
 	struct fenster *f;
+	uint32_t *buf;
+	int64_t last_frame_time;
 } lua_fenster;
 
 static int open(lua_State *L) {
@@ -12,30 +14,159 @@ static int open(lua_State *L) {
 	const int height = luaL_checknumber(L, 3);
 
 	uint32_t *buf = (uint32_t *) calloc(width * height, sizeof(uint32_t));
-	if (buf == NULL) return luaL_error(L, "failed to allocate frame buffer of size %d", width * height);
+	if (buf == NULL) return luaL_error(L, "failed to allocate memory for frame buffer of size %d", width * height);
 
-	struct fenster f = {
+	struct fenster temp_f = {
 		.title = title,
 		.width = width,
 		.height = height,
 		.buf = buf
 	};
 
-	int res = fenster_open(&f);
-	if (res != 0) return luaL_error(L, "failed to open window (%d)", res);
+	struct fenster *f = (struct fenster *) malloc(sizeof(struct fenster));
+	if (f == NULL) {
+		free(f);
+		free(buf);
+		return luaL_error(L, "failed to allocate memory for window");
+	}
+
+	memcpy(f, &temp_f, sizeof(struct fenster));
+
+	const int res = fenster_open(f);
+	if (res != 0) {
+		free(f);
+		free(buf);
+		return luaL_error(L, "failed to open window (%d)", res);
+	}
 
 	lua_fenster *lf = lua_newuserdata(L, sizeof(lua_fenster));
-	lf->f = &f;
+	lf->f = f;
+	lf->buf = buf;
+	lf->last_frame_time = fenster_time();
+
+	luaL_setmetatable(L, "fenster_window");
 
 	return 1;
 }
 
+static int close(lua_State *L) {
+	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
+
+	fenster_close(lf->f);
+	free(lf->f);
+	free(lf->buf);
+	return 0;
+}
+
+static int loop(lua_State *L) {
+	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
+
+	if (lua_gettop(L) >= 2) {
+		const double max_fps = luaL_checknumber(L, 2);
+		const double max_frame_time = 1000.0 / max_fps;
+
+		const int64_t curr_frame_time = fenster_time();
+		const int64_t frame_time = curr_frame_time - lf->last_frame_time;
+
+		if (frame_time < max_frame_time) {
+			fenster_sleep(max_frame_time - frame_time);
+		}
+
+		lf->last_frame_time = curr_frame_time;
+	}
+
+	if (fenster_loop(lf->f) == 0) {
+		lua_pushboolean(L, 1);
+	} else {
+		lua_pushboolean(L, 0);
+	}
+	return 1;
+}
+
+static int set(lua_State *L) {
+	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
+	const int x = luaL_checknumber(L, 2);
+	const int y = luaL_checknumber(L, 3);
+	const uint32_t color = luaL_checknumber(L, 4);
+
+	if (x < 0 || x >= lf->f->width || y < 0 || y >= lf->f->height) {
+		return luaL_error(L, "pixel out of bounds");
+	}
+
+	fenster_pixel(lf->f, x, y) = color;
+	return 0;
+}
+
+static int get(lua_State *L) {
+	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
+	const int x = luaL_checknumber(L, 2);
+	const int y = luaL_checknumber(L, 3);
+
+	lua_pushnumber(L, fenster_pixel(lf->f, x, y));
+	return 1;
+}
+
+static int key(lua_State *L) {
+	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
+	const int key = luaL_checknumber(L, 2);
+
+	if (lf->f->keys[key]) {
+		lua_pushboolean(L, 1);
+	} else {
+		lua_pushboolean(L, 0);
+	}
+	return 1;
+}
+
+static int time(lua_State *L) {
+	lua_pushnumber(L, fenster_time());
+	return 1;
+}
+
+static int sleep(lua_State *L) {
+	const int64_t ms = luaL_checknumber(L, 1);
+
+	fenster_sleep(ms);
+	return 0;
+}
+
 static const struct luaL_Reg fenster_funcs[] = {
 	{"open", open},
+	{"close", close},
+	{"loop", loop},
+	{"set", set},
+	{"get", get},
+	{"key", key},
+	{"time", time},
+	{"sleep", sleep},
+	{NULL, NULL}  /* sentinel */
+};
+
+static const struct luaL_Reg fenster_methods[] = {
+	{"close", close},
+	{"loop", loop},
+	{"set", set},
+	{"get", get},
+	{"key", key},
+	{"time", time},
+	{"sleep", sleep},
 	{NULL, NULL}  /* sentinel */
 };
 
 FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
+	if (luaL_newmetatable(L, "fenster_window")) {
+		luaL_setfuncs(L, fenster_methods, 0);
+
+		lua_pushliteral(L, "__index");
+		lua_pushvalue(L, -2);
+		lua_settable(L, -3);
+
+		lua_pushliteral(L, "__gc");
+		lua_pushcfunction(L, close);
+		lua_settable(L, -3);
+	}
+	lua_pop(L, 1);
+
 	luaL_newlib(L, fenster_funcs);
 	return 1;
 }
