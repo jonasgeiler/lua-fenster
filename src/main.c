@@ -8,7 +8,7 @@ typedef struct lua_fenster {
 	int64_t last_frame_time;
 } lua_fenster;
 
-static int open(lua_State *L) {
+static int lua_fenster_open(lua_State *L) {
 	const char *title = luaL_checklstring(L, 1, NULL);
 	const int width = luaL_checknumber(L, 2);
 	const int height = luaL_checknumber(L, 3);
@@ -49,7 +49,7 @@ static int open(lua_State *L) {
 	return 1;
 }
 
-static int close(lua_State *L) {
+static int lua_fenster_close(lua_State *L) {
 	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
 
 	fenster_close(lf->f);
@@ -58,7 +58,7 @@ static int close(lua_State *L) {
 	return 0;
 }
 
-static int loop(lua_State *L) {
+static int lua_fenster_loop(lua_State *L) {
 	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
 
 	if (lua_gettop(L) >= 2) {
@@ -83,7 +83,7 @@ static int loop(lua_State *L) {
 	return 1;
 }
 
-static int set(lua_State *L) {
+static int lua_fenster_set(lua_State *L) {
 	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
 	const int x = luaL_checknumber(L, 2);
 	const int y = luaL_checknumber(L, 3);
@@ -97,7 +97,7 @@ static int set(lua_State *L) {
 	return 0;
 }
 
-static int get(lua_State *L) {
+static int lua_fenster_get(lua_State *L) {
 	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
 	const int x = luaL_checknumber(L, 2);
 	const int y = luaL_checknumber(L, 3);
@@ -106,7 +106,7 @@ static int get(lua_State *L) {
 	return 1;
 }
 
-static int key(lua_State *L) {
+static int lua_fenster_key(lua_State *L) {
 	lua_fenster *lf = (lua_fenster *) luaL_checkudata(L, 1, "fenster_window");
 	const int key = luaL_checknumber(L, 2);
 
@@ -118,12 +118,12 @@ static int key(lua_State *L) {
 	return 1;
 }
 
-static int time(lua_State *L) {
+static int lua_fenster_time(lua_State *L) {
 	lua_pushnumber(L, fenster_time());
 	return 1;
 }
 
-static int sleep(lua_State *L) {
+static int lua_fenster_sleep(lua_State *L) {
 	const int64_t ms = luaL_checknumber(L, 1);
 
 	fenster_sleep(ms);
@@ -131,25 +131,25 @@ static int sleep(lua_State *L) {
 }
 
 static const struct luaL_Reg fenster_funcs[] = {
-	{"open", open},
-	{"close", close},
-	{"loop", loop},
-	{"set", set},
-	{"get", get},
-	{"key", key},
-	{"time", time},
-	{"sleep", sleep},
+	{"open", lua_fenster_open},
+	{"close", lua_fenster_close},
+	{"loop", lua_fenster_loop},
+	{"set", lua_fenster_set},
+	{"get", lua_fenster_get},
+	{"key", lua_fenster_key},
+	{"time", lua_fenster_time},
+	{"sleep", lua_fenster_sleep},
 	{NULL, NULL}  /* sentinel */
 };
 
 static const struct luaL_Reg fenster_methods[] = {
-	{"close", close},
-	{"loop", loop},
-	{"set", set},
-	{"get", get},
-	{"key", key},
-	{"time", time},
-	{"sleep", sleep},
+	{"close", lua_fenster_close},
+	{"loop", lua_fenster_loop},
+	{"set", lua_fenster_set},
+	{"get", lua_fenster_get},
+	{"key", lua_fenster_key},
+	{"time", lua_fenster_time},
+	{"sleep", lua_fenster_sleep},
 	{NULL, NULL}  /* sentinel */
 };
 
@@ -162,7 +162,7 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
 		lua_settable(L, -3);
 
 		lua_pushliteral(L, "__gc");
-		lua_pushcfunction(L, close);
+		lua_pushcfunction(L, lua_fenster_close);
 		lua_settable(L, -3);
 	}
 	lua_pop(L, 1);
