@@ -47,7 +47,7 @@ FENSTER_API int fenster_open(struct fenster *f);
 FENSTER_API int fenster_loop(struct fenster *f);
 FENSTER_API void fenster_close(struct fenster *f);
 FENSTER_API void fenster_sleep(int64_t ms);
-FENSTER_API int64_t fenster_time();
+FENSTER_API int64_t fenster_time(void);
 #define fenster_pixel(f, x, y) ((f)->buf[((y) * (f)->width) + (x)])
 
 #ifndef FENSTER_HEADER
@@ -231,7 +231,7 @@ FENSTER_API int fenster_open(struct fenster *f) {
   wc.lpszClassName = f->title;
   RegisterClassEx(&wc);
   f->hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, f->title, f->title,
-                           WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT,
+                           WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
                            f->width, f->height, NULL, NULL, hInstance, NULL);
 
   if (f->hwnd == NULL)
@@ -325,7 +325,7 @@ FENSTER_API void fenster_sleep(int64_t ms) {
   ts.tv_nsec = (ms % 1000) * 1000000;
   nanosleep(&ts, NULL);
 }
-FENSTER_API int64_t fenster_time() {
+FENSTER_API int64_t fenster_time(void) {
   struct timespec time;
   clock_gettime(CLOCK_REALTIME, &time);
   return time.tv_sec * 1000 + (time.tv_nsec / 1000000);
