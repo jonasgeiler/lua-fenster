@@ -1,0 +1,47 @@
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+      - 'renovate/**'
+    paths:
+      - .github/workflows/check.yml
+      - '**.rockspec'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/check.yml
+      - '**.rockspec'
+
+  workflow_dispatch:
+
+jobs:
+  lint-rockspecs:
+    name: Lint Rockspecs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10.0.0
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v4.3.0
+
+      - name: Run luarocks lint
+        run: |
+          shopt -s nullglob
+          rockspecs=(*.rockspec **/*.rockspec)
+          if [[ "${#rockspecs[@]}" -eq 0 ]]; then
+            echo "No rockspecs found"
+            exit 1
+          fi
+          for rockspec in "${rockspecs[@]}"; do
+            echo "Linting $rockspec"
+            luarocks lint "$rockspec"
+          done
