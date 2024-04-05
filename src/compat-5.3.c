@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
-#include "lua-compat-5.3.h"
+#include "compat-5.3.h"
 
 /* don't compile it again if it already is included via compat53.h */
 #ifndef COMPAT53_C_

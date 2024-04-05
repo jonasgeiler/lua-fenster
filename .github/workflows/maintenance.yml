@@ -1,0 +1,37 @@
+name: Maintenance
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+
+  workflow_dispatch:
+
+jobs:
+  update-libraries:
+    name: Update Libraries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Update fenster
+        run: wget https://raw.githubusercontent.com/zserge/fenster/main/fenster.h -O src/fenster.h
+
+      - name: Update compat-5.3
+        run: |
+          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.h -O src/compat-5.3.h
+          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.c -O src/compat-5.3.c
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6.0.2
+        with:
+          commit-message: 'chore(libs): update libraries'
+          signoff: true
+          branch: maintenance/update-libraries
+          delete-branch: true
+          title: 'chore(libs): update libraries'
+          body: |
+              This PR updates the libraries used by the project.
+          labels: libraries
+          reviewers: ${{ github.repository_owner }}

@@ -18,14 +18,14 @@ extern "C" {
 #undef COMPAT53_INCLUDE_SOURCE
 #if defined(COMPAT53_PREFIX)
 /* - change the symbol names of functions to avoid linker conflicts
- * - lua-compat-5.3.c needs to be compiled (and linked) separately
+ * - compat-5.3.c needs to be compiled (and linked) separately
  */
 #  if !defined(COMPAT53_API)
 #    define COMPAT53_API extern
 #  endif
 #else /* COMPAT53_PREFIX */
 /* - make all functions static and include the source.
- * - lua-compat-5.3.c doesn't need to be compiled (and linked) separately
+ * - compat-5.3.c doesn't need to be compiled (and linked) separately
  */
 #  define COMPAT53_PREFIX compat53
 #  undef COMPAT53_API
@@ -413,7 +413,7 @@ COMPAT53_API void luaL_requiref (lua_State *L, const char *modname,
 
 
 #if defined(COMPAT53_INCLUDE_SOURCE)
-#  include "lua-compat-5.3.c"
+#  include "compat-5.3.c"
 #endif
 
 

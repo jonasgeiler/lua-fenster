@@ -1,6 +1,6 @@
 #include "main.h"
 #include "fenster.h"
-#include "lua-compat-5.3.h"
+#include "compat-5.3.h"
 
 typedef struct lua_fenster {
 	struct fenster *f;
