@@ -34,9 +34,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-      # This will be ignored on platforms other than Windows
       - name: Setup Microsoft Visual C++ Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.13.0
+        # Will be ignored on non-Windows platforms anyway, but it's better to just skip it
+        if: matrix.os == 'windows-latest'
 
       - name: Setup Lua
         uses: leafo/gh-actions-lua@v10.0.0
@@ -45,8 +46,13 @@ jobs:
 
       - name: Setup LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
-        with:
-          luarocksVersion: 3.11.0
 
       - name: Run luarocks build
         run: luarocks build
+        # Currently does not work for LuaJIT on Windows (lua library not found)
+        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
+
+      - name: Run basic test
+        run: lua -e "local fenster = require('fenster');print(fenster.time())"
+        # Currently does not work for Windows (can't import 'fenster')
+        if: matrix.os != 'windows-latest'
