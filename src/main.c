@@ -145,7 +145,7 @@ static const struct luaL_Reg fenster_funcs[] = {
 static const struct luaL_Reg fenster_methods[] = {
 	{"close", lua_fenster_close},
 	{"loop", lua_fenster_loop},
-	{"set", lua_fenster_set}
+	{"set", lua_fenster_set},
 	{"get", lua_fenster_get},
 	{"key", lua_fenster_key},
 	{NULL, NULL}  /* sentinel */
