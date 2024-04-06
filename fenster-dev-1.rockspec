@@ -6,18 +6,23 @@ source = {
 	branch = 'main',
 }
 description = {
-	summary = 'WIP',
+	summary = 'The most minimal cross-platform GUI library - now in Lua! (WIP)',
 	detailed = [[
-      WIP
+      A Lua binding for the [fenster](https://github.com/zserge/fenster) C
+      library, providing a minimal cross-platform GUI library for creating
+      windows and drawing pixels. This binding is currently in development
+      and not feature-complete.
    ]],
 	license = 'MIT',
 	homepage = 'https://github.com/jonasgeiler/lua-fenster',
 	issues_url = 'https://github.com/jonasgeiler/lua-fenster/issues',
 	maintainer = 'Jonas Geiler',
 	labels = {
-		'gui',
-		'graphics',
-	}
+		'gui', 'ui', 'graphics', 'pixels', 'graphics-programming', 'window',
+		'windowing', 'framebuffer', 'cross-platform-gui', 'user-interface',
+		'gui-framework', 'c-bindings', 'gui-library', 'fenster', 'minifb',
+		'softbuffer', 'raylib',
+	},
 }
 dependencies = {
 	'lua >= 5.1, <= 5.4',
