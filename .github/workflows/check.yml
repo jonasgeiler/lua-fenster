@@ -19,6 +19,7 @@ on:
       - 'src/**'
 
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   test-build:

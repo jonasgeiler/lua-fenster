@@ -1,9 +1,9 @@
 rockspec_format = '3.0'
 package = 'fenster'
-version = 'dev-1'
+version = 'dev-1' -- this will be replaced by the release workflow
 source = {
 	url = 'git+https://github.com/jonasgeiler/lua-fenster',
-	branch = 'main',
+	branch = 'main', -- this will be replaced by the release workflow
 }
 description = {
 	summary = 'The most minimal cross-platform GUI library - now in Lua! (WIP)',
