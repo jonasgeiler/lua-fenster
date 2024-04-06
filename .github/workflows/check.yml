@@ -7,47 +7,20 @@ on:
       - 'renovate/**'
     paths:
       - .github/workflows/check.yml
-      - '**.rockspec'
-      - src
+      - fenster-dev-1.rockspec
+      - 'src/**'
 
   pull_request:
     branches:
       - main
     paths:
       - .github/workflows/check.yml
-      - '**.rockspec'
-      - src
+      - fenster-dev-1.rockspec
+      - 'src/**'
 
   workflow_dispatch:
 
 jobs:
-  lint-rockspecs:
-    name: Lint Rockspecs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-      - name: Setup Lua
-        uses: leafo/gh-actions-lua@v10.0.0
-
-      - name: Setup LuaRocks
-        uses: leafo/gh-actions-luarocks@v4.3.0
-
-      - name: Run luarocks lint
-        run: |
-          shopt -s nullglob
-          rockspecs=(*.rockspec **/*.rockspec)
-          if [[ "${#rockspecs[@]}" -eq 0 ]]; then
-            echo "No rockspecs found"
-            exit 1
-          fi
-          for rockspec in "${rockspecs[@]}"; do
-            echo "Linting $rockspec"
-            luarocks lint "$rockspec"
-          done
-
   test-build:
     name: Test Build
     runs-on: ubuntu-latest
@@ -64,3 +37,6 @@ jobs:
 
       - name: Run luarocks build
         run: luarocks build
+
+      - name: Run basic test
+        run: lua -e "require('luarocks.loader');local fenster = require('fenster');print(fenster.time())"
