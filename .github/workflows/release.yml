@@ -45,10 +45,11 @@ jobs:
           sed -i -E "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "$rockspec"
           sed -i -E "s/\bbranch\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-_\/]+\s*('|\"|\]\])/tag = '$version'/" "$rockspec"
           git diff
-          if [[ -z "$(git status --porcelain)" ]]; then
+          if [[ -z "$(git status --porcelain "$rockspec")" ]]; then
             echo "Rockspec not modified"
             exit 1
           fi
+          luarocks install dkjson
           luarocks upload --temp-key "${{ secrets.LUAROCKS_API_KEY }}" "$rockspec"
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
 
