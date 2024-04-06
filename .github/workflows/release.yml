@@ -63,7 +63,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Release on GitHub
+      - name: Draft release on GitHub
         uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 # v2.0.4
         with:
           draft: true
