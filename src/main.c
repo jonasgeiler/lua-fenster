@@ -148,8 +148,6 @@ static const struct luaL_Reg fenster_methods[] = {
 	{"set", lua_fenster_set},
 	{"get", lua_fenster_get},
 	{"key", lua_fenster_key},
-	{"time", lua_fenster_time},
-	{"sleep", lua_fenster_sleep},
 	{NULL, NULL}  /* sentinel */
 };
 
@@ -164,6 +162,10 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
 		lua_pushliteral(L, "__gc");
 		lua_pushcfunction(L, lua_fenster_close);
 		lua_settable(L, -3);
+
+		lua_pushliteral(L, "__close");
+        lua_pushcfunction(L, lua_fenster_close);
+        lua_settable(L, -3);
 	}
 	lua_pop(L, 1);
 
