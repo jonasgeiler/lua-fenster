@@ -1,4 +1,3 @@
-require('luarocks.loader')
 local fenster = require('fenster')
 
 -- Open a window

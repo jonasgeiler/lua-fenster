@@ -1,4 +1,3 @@
-require('luarocks.loader')
 local fenster = require('fenster')
 
 -- Define the microknight font
