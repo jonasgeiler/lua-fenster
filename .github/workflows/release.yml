@@ -19,7 +19,7 @@ on:
 jobs:
   check:
     name: Check
-    uses: .github/workflows/check.yml
+    uses: ./.github/workflows/check.yml
 
   luarocks-upload:
     name: LuaRocks Upload
