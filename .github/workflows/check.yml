@@ -8,6 +8,7 @@ on:
     paths:
       - .github/workflows/check.yml
       - '**.rockspec'
+      - src
 
   pull_request:
     branches:
@@ -15,6 +16,7 @@ on:
     paths:
       - .github/workflows/check.yml
       - '**.rockspec'
+      - src
 
   workflow_dispatch:
 
@@ -45,3 +47,20 @@ jobs:
             echo "Linting $rockspec"
             luarocks lint "$rockspec"
           done
+
+  test-build:
+    name: Test Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10.0.0
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v4.3.0
+
+      - name: Run luarocks build
+        run: luarocks build
