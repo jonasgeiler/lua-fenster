@@ -41,7 +41,7 @@ jobs:
           wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.c -O src/compat-5.3.c
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6.0.2
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
         with:
           commit-message: 'chore(libs): update libraries'
           signoff: true

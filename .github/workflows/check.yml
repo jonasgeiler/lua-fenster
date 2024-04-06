@@ -35,12 +35,12 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup Microsoft Visual C++ Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1.13.0
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         # Will be ignored on non-Windows platforms anyway, but it's better to just skip it
         if: matrix.os == 'windows-latest'
 
       - name: Setup Lua
-        uses: leafo/gh-actions-lua@v10.0.0
+        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
         with:
           luaVersion: ${{ matrix.lua_version }}
 
