@@ -25,12 +25,18 @@ jobs:
     name: Test Build
     runs-on: ubuntu-latest
 
+    strategy:
+        matrix:
+          lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit' ]
+
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Setup Lua
         uses: leafo/gh-actions-lua@v10.0.0
+        with:
+          luaVersion: ${{ matrix.lua_version }}
 
       - name: Setup LuaRocks
         uses: leafo/gh-actions-luarocks@v4.3.0
