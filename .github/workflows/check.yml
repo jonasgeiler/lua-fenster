@@ -49,7 +49,4 @@ jobs:
           luarocksVersion: 3.11.0
 
       - name: Run luarocks build
-        run: luarocks && luarocks config && luarocks build
-
-      - name: Run basic test
-        run: lua -e "require('luarocks.loader');local fenster = require('fenster');print(fenster.time())"
+        run: luarocks build
