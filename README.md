@@ -91,7 +91,7 @@ local keys = {
 
 -- Usage
 if window:key(keys.enter) then
-    -- A key is pressed
+    -- Enter key is pressed
 end 
 ```
 
