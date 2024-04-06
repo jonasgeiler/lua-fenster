@@ -23,11 +23,12 @@ on:
 jobs:
   test-build:
     name: Test Build
-    runs-on: ubuntu-latest
 
     strategy:
         matrix:
+          os: [ ubuntu-latest, windows-latest ]
           lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit' ]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
