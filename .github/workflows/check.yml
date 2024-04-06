@@ -26,7 +26,7 @@ jobs:
 
     strategy:
         matrix:
-          os: [ ubuntu-latest, windows-latest ]
+          os: [ ubuntu-latest, windows-latest, macos-latest ]
           lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit' ]
     runs-on: ${{ matrix.os }}
 
