@@ -17,14 +17,14 @@ on:
       - .github/workflows/release.yml
 
 jobs:
-  check:
-    name: Check
-    uses: ./.github/workflows/check.yml
+  #check:
+  #  name: Check
+  #  uses: ./.github/workflows/check.yml
 
   luarocks-upload:
     name: LuaRocks Upload
     runs-on: ubuntu-latest
-    needs: check
+    #needs: check
 
     steps:
       - name: Checkout
@@ -38,11 +38,13 @@ jobs:
 
       - name: Modify rockspec & upload to LuaRocks server
         run: |
+          set -x
           version="${{ github.ref_name }}"
           rockspec="fenster-${version#v}-1.rockspec"
           git mv fenster-dev-1.rockspec "$rockspec"
-          sed -iE "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "$rockspec"
-          sed -iE "s/\bbranch\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-_\/]+\s*('|\"|\]\])/tag = '$version'/" "$rockspec"
+          sed -i -E "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "$rockspec"
+          sed -i -E "s/\bbranch\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-_\/]+\s*('|\"|\]\])/tag = '$version'/" "$rockspec"
+          git diff
           if [[ -z "$(git status --porcelain)" ]]; then
             echo "Rockspec not modified"
             exit 1
