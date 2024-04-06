@@ -47,7 +47,7 @@ jobs:
         uses: hishamhm/gh-actions-luarocks@master
 
       - name: Run luarocks build
-        run: luarocks build
+        run: luarocks && luarocks config && luarocks build
 
       - name: Run basic test
         run: lua -e "local fenster = require('fenster');print(fenster.time())"
