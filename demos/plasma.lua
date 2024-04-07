@@ -27,7 +27,7 @@ while window:loop(60) and not window:key(27) do
 			local r = math.floor((0.5 + 0.5 * math.cos(s + 0.2)) * 255)
 			local g = math.floor((0.5 + 0.5 * math.cos(s + 0.5)) * 255)
 			local b = math.floor((0.5 + 0.5 * math.cos(s + 0.7)) * 255)
-			window:set(x, y, r * 0x10000 + g * 0x100 + b)
+			window:set(x, y, fenster.rgb(r, g, b))
 
 			px = px + plasma_x_step
 		end

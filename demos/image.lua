@@ -35,7 +35,7 @@ while true do
 	local r = string.byte(r_raw)
 	local g = string.byte(g_raw)
 	local b = string.byte(b_raw)
-	table.insert(image_buffer, r * 0x10000 + g * 0x100 + b)
+	table.insert(image_buffer, fenster.rgb(r, g, b))
 end
 
 -- Open a window

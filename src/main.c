@@ -150,6 +150,24 @@ static int lua_fenster_mouse(lua_State *L) {
 	return 3;
 }
 
+static int lua_fenster_rgb(lua_State *L) {
+	if (lua_gettop(L) < 3) {
+		const uint32_t color = luaL_checknumber(L, 1);
+
+		lua_pushnumber(L, (color >> 16) & 0xFF);
+		lua_pushnumber(L, (color >> 8) & 0xFF);
+		lua_pushnumber(L, color & 0xFF);
+		return 3;
+	} else {
+		const uint8_t r = luaL_checknumber(L, 1);
+		const uint8_t g = luaL_checknumber(L, 2);
+		const uint8_t b = luaL_checknumber(L, 3);
+
+		lua_pushnumber(L, (r << 16) | (g << 8) | b);
+		return 1;
+	}
+}
+
 static int lua_fenster_sleep(lua_State *L) {
 	const int64_t ms = luaL_checknumber(L, 1);
 
@@ -175,6 +193,7 @@ static const struct luaL_Reg fenster_funcs[] = {
 	{"mouse", lua_fenster_mouse},
 	{"sleep", lua_fenster_sleep},
 	{"time", lua_fenster_time},
+	{"rgb", lua_fenster_rgb},
 	{NULL, NULL}  /* sentinel */
 };
 

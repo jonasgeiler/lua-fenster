@@ -158,14 +158,20 @@ local microknight_layout = {
 -- Calculate the microknight texture
 local microknight_texture = {}
 for _, t in ipairs(microknight_font) do
-	microknight_texture[#microknight_texture + 1] = ((t >> 7) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 6) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 5) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 4) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 3) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 2) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = ((t >> 1) & 1) == 0 and 0x000000 or 0xffffff
-	microknight_texture[#microknight_texture + 1] = (t & 1) == 0 and 0x000000 or 0xffffff
+	local bits = {}
+	for b = 8, 1, -1 do
+		bits[b] = math.fmod(t, 2)
+		t = math.floor((t - bits[b]) / 2)
+	end
+
+	microknight_texture[#microknight_texture + 1] = bits[1] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[2] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[3] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[4] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[5] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[6] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[7] == 0 and 0x000000 or 0xffffff
+	microknight_texture[#microknight_texture + 1] = bits[8] == 0 and 0x000000 or 0xffffff
 end
 
 -- Define the height/width of each microknight character
