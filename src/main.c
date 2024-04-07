@@ -93,8 +93,8 @@ static int lua_fenster_set(lua_State *L) {
 	if (x < 0 || x >= p_lua_fenster->p_fenster->width || y < 0 || y >= p_lua_fenster->p_fenster->height) {
 		return luaL_error(L, "pixel out of bounds");
 	}
-
 	fenster_pixel(p_lua_fenster->p_fenster, x, y) = color;
+
 	return 0;
 }
 
@@ -154,6 +154,7 @@ static int lua_fenster_sleep(lua_State *L) {
 	const int64_t ms = luaL_checknumber(L, 1);
 
 	fenster_sleep(ms);
+
 	return 0;
 }
 
