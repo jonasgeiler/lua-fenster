@@ -46,12 +46,12 @@ static int lua_fenster_open(lua_State *L) {
 	p_lua_fenster->last_frame_time = fenster_time();
 	p_lua_fenster->keys_size = sizeof(p_fenster->keys) / sizeof(p_fenster->keys[0]);
 
-	luaL_setmetatable(L, "p_lua_fenster");
+	luaL_setmetatable(L, "lua_fenster");
 	return 1;
 }
 
 static int lua_fenster_close(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
 	fenster_close(p_lua_fenster->p_fenster);
 	free(p_lua_fenster->p_fenster);
@@ -60,7 +60,7 @@ static int lua_fenster_close(lua_State *L) {
 }
 
 static int lua_fenster_loop(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
 	if (lua_gettop(L) >= 2) {
 		const double max_fps = luaL_checknumber(L, 2);
@@ -85,7 +85,7 @@ static int lua_fenster_loop(lua_State *L) {
 }
 
 static int lua_fenster_set(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 	const int x = luaL_checknumber(L, 2);
 	const int y = luaL_checknumber(L, 3);
 	const uint32_t color = luaL_checknumber(L, 4);
@@ -99,7 +99,7 @@ static int lua_fenster_set(lua_State *L) {
 }
 
 static int lua_fenster_get(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 	const int x = luaL_checknumber(L, 2);
 	const int y = luaL_checknumber(L, 3);
 
@@ -108,7 +108,7 @@ static int lua_fenster_get(lua_State *L) {
 }
 
 static int lua_fenster_key(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 	const int key = luaL_checknumber(L, 2);
 
 	if (p_lua_fenster->p_fenster->keys[key]) {
@@ -120,7 +120,7 @@ static int lua_fenster_key(lua_State *L) {
 }
 
 static int lua_fenster_keys(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
 	lua_newtable(L);
 	for (int i = 0; i < p_lua_fenster->keys_size; i++) {
@@ -132,7 +132,7 @@ static int lua_fenster_keys(lua_State *L) {
 }
 
 static int lua_fenster_mods(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
 	lua_pushboolean(L, p_lua_fenster->p_fenster->mod & 1); // ctrl
 	lua_pushboolean(L, (p_lua_fenster->p_fenster->mod >> 1) & 1); // shift
@@ -142,7 +142,7 @@ static int lua_fenster_mods(lua_State *L) {
 }
 
 static int lua_fenster_mouse(lua_State *L) {
-	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "p_lua_fenster");
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
 	lua_pushnumber(L, p_lua_fenster->p_fenster->x); // mouse x
 	lua_pushnumber(L, p_lua_fenster->p_fenster->y); // mouse y
@@ -190,7 +190,7 @@ static const struct luaL_Reg fenster_methods[] = {
 };
 
 FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
-	if (luaL_newmetatable(L, "p_lua_fenster")) {
+	if (luaL_newmetatable(L, "lua_fenster")) {
 		luaL_setfuncs(L, fenster_methods, 0);
 
 		lua_pushliteral(L, "__index");
