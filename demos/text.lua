@@ -293,16 +293,20 @@ while window:loop(60) and not window:key(escape_key) do
 					break
 				end
 
+				-- Get the character to print
+				local _, shift = window:mods()
+				local character = shift and key:upper() or key:lower()
+
 				-- Draw new character
 				draw_text(
 					window,
-					key,
+					character,
 					text_offset_x + #typed_text_lines[curr_line] * microknight_size,
 					text_offset_y + text_line_height * (curr_line + 1)
 				)
 
 				-- Add new character to text line
-				typed_text_lines[curr_line] = typed_text_lines[curr_line] .. key
+				typed_text_lines[curr_line] = typed_text_lines[curr_line] .. character
 				break
 			end
 		end
