@@ -212,11 +212,19 @@ local escape_key = 27
 local enter_key = 10
 local backspace_key = 8
 local character_keys = {
-	A = 65, B = 66, C = 67, D = 68, E = 69, F = 70, G = 71, H = 72, I = 73,
-	J = 74, K = 75, L = 76, M = 77, N = 78, O = 79, P = 80, Q = 81, R = 82,
-	S = 83, T = 84, U = 85, V = 86, W = 87, X = 88, Y = 89, Z = 90, ['0'] = 48,
-	['1'] = 49, ['2'] = 50, ['3'] = 51, ['4'] = 52, ['5'] = 53, ['6'] = 54,
-	['7'] = 55, ['8'] = 56, ['9'] = 57, [' '] = 32
+	[' '] = 32, ["'"] = 39, [','] = 44, ['-'] = 45, ['.'] = 46, ['/'] = 47,
+	['0'] = 48, ['1'] = 49, ['2'] = 50, ['3'] = 51, ['4'] = 52, ['5'] = 53,
+	['6'] = 54, ['7'] = 55, ['8'] = 56, ['9'] = 57, [';'] = 59, ['='] = 61,
+	a = 65, b = 66, c = 67, d = 68, e = 69, f = 70, g = 71, h = 72, i = 73,
+	j = 74, k = 75, l = 76, m = 77, n = 78, o = 79, p = 80, q = 81, r = 82,
+	s = 83, t = 84, u = 85, v = 86, w = 87, x = 88, y = 89, z = 90, ['['] = 91,
+	['\\'] = 92, [']'] = 93, ['`'] = 96,
+}
+local character_uppercase_map = {
+	["'"] = '"', [','] = '<', ['-'] = '_', ['.'] = '>', ['/'] = '?', ['1'] = '!',
+	['2'] = '@', ['3'] = '#', ['4'] = '$', ['5'] = '%', ['6'] = '^', ['7'] = '&',
+	['8'] = '*', ['9'] = '(', ['0'] = ')', [';'] = ':', ['='] = '+', ['['] = '{',
+	['\\'] = '|', [']'] = '}', ['`'] = '~',
 }
 
 -- Text settings
@@ -295,7 +303,7 @@ while window:loop(60) and not window:key(escape_key) do
 
 				-- Get the character to print
 				local _, shift = window:mods()
-				local character = shift and key:upper() or key:lower()
+				local character = shift and (character_uppercase_map[key] or key:upper()) or key
 
 				-- Draw new character
 				draw_text(
