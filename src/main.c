@@ -107,6 +107,27 @@ static int lua_fenster_get(lua_State *L) {
 	return 1;
 }
 
+static int lua_fenster_title(lua_State *L) {
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+
+	lua_pushstring(L, p_lua_fenster->p_fenster->title);
+	return 1;
+}
+
+static int lua_fenster_width(lua_State *L) {
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+
+	lua_pushnumber(L, p_lua_fenster->p_fenster->width);
+	return 1;
+}
+
+static int lua_fenster_height(lua_State *L) {
+	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+
+	lua_pushnumber(L, p_lua_fenster->p_fenster->height);
+	return 1;
+}
+
 static int lua_fenster_key(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 	const int key = luaL_checknumber(L, 2);
@@ -187,6 +208,9 @@ static const struct luaL_Reg fenster_funcs[] = {
 	{"loop", lua_fenster_loop},
 	{"set", lua_fenster_set},
 	{"get", lua_fenster_get},
+	{"title", lua_fenster_title},
+	{"width", lua_fenster_width},
+	{"height", lua_fenster_height},
 	{"key", lua_fenster_key},
 	{"keys", lua_fenster_keys},
 	{"mods", lua_fenster_mods},
@@ -202,6 +226,9 @@ static const struct luaL_Reg fenster_methods[] = {
 	{"loop", lua_fenster_loop},
 	{"set", lua_fenster_set},
 	{"get", lua_fenster_get},
+	{"title", lua_fenster_title},
+	{"width", lua_fenster_width},
+	{"height", lua_fenster_height},
 	{"key", lua_fenster_key},
 	{"keys", lua_fenster_keys},
 	{"mods", lua_fenster_mods},

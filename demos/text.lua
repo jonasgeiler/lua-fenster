@@ -231,7 +231,7 @@ local character_uppercase_map = {
 local text_offset_x = 16
 local text_offset_y = 16
 local text_line_height = microknight_size * 2
-local max_text_line_length = 80
+local max_text_line_length = 80 -- should be higher than 30
 local max_text_lines = 30
 
 -- Open a window
