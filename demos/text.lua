@@ -244,13 +244,15 @@ local window = fenster.open('Text Demo', window_width, window_height)
 -- Draw instructions
 draw_text(
 	window,
-	'Press ESC to exit',
+	'Type anything' ..
+		string.rep(' ', max_text_line_length - 30) ..
+		'Press ESC to exit',
 	text_offset_x,
 	text_offset_y + text_line_height * 0
 )
 draw_text(
 	window,
-	'Type anything:',
+	string.rep('-', max_text_line_length),
 	text_offset_x,
 	text_offset_y + text_line_height * 1
 )
