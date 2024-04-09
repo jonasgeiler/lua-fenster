@@ -6,6 +6,9 @@ const uint32_t MAX_COLOR = 0xffffff;
 
 typedef struct lua_fenster {
   struct fenster *p_fenster;
+  int original_width;
+  int original_height;
+  uint8_t scale;
   int64_t last_frame_time;
   unsigned long keys_size;
 } lua_fenster;
@@ -14,23 +17,35 @@ static int lua_fenster_open(lua_State *L) {
   const char *title = luaL_checklstring(L, 1, NULL);
   const int width = (int) luaL_checknumber(L, 2);
   const int height = (int) luaL_checknumber(L, 3);
+  const int scale = (uint8_t) luaL_optnumber(L, 4, 1);
+  if ((scale & (scale - 1)) != 0) {
+    return luaL_error(
+        L, "invalid scale value: %d (must be a power of 2 and 1-128)",
+        scale
+    );
+  }
 
-  uint32_t *buffer = (uint32_t *) calloc(width * height, sizeof(uint32_t));
+  uint32_t *buffer = (uint32_t *) calloc(
+      width * scale * height * scale,
+      sizeof(uint32_t)
+  );
   if (buffer == NULL) {
     return luaL_error(
         L, "failed to allocate memory of size %d for frame buffer (%d)",
-        width * height, errno
+        width * scale * height * scale, errno
     );
   }
 
   struct fenster temp_fenster = {
       .title = title,
-      .width = width,
-      .height = height,
+      .width = width * scale,
+      .height = height * scale,
       .buf = buffer,
   };
 
-  struct fenster *p_fenster = (struct fenster *) malloc(sizeof(struct fenster));
+  struct fenster *p_fenster = (struct fenster *) malloc(
+      sizeof(struct fenster)
+  );
   if (p_fenster == NULL) {
     free(buffer);
     buffer = NULL;
@@ -53,6 +68,9 @@ static int lua_fenster_open(lua_State *L) {
 
   lua_fenster *p_lf = lua_newuserdata(L, sizeof(lua_fenster));
   p_lf->p_fenster = p_fenster;
+  p_lf->original_width = width;
+  p_lf->original_height = height;
+  p_lf->scale = scale;
   p_lf->last_frame_time = fenster_time();
   p_lf->keys_size = sizeof(p_fenster->keys) / sizeof(p_fenster->keys[0]);
 
@@ -110,14 +128,20 @@ static int lua_fenster_set(lua_State *L) {
     );
   }
 
-  if (x < 0 || x >= p_lf->p_fenster->width ||
-      y < 0 || y >= p_lf->p_fenster->height) {
+  if (x < 0 || x >= p_lf->original_width ||
+      y < 0 || y >= p_lf->original_height) {
     return luaL_error(
         L, "pixel out of bounds: %d,%d (must be 0-%d,0-%d)",
-        x, y, p_lf->p_fenster->width - 1, p_lf->p_fenster->height - 1
+        x, y, p_lf->original_width - 1, p_lf->original_height - 1
     );
   }
-  fenster_pixel(p_lf->p_fenster, x, y) = color;
+  int i_max = (x + 1) * p_lf->scale;
+  int j_max = (y + 1) * p_lf->scale;
+  for (int i = x * p_lf->scale; i < i_max; i++) {
+    for (int j = y * p_lf->scale; j < j_max; j++) {
+      fenster_pixel(p_lf->p_fenster, i, j) = color;
+    }
+  }
 
   return 0;
 }
@@ -127,15 +151,17 @@ static int lua_fenster_get(lua_State *L) {
   const int x = (int) luaL_checknumber(L, 2);
   const int y = (int) luaL_checknumber(L, 3);
 
-  if (x < 0 || x >= p_lf->p_fenster->width ||
-      y < 0 || y >= p_lf->p_fenster->height) {
+  if (x < 0 || x >= p_lf->original_width ||
+      y < 0 || y >= p_lf->original_height) {
     return luaL_error(
         L, "pixel out of bounds: %d,%d (must be 0-%d,0-%d)",
-        x, y, p_lf->p_fenster->width - 1, p_lf->p_fenster->height - 1
+        x, y, p_lf->original_width - 1, p_lf->original_height - 1
     );
   }
 
-  lua_pushnumber(L, fenster_pixel(p_lf->p_fenster, x, y));
+  lua_pushnumber(
+      L, fenster_pixel(p_lf->p_fenster, x * p_lf->scale, y * p_lf->scale)
+  );
   return 1;
 }
 
@@ -149,14 +175,14 @@ static int lua_fenster_title(lua_State *L) {
 static int lua_fenster_width(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
-  lua_pushnumber(L, p_lf->p_fenster->width);
+  lua_pushnumber(L, p_lf->original_width);
   return 1;
 }
 
 static int lua_fenster_height(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
-  lua_pushnumber(L, p_lf->p_fenster->height);
+  lua_pushnumber(L, p_lf->original_height);
   return 1;
 }
 
@@ -197,8 +223,14 @@ static int lua_fenster_mods(lua_State *L) {
 static int lua_fenster_mouse(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
-  lua_pushnumber(L, p_lf->p_fenster->x); // mouse x
-  lua_pushnumber(L, p_lf->p_fenster->y); // mouse y
+  // We use the special division formula (a + b / 2) / b to round to the nearest
+  // integer. If we used the normal formula a / b, we would always round down...
+  lua_pushnumber( // mouse x
+      L, (p_lf->p_fenster->x + p_lf->scale / 2) / p_lf->scale
+  );
+  lua_pushnumber( // mouse y
+      L, (p_lf->p_fenster->y + p_lf->scale / 2) / p_lf->scale
+  );
   lua_pushboolean(L, p_lf->p_fenster->mouse); // mouse button
   return 3;
 }

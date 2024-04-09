@@ -13,12 +13,13 @@ local function map(value, start1, stop1, start2, stop2)
 end
 
 -- Open a window
-local window_width = 320
-local window_height = 320
+local window_width = 144
+local window_height = 144
 local window = fenster.open(
 	'Fractal Demo - Press ESC to exit',
 	window_width,
-	window_height
+	window_height,
+	4
 )
 
 -- Fractal settings
@@ -33,8 +34,15 @@ local y_min = 0 - range
 local y_max = 0 + range
 
 -- Display the fractal
+local last_frame_time = fenster.time()
 local angle = 0
 while window:loop(60) and not window:key(27) do
+	-- Calculate the delta time, which is needed for FPS independent rotation
+	local curr_frame_time = fenster.time()
+	local delta = (curr_frame_time - last_frame_time) / 1000
+	last_frame_time = curr_frame_time
+
+	-- Draw the fractal
 	for y = 0, window_height - 1 do
 		for x = 0, window_width - 1 do
 			local real = map(x, 0, window_width, x_min, x_max)
@@ -63,5 +71,5 @@ while window:loop(60) and not window:key(27) do
 	end
 
 	-- Rotate the fractal
-	angle = angle + 0.1
+	angle = angle + 1 * delta
 end

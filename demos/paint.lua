@@ -94,7 +94,7 @@ local fill_key = 70 -- F Key
 
 -- Open a window
 local window_width = 640
-local window_height = 480
+local window_height = 360
 local window = fenster.open(
 	'Paint Demo - Press ESC to exit, 0-9 to change color, F to fill',
 	window_width,
