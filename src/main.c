@@ -27,8 +27,8 @@ static int lua_fenster_open(lua_State *L) {
 
 	struct fenster *p_fenster = (struct fenster *) malloc(sizeof(struct fenster));
 	if (p_fenster == NULL) {
-		free(p_fenster);
 		free(buffer);
+		buffer = NULL;
 		return luaL_error(L, "failed to allocate memory for window (%d)", errno);
 	}
 
@@ -37,7 +37,9 @@ static int lua_fenster_open(lua_State *L) {
 	const int result = fenster_open(p_fenster);
 	if (result != 0) {
 		free(p_fenster);
+		p_fenster = NULL;
 		free(buffer);
+		buffer = NULL;
 		return luaL_error(L, "failed to open window (%d)", result);
 	}
 
@@ -58,6 +60,8 @@ static int lua_fenster_close(lua_State *L) {
 		return 0;
 	}
 	fenster_close(p_lua_fenster->p_fenster);
+	free(p_lua_fenster->p_fenster->buf);
+	p_lua_fenster->p_fenster->buf = NULL;
 	free(p_lua_fenster->p_fenster);
 	p_lua_fenster->p_fenster = NULL;
 
@@ -66,15 +70,15 @@ static int lua_fenster_close(lua_State *L) {
 
 static int lua_fenster_loop(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-
 	if (lua_gettop(L) >= 2) {
 		const double max_fps = luaL_checknumber(L, 2);
-		const double max_frame_time = 1000.0 / max_fps;
 
 		const int64_t curr_frame_time = fenster_time();
 		const int64_t frame_time = curr_frame_time - p_lua_fenster->last_frame_time;
 
+		const double max_frame_time = 1000.0 / max_fps;
 		if (frame_time < max_frame_time) {
+			// sleep for the remaining frame time
 			fenster_sleep(max_frame_time - frame_time);
 		}
 
