@@ -127,6 +127,14 @@ static int lua_fenster_get(lua_State *L) {
   const int x = (int) luaL_checknumber(L, 2);
   const int y = (int) luaL_checknumber(L, 3);
 
+  if (x < 0 || x >= p_lf->p_fenster->width ||
+      y < 0 || y >= p_lf->p_fenster->height) {
+    return luaL_error(
+        L, "pixel out of bounds: %d,%d (must be 0-%d,0-%d)",
+        x, y, p_lf->p_fenster->width - 1, p_lf->p_fenster->height - 1
+    );
+  }
+
   lua_pushnumber(L, fenster_pixel(p_lf->p_fenster, x, y));
   return 1;
 }
