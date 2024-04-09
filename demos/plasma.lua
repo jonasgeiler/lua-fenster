@@ -16,7 +16,7 @@ local plasma_x_step = 1 / window_width
 
 -- Draw plasma effect
 local time = 0
-while window:loop(60) and not window:key(27) do
+while window:loop() and not window:key(27) do
 	local py = 0
 	for y = 1, window_height - 1 do
 		local px = 0

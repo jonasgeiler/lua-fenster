@@ -11,7 +11,7 @@ local window = fenster.open(
 )
 
 -- Generate noise
-while window:loop(60) and not window:key(27) do
+while window:loop() and not window:key(27) do
 	for y = 0, window_height - 1 do
 		for x = 0, window_width - 1 do
 			window:set(x, y, math.random(0x000000, 0xffffff))

@@ -4,6 +4,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#include <math.h>
 
 #ifdef _WIN32
 #define FENSTER_EXPORT __declspec (dllexport)

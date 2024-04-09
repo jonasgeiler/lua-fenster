@@ -54,6 +54,6 @@ for y = 0, image_height - 1 do
 end
 
 -- Empty window loop
-while window:loop(60) and not window:key(27) do
+while window:loop() and not window:key(27) do
 	--
 end

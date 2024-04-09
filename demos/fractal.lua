@@ -34,14 +34,8 @@ local y_min = 0 - range
 local y_max = 0 + range
 
 -- Display the fractal
-local last_frame_time = fenster.time()
 local angle = 0
-while window:loop(60) and not window:key(27) do
-	-- Calculate the delta time, which is needed for FPS independent rotation
-	local curr_frame_time = fenster.time()
-	local delta = (curr_frame_time - last_frame_time) / 1000
-	last_frame_time = curr_frame_time
-
+while window:loop() and not window:key(27) do
 	-- Draw the fractal
 	for y = 0, window_height - 1 do
 		for x = 0, window_width - 1 do
@@ -71,5 +65,5 @@ while window:loop(60) and not window:key(27) do
 	end
 
 	-- Rotate the fractal
-	angle = angle + 1 * delta
+	angle = angle + 2 * window:delta()
 end

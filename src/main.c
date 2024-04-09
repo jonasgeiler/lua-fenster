@@ -9,7 +9,9 @@ typedef struct lua_fenster {
   int original_width;
   int original_height;
   uint8_t scale;
-  int64_t last_frame_time;
+  double delta;
+  int64_t target_frame_time;
+  int64_t start_frame_time;
   unsigned long keys_size;
 } lua_fenster;
 
@@ -17,13 +19,14 @@ static int lua_fenster_open(lua_State *L) {
   const char *title = luaL_checklstring(L, 1, NULL);
   const int width = (int) luaL_checknumber(L, 2);
   const int height = (int) luaL_checknumber(L, 3);
-  const int scale = (uint8_t) luaL_optnumber(L, 4, 1);
+  const uint8_t scale = (uint8_t) luaL_optnumber(L, 4, 1.0);
   if ((scale & (scale - 1)) != 0) {
     return luaL_error(
         L, "invalid scale value: %d (must be a power of 2 and 1-128)",
         scale
     );
   }
+  const double target_fps = (double) luaL_optnumber(L, 5, 60.0);
 
   uint32_t *buffer = (uint32_t *) calloc(
       width * scale * height * scale,
@@ -71,7 +74,9 @@ static int lua_fenster_open(lua_State *L) {
   p_lf->original_width = width;
   p_lf->original_height = height;
   p_lf->scale = scale;
-  p_lf->last_frame_time = fenster_time();
+  p_lf->delta = 0.0;
+  p_lf->target_frame_time = lround(1000.0 / target_fps);
+  p_lf->start_frame_time = 0;
   p_lf->keys_size = sizeof(p_fenster->keys) / sizeof(p_fenster->keys[0]);
 
   luaL_setmetatable(L, "lua_fenster");
@@ -96,17 +101,21 @@ static int lua_fenster_close(lua_State *L) {
 
 static int lua_fenster_loop(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-  if (lua_gettop(L) >= 2) {
-    const int64_t max_fps = (int64_t) luaL_checknumber(L, 2);
 
-    const int64_t max_frame_time = 1000 / max_fps;
-    const int64_t delta_frame_time = fenster_time() - p_lf->last_frame_time;
-    if (max_frame_time > delta_frame_time) {
-      // sleep for the remaining frame time to limit FPS
-      fenster_sleep(max_frame_time - delta_frame_time);
-    }
-    p_lf->last_frame_time = fenster_time();
+  // handle frame timing
+  int64_t now = fenster_time();
+  if (p_lf->start_frame_time == 0) {
+    // initialize start frame time
+    p_lf->start_frame_time = now;
   }
+  const int64_t last_frame_time = now - p_lf->start_frame_time;
+  if (p_lf->target_frame_time > last_frame_time) {
+    // sleep for the remaining frame time to reach target frame time
+    fenster_sleep(p_lf->target_frame_time - last_frame_time);
+  }
+  now = fenster_time();
+  p_lf->delta = (double) (now - p_lf->start_frame_time) / 1000.0;
+  p_lf->start_frame_time = now;
 
   if (fenster_loop(p_lf->p_fenster) == 0) {
     lua_pushboolean(L, 1);
@@ -186,6 +195,13 @@ static int lua_fenster_height(lua_State *L) {
   return 1;
 }
 
+static int lua_fenster_delta(lua_State *L) {
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+
+  lua_pushnumber(L, p_lf->delta);
+  return 1;
+}
+
 static int lua_fenster_key(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
   const int key = (int) luaL_checknumber(L, 2);
@@ -223,13 +239,13 @@ static int lua_fenster_mods(lua_State *L) {
 static int lua_fenster_mouse(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
-  // We use the special division formula (a + b / 2) / b to round to the nearest
-  // integer. If we used the normal formula a / b, we would always round down...
+  // we use the special division formula (a + b / 2) / b to round to the nearest
+  // integer - if we used the normal formula a / b, we would always round down
   lua_pushnumber( // mouse x
-      L, (p_lf->p_fenster->x + p_lf->scale / 2) / p_lf->scale
+      L, (int) ((p_lf->p_fenster->x + p_lf->scale / 2) / p_lf->scale)
   );
   lua_pushnumber( // mouse y
-      L, (p_lf->p_fenster->y + p_lf->scale / 2) / p_lf->scale
+      L, (int) ((p_lf->p_fenster->y + p_lf->scale / 2) / p_lf->scale)
   );
   lua_pushboolean(L, p_lf->p_fenster->mouse); // mouse button
   return 3;
@@ -268,7 +284,7 @@ static int lua_fenster_sleep(lua_State *L) {
 }
 
 static int lua_fenster_time(lua_State *L) {
-  lua_pushnumber(L, (lua_Number) fenster_time());
+  lua_pushnumber(L, (double) fenster_time());
   return 1;
 }
 
@@ -281,6 +297,7 @@ static const struct luaL_Reg lua_fenster_funcs[] = {
     {"title", lua_fenster_title},
     {"width", lua_fenster_width},
     {"height", lua_fenster_height},
+    {"delta", lua_fenster_delta},
     {"key", lua_fenster_key},
     {"keys", lua_fenster_keys},
     {"mods", lua_fenster_mods},
@@ -299,6 +316,7 @@ static const struct luaL_Reg lua_fenster_methods[] = {
     {"title", lua_fenster_title},
     {"width", lua_fenster_width},
     {"height", lua_fenster_height},
+    {"delta", lua_fenster_delta},
     {"key", lua_fenster_key},
     {"keys", lua_fenster_keys},
     {"mods", lua_fenster_mods},

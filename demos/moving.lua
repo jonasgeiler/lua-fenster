@@ -41,22 +41,16 @@ local window = fenster.open(
 )
 
 -- Draw a moving rectangle
-local last_frame_time = fenster.time()
 local rect_x, rect_y = 0, 0
 local rect_dir_x, rect_dir_y = 1, 1
 local rect_color_index = 1
-while window:loop(60) and not window:key(27) do
-	-- Calculate the delta time, which is needed for FPS independent movement
-	local curr_frame_time = fenster.time()
-	local delta = (curr_frame_time - last_frame_time) / 1000
-	last_frame_time = curr_frame_time
-
+while window:loop() and not window:key(27) do
 	-- Clear the previous rectangle
 	draw_rectangle(window, rect_x, rect_y, rect_width, rect_height, 0x000000)
 
 	-- Move the rectangle
-	rect_x = rect_x + rect_speed * rect_dir_x * delta
-	rect_y = rect_y + rect_speed * rect_dir_y * delta
+	rect_x = rect_x + rect_speed * rect_dir_x * window:delta()
+	rect_y = rect_y + rect_speed * rect_dir_y * window:delta()
 
 	-- Check if the rectangle would be out of bounds
 	if rect_x < 0 or rect_x + rect_width >= window_width then
@@ -67,7 +61,7 @@ while window:loop(60) and not window:key(27) do
 		rect_color_index = (rect_color_index % #rect_colors) + 1
 
 		-- Recalculate the x position with the new direction
-		rect_x = rect_x + rect_speed * rect_dir_x * delta
+		rect_x = rect_x + rect_speed * rect_dir_x * window:delta()
 	end
 	if rect_y < 0 or rect_y + rect_height >= window_height then
 		-- Flip the y direction
@@ -77,7 +71,7 @@ while window:loop(60) and not window:key(27) do
 		rect_color_index = (rect_color_index % #rect_colors) + 1
 
 		-- Recalculate the y position with the new direction
-		rect_y = rect_y + rect_speed * rect_dir_y * delta
+		rect_y = rect_y + rect_speed * rect_dir_y * window:delta()
 	end
 
 	-- Draw the rectangle

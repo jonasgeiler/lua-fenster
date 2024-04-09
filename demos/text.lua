@@ -260,7 +260,7 @@ draw_text(
 -- Main loop
 local typed_text_lines = {''}
 local curr_line = 1
-while window:loop(60) and not window:key(escape_key) do
+while window:loop() and not window:key(escape_key) do
 	-- Get text input and draw the new text when needed
 	local pressed_key
 	if window:key(enter_key) then
@@ -324,7 +324,7 @@ while window:loop(60) and not window:key(escape_key) do
 
 	-- Wait until pressed key was released
 	if pressed_key then
-		while window:loop(60) and window:key(pressed_key) do
+		while window:loop() and window:key(pressed_key) do
 			--
 		end
 	end

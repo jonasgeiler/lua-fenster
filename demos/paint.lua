@@ -104,7 +104,7 @@ local window = fenster.open(
 -- Main loop
 local paint_color = key_color_map[49]
 local last_mouse_x, last_mouse_y
-while window:loop(60) and not window:key(27) do
+while window:loop() and not window:key(27) do
 	local keys = window:keys()
 
 	-- Check if a color key is pressed
@@ -144,7 +144,7 @@ while window:loop(60) and not window:key(27) do
 		fill(window, mouse_x, mouse_y, paint_color)
 
 		-- Wait until fill key released
-		while window:loop(60) and window:key(fill_key) do
+		while window:loop() and window:key(fill_key) do
 			--
 		end
 	end
