@@ -48,15 +48,30 @@ local function fill(window, x, y, color, old_color)
 	if old_color == color then
 		return
 	end
-	if x < 0 or x >= window:width() or y < 0 or y >= window:height() then
-		return
-	end
-	if window:get(x, y) == old_color then
-		window:set(x, y, color)
-		fill(window, x - 1, y, color, old_color)
-		fill(window, x + 1, y, color, old_color)
-		fill(window, x, y - 1, color, old_color)
-		fill(window, x, y + 1, color, old_color)
+
+	local window_width = window:width()
+	local window_height = window:height()
+	local stack = {(y * window_width) + x}
+	while stack[1] do
+		local pos = table.remove(stack)
+		x = pos % window_width
+		y = math.floor(pos / window_width)
+		if window:get(x, y) == old_color then
+			window:set(x, y, color)
+
+			if x > 0 then
+				table.insert(stack, pos - 1)
+			end
+			if x < window_width - 1 then
+				table.insert(stack, pos + 1)
+			end
+			if y > 0 then
+				table.insert(stack, pos - window_width)
+			end
+			if y < window_height - 1 then
+				table.insert(stack, pos + window_width)
+			end
+		end
 	end
 end
 
@@ -102,7 +117,7 @@ while window:loop(60) and not window:key(27) do
 
 	local mouse_x, mouse_y, mouse_down = window:mouse()
 
-	if mouse_down then -- Check if mouse is pressed
+	if mouse_down then
 		-- Check if the last mouse position is not set
 		if not last_mouse_x and not last_mouse_y then
 			-- Use the current mouse position as the "last mouse position" (line starting point)
@@ -110,18 +125,27 @@ while window:loop(60) and not window:key(27) do
 		end
 
 		-- Draw a line between the last mouse position and the current mouse position
-		draw_line(window, last_mouse_x, last_mouse_y, mouse_x, mouse_y, paint_color)
+		draw_line(
+			window,
+			last_mouse_x,
+			last_mouse_y,
+			mouse_x,
+			mouse_y,
+			paint_color
+		)
 
 		-- Update the last mouse position
 		last_mouse_x, last_mouse_y = mouse_x, mouse_y
-	elseif last_mouse_x and last_mouse_y then -- Otherwise check if mouse is released
+	elseif last_mouse_x and last_mouse_y then
 		-- Reset the last mouse position
 		last_mouse_x, last_mouse_y = nil, nil
-	elseif keys[fill_key] then -- Otherwise check if fill key is pressed
+	elseif keys[fill_key] then
 		-- Fill the area at the mouse position
 		fill(window, mouse_x, mouse_y, paint_color)
 
 		-- Wait until fill key released
-		while window:loop(60) and window:key(fill_key) do end
+		while window:loop(60) and window:key(fill_key) do
+			--
+		end
 	end
 end
