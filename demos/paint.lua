@@ -37,16 +37,31 @@ local function draw_line(window, x0, y0, x1, y1, color)
 	end
 end
 
+-- Define the keyboard keys and their corresponding colors
+local key_color_map = {
+	[48] = 0x000000, -- 0 (black)
+	[49] = 0xffffff, -- 1 (white)
+	[50] = 0x0000ff, -- 2 (blue)
+	[51] = 0x00ff00, -- 3 (green)
+	[52] = 0x00ffff, -- 4 (cyan)
+	[53] = 0xff0000, -- 5 (red)
+	[54] = 0xff00ff, -- 6 (magenta)
+	[55] = 0xffff00, -- 7 (yellow)
+	[56] = 0x808080, -- 8 (gray)
+	[57] = 0xFFA500, -- 9 (orange)
+}
+
 -- Open a window
 local window_width = 640
 local window_height = 480
 local window = fenster.open(
-	'Paint Demo - Press ESC to exit',
+	'Paint Demo - Press ESC to exit, 0-9 to change color',
 	window_width,
 	window_height
 )
 
 -- Main loop
+local paint_color = key_color_map[49]
 local last_mouse_x, last_mouse_y
 while window:loop(60) and not window:key(27) do
     local mouse_x, mouse_y, mouse_down = window:mouse()
@@ -60,12 +75,22 @@ while window:loop(60) and not window:key(27) do
 		end
 
 		-- Draw a line between the last mouse position and the current mouse position
-		draw_line(window, last_mouse_x, last_mouse_y, mouse_x, mouse_y, 0xffffff)
+		draw_line(window, last_mouse_x, last_mouse_y, mouse_x, mouse_y, paint_color)
 
 		-- Update the last mouse position
 		last_mouse_x, last_mouse_y = mouse_x, mouse_y
 	elseif last_mouse_x and last_mouse_y then
 		-- Reset the last mouse position when the mouse is released
 		last_mouse_x, last_mouse_y = nil, nil
+	end
+
+	local keys = window:keys()
+
+	-- Check if a key is pressed
+	for key, color in pairs(key_color_map) do
+		if keys[key] then
+			-- Set the color to the key color
+			paint_color = color
+		end
 	end
 end
