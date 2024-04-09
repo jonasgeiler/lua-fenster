@@ -2,6 +2,20 @@
 
 WIP
 
+## Installation
+
+From LuaRocks server:
+```shell
+luarocks install fenster
+```
+
+From source:
+```shell
+git clone https://github.com/jonasgeiler/lua-fenster.git
+cd lua-fenster
+luarocks make
+```
+
 ## Notes
 
 API planning:

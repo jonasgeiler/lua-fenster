@@ -48,8 +48,8 @@ jobs:
       - name: Setup LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
 
-      - name: Run luarocks build
-        run: luarocks build
+      - name: Run luarocks make
+        run: luarocks make
         # Currently does not work for LuaJIT on Windows (lua library not found)
         if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 

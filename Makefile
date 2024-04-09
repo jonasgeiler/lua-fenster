@@ -1,6 +1,6 @@
 #
 # !IMPORTANT!
-# I created this file for CLion and it works on my machine, but you should rather use `luarocks build` to build the library.
+# I created this file for CLion and it works on my machine, but you should rather use `luarocks make` to build the library.
 # I really don't have any experience with Makefiles, so I can't guarantee that it will work on your machine.
 #
 
