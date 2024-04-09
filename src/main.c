@@ -15,7 +15,7 @@ static int lua_fenster_open(lua_State *L) {
 
 	uint32_t *buffer = (uint32_t *) calloc(width * height, sizeof(uint32_t));
 	if (buffer == NULL) {
-		return luaL_error(L, "failed to allocate memory for frame buffer of size %d", width * height);
+		return luaL_error(L, "failed to allocate memory for frame buffer of size %d (%d)", width * height, errno);
 	}
 
 	struct fenster temp_fenster = {
@@ -29,7 +29,7 @@ static int lua_fenster_open(lua_State *L) {
 	if (p_fenster == NULL) {
 		free(p_fenster);
 		free(buffer);
-		return luaL_error(L, "failed to allocate memory for window");
+		return luaL_error(L, "failed to allocate memory for window (%d)", errno);
 	}
 
 	memcpy(p_fenster, &temp_fenster, sizeof(struct fenster));
