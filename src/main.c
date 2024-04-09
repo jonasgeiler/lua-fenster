@@ -2,6 +2,8 @@
 #include "vendor/fenster.h"
 #include "vendor/compat-5.3.h"
 
+const uint32_t MAX_COLOR = 0xffffff;
+
 typedef struct lua_fenster {
 	struct fenster *p_fenster;
 	int64_t last_frame_time;
@@ -10,8 +12,8 @@ typedef struct lua_fenster {
 
 static int lua_fenster_open(lua_State *L) {
 	const char *title = luaL_checklstring(L, 1, NULL);
-	const int width = luaL_checknumber(L, 2);
-	const int height = luaL_checknumber(L, 3);
+	const int width = (int) luaL_checknumber(L, 2);
+	const int height = (int) luaL_checknumber(L, 3);
 
 	uint32_t *buffer = (uint32_t *) calloc(width * height, sizeof(uint32_t));
 	if (buffer == NULL) {
@@ -71,15 +73,14 @@ static int lua_fenster_close(lua_State *L) {
 static int lua_fenster_loop(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 	if (lua_gettop(L) >= 2) {
-		const double max_fps = luaL_checknumber(L, 2);
+		const int64_t max_fps = (int64_t) luaL_checknumber(L, 2);
 
+		const int64_t max_frame_time = 1000 / max_fps;
 		const int64_t delta_frame_time = fenster_time() - p_lua_fenster->last_frame_time;
-		const double max_frame_time = 1000.0 / max_fps;
-		if (delta_frame_time < max_frame_time) {
-			// sleep for the remaining frame time
+		if (max_frame_time > delta_frame_time) {
+			// sleep for the remaining frame time to limit FPS
 			fenster_sleep(max_frame_time - delta_frame_time);
 		}
-
 		p_lua_fenster->last_frame_time = fenster_time();
 	}
 
@@ -93,9 +94,12 @@ static int lua_fenster_loop(lua_State *L) {
 
 static int lua_fenster_set(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-	const int x = luaL_checknumber(L, 2);
-	const int y = luaL_checknumber(L, 3);
-	const uint32_t color = luaL_checknumber(L, 4);
+	const int x = (int) luaL_checknumber(L, 2);
+	const int y = (int) luaL_checknumber(L, 3);
+	const uint32_t color = (uint32_t) luaL_checknumber(L, 4);
+	if (color > MAX_COLOR) {
+		return luaL_error(L, "invalid color value");
+	}
 
 	if (x < 0 || x >= p_lua_fenster->p_fenster->width || y < 0 || y >= p_lua_fenster->p_fenster->height) {
 		return luaL_error(L, "pixel out of bounds");
@@ -107,8 +111,8 @@ static int lua_fenster_set(lua_State *L) {
 
 static int lua_fenster_get(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-	const int x = luaL_checknumber(L, 2);
-	const int y = luaL_checknumber(L, 3);
+	const int x = (int) luaL_checknumber(L, 2);
+	const int y = (int) luaL_checknumber(L, 3);
 
 	lua_pushnumber(L, fenster_pixel(p_lua_fenster->p_fenster, x, y));
 	return 1;
@@ -137,7 +141,7 @@ static int lua_fenster_height(lua_State *L) {
 
 static int lua_fenster_key(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-	const int key = luaL_checknumber(L, 2);
+	const int key = (int) luaL_checknumber(L, 2);
 
 	if (p_lua_fenster->p_fenster->keys[key]) {
 		lua_pushboolean(L, 1);
@@ -180,16 +184,19 @@ static int lua_fenster_mouse(lua_State *L) {
 
 static int lua_fenster_rgb(lua_State *L) {
 	if (lua_gettop(L) < 3) {
-		const uint32_t color = luaL_checknumber(L, 1);
+		const uint32_t color = (uint32_t) luaL_checknumber(L, 1);
+		if (color > MAX_COLOR) {
+			return luaL_error(L, "invalid color value");
+		}
 
 		lua_pushnumber(L, (color >> 16) & 0xFF);
 		lua_pushnumber(L, (color >> 8) & 0xFF);
 		lua_pushnumber(L, color & 0xFF);
 		return 3;
 	} else {
-		const uint8_t r = luaL_checknumber(L, 1);
-		const uint8_t g = luaL_checknumber(L, 2);
-		const uint8_t b = luaL_checknumber(L, 3);
+		const uint8_t r = (uint8_t) luaL_checknumber(L, 1);
+		const uint8_t g = (uint8_t) luaL_checknumber(L, 2);
+		const uint8_t b = (uint8_t) luaL_checknumber(L, 3);
 
 		lua_pushnumber(L, (r << 16) | (g << 8) | b);
 		return 1;
@@ -197,7 +204,7 @@ static int lua_fenster_rgb(lua_State *L) {
 }
 
 static int lua_fenster_sleep(lua_State *L) {
-	const int64_t ms = luaL_checknumber(L, 1);
+	const int64_t ms = (int64_t) luaL_checknumber(L, 1);
 
 	fenster_sleep(ms);
 
@@ -205,7 +212,7 @@ static int lua_fenster_sleep(lua_State *L) {
 }
 
 static int lua_fenster_time(lua_State *L) {
-	lua_pushnumber(L, fenster_time());
+	lua_pushnumber(L, (lua_Number) fenster_time());
 	return 1;
 }
 
