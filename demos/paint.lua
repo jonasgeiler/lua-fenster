@@ -38,6 +38,28 @@ local function draw_line(window, x0, y0, x1, y1, color)
 	end
 end
 
+---Fill an area with a specific color
+---@param x number
+---@param y number
+---@param color number
+---@param old_color number?
+local function fill(window, x, y, color, old_color)
+	old_color = old_color or window:get(x, y)
+	if old_color == color then
+		return
+	end
+	if x < 0 or x >= window:width() or y < 0 or y >= window:height() then
+		return
+	end
+	if window:get(x, y) == old_color then
+		window:set(x, y, color)
+		fill(window, x - 1, y, color, old_color)
+		fill(window, x + 1, y, color, old_color)
+		fill(window, x, y - 1, color, old_color)
+		fill(window, x, y + 1, color, old_color)
+	end
+end
+
 -- Define the keyboard keys and their corresponding colors
 local key_color_map = {
 	[48] = 0x000000, -- 0 (black)
@@ -52,11 +74,14 @@ local key_color_map = {
 	[57] = 0xFFA500, -- 9 (orange)
 }
 
+-- Define the key for the fill action
+local fill_key = 70 -- F Key
+
 -- Open a window
 local window_width = 640
 local window_height = 480
 local window = fenster.open(
-	'Paint Demo - Press ESC to exit, 0-9 to change color',
+	'Paint Demo - Press ESC to exit, 0-9 to change color, F to fill',
 	window_width,
 	window_height
 )
@@ -65,10 +90,19 @@ local window = fenster.open(
 local paint_color = key_color_map[49]
 local last_mouse_x, last_mouse_y
 while window:loop(60) and not window:key(27) do
+	local keys = window:keys()
+
+	-- Check if a color key is pressed
+	for key, color in pairs(key_color_map) do
+		if keys[key] then
+			-- Set the color to the assigned key color
+			paint_color = color
+		end
+	end
+
 	local mouse_x, mouse_y, mouse_down = window:mouse()
 
-	-- Check if the mouse is pressed
-	if mouse_down then
+	if mouse_down then -- Check if mouse is pressed
 		-- Check if the last mouse position is not set
 		if not last_mouse_x and not last_mouse_y then
 			-- Use the current mouse position as the "last mouse position" (line starting point)
@@ -80,18 +114,14 @@ while window:loop(60) and not window:key(27) do
 
 		-- Update the last mouse position
 		last_mouse_x, last_mouse_y = mouse_x, mouse_y
-	elseif last_mouse_x and last_mouse_y then
-		-- Reset the last mouse position when the mouse is released
+	elseif last_mouse_x and last_mouse_y then -- Otherwise check if mouse is released
+		-- Reset the last mouse position
 		last_mouse_x, last_mouse_y = nil, nil
-	end
+	elseif keys[fill_key] then -- Otherwise check if fill key is pressed
+		-- Fill the area at the mouse position
+		fill(window, mouse_x, mouse_y, paint_color)
 
-	local keys = window:keys()
-
-	-- Check if a key is pressed
-	for key, color in pairs(key_color_map) do
-		if keys[key] then
-			-- Set the color to the key color
-			paint_color = color
-		end
+		-- Wait until fill key released
+		while window:loop(60) and window:key(fill_key) do end
 	end
 end
