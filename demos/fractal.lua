@@ -13,8 +13,8 @@ local function map(value, start1, stop1, start2, stop2)
 end
 
 -- Open a window
-local window_width = 300
-local window_height = 300
+local window_width = 320
+local window_height = 320
 local window = fenster.open(
 	'Fractal Demo - Press ESC to exit',
 	window_width,
