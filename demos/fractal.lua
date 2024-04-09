@@ -15,11 +15,12 @@ end
 -- Open a window
 local window_width = 144
 local window_height = 144
+local window_scale = 4
 local window = fenster.open(
 	'Fractal Demo - Press ESC to exit',
 	window_width,
 	window_height,
-	4
+	window_scale
 )
 
 -- Fractal settings

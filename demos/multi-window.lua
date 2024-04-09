@@ -28,7 +28,7 @@ local window2 = fenster.open(
 	'Multi-Window Demo - Press ESC to exit (2)',
 	window_width,
 	window_height,
-	2
+	2 -- scale x 2
 )
 
 -- Draw a circle on the both windows

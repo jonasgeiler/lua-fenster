@@ -33,11 +33,12 @@ local rect_colors = {
 -- Open a window
 local window_width = 256
 local window_height = 144
+local window_scale = 2
 local window = fenster.open(
 	'Moving Demo - Press ESC to exit',
 	window_width,
 	window_height,
-	2
+	window_scale
 )
 
 -- Draw a moving rectangle

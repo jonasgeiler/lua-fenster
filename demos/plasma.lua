@@ -3,11 +3,12 @@ local fenster = require('fenster')
 -- Open a window
 local window_width = 256
 local window_height = 144
+local window_scale = 4
 local window = fenster.open(
 	'Plasma Demo - Press ESC to exit',
 	window_width,
 	window_height,
-	4
+	window_scale
 )
 
 -- Calculate plasma effect steps

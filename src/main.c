@@ -33,9 +33,10 @@ static int lua_fenster_open(lua_State *L) {
       sizeof(uint32_t)
   );
   if (buffer == NULL) {
+    const int error = errno;
     return luaL_error(
         L, "failed to allocate memory of size %d for frame buffer (%d)",
-        width * scale * height * scale, errno
+        width * scale * height * scale, error
     );
   }
 
