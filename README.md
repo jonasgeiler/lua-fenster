@@ -2,6 +2,55 @@
 
 WIP
 
+## Notes
+
+API planning:
+```
+userdata fenster.open(width, height, title)
+userdata fenster.open(width, height, title, scale)
+userdata fenster.open(width, height, title, scale, target_fps)
+
+void window:close()
+
+boolean window:loop()
+
+void window:set(x, y, color)
+
+number window:get(x, y)
+
+boolean window:key(key)
+
+boolean,boolean,boolean,boolean window:mods()
+
+number,number,boolean window:mouse()
+
+string window.title
+
+number window.width
+
+number window.height
+
+number window.scale
+
+number window.delta
+
+{number: boolean} window.keys
+
+number window.mod
+
+number window.mouse_x
+
+number window.mouse_y
+
+number window.mouse_button
+
+void fenster.sleep(ms)
+
+number fenster.time()
+
+number,number?,number? fenster.rgb(r_or_color, g?, b?)
+```
+
 ## Useful Snippets
 
 ### Basic window loop
@@ -10,7 +59,7 @@ A simple window loop that runs at maximum 60 FPS and closes when the Escape key
 is pressed:
 
 ```lua
-while window:loop(60) and not window:key(27) do
+while window:loop() and not window:key(27) do
 	-- Draw stuff here
 end 
 ```
