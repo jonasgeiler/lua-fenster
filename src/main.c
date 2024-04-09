@@ -53,8 +53,13 @@ static int lua_fenster_open(lua_State *L) {
 static int lua_fenster_close(lua_State *L) {
 	lua_fenster *p_lua_fenster = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
+	if (p_lua_fenster->p_fenster == NULL) {
+		// already closed
+		return 0;
+	}
 	fenster_close(p_lua_fenster->p_fenster);
 	free(p_lua_fenster->p_fenster);
+	p_lua_fenster->p_fenster = NULL;
 
 	return 0;
 }
