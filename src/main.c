@@ -73,16 +73,14 @@ static int lua_fenster_loop(lua_State *L) {
 	if (lua_gettop(L) >= 2) {
 		const double max_fps = luaL_checknumber(L, 2);
 
-		const int64_t curr_frame_time = fenster_time();
-		const int64_t frame_time = curr_frame_time - p_lua_fenster->last_frame_time;
-
+		const int64_t delta_frame_time = fenster_time() - p_lua_fenster->last_frame_time;
 		const double max_frame_time = 1000.0 / max_fps;
-		if (frame_time < max_frame_time) {
+		if (delta_frame_time < max_frame_time) {
 			// sleep for the remaining frame time
-			fenster_sleep(max_frame_time - frame_time);
+			fenster_sleep(max_frame_time - delta_frame_time);
 		}
 
-		p_lua_fenster->last_frame_time = curr_frame_time;
+		p_lua_fenster->last_frame_time = fenster_time();
 	}
 
 	if (fenster_loop(p_lua_fenster->p_fenster) == 0) {
