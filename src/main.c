@@ -18,7 +18,7 @@ static int lua_fenster_open(lua_State *L) {
   uint32_t *buffer = (uint32_t *) calloc(width * height, sizeof(uint32_t));
   if (buffer == NULL) {
     return luaL_error(
-        L, "failed to allocate memory for frame buffer of size %d (%d)",
+        L, "failed to allocate memory of size %d for frame buffer (%d)",
         width * height, errno
     );
   }
@@ -34,7 +34,10 @@ static int lua_fenster_open(lua_State *L) {
   if (p_fenster == NULL) {
     free(buffer);
     buffer = NULL;
-    return luaL_error(L, "failed to allocate memory for window (%d)", errno);
+    return luaL_error(
+        L, "failed to allocate memory of size %d for window (%d)",
+        sizeof(struct fenster), errno
+    );
   }
 
   memcpy(p_fenster, &temp_fenster, sizeof(struct fenster));
@@ -101,12 +104,18 @@ static int lua_fenster_set(lua_State *L) {
   const int y = (int) luaL_checknumber(L, 3);
   const uint32_t color = (uint32_t) luaL_checknumber(L, 4);
   if (color > MAX_COLOR) {
-    return luaL_error(L, "invalid color value");
+    return luaL_error(
+        L, "invalid color value: %d (must be 0-%d)",
+        color, MAX_COLOR
+    );
   }
 
   if (x < 0 || x >= p_lf->p_fenster->width ||
       y < 0 || y >= p_lf->p_fenster->height) {
-    return luaL_error(L, "pixel out of bounds");
+    return luaL_error(
+        L, "pixel out of bounds: %d,%d (must be 0-%d,0-%d)",
+        x, y, p_lf->p_fenster->width - 1, p_lf->p_fenster->height - 1
+    );
   }
   fenster_pixel(p_lf->p_fenster, x, y) = color;
 
@@ -190,7 +199,10 @@ static int lua_fenster_rgb(lua_State *L) {
   if (lua_gettop(L) < 3) {
     const uint32_t color = (uint32_t) luaL_checknumber(L, 1);
     if (color > MAX_COLOR) {
-      return luaL_error(L, "invalid color value");
+      return luaL_error(
+          L, "invalid color value: %d (must be 0-%d)",
+          color, MAX_COLOR
+      );
     }
 
     lua_pushnumber(L, (color >> 16) & 0xFF);
