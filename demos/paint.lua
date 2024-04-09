@@ -1,7 +1,7 @@
 local fenster = require('fenster')
 
 ---Draw a line between two points (window boundary version)
----@param window table
+---@param window userdata
 ---@param x0 number
 ---@param y0 number
 ---@param x1 number
@@ -17,6 +17,7 @@ local function draw_line(window, x0, y0, x1, y1, color)
 	local err = (dx > dy and dx or -dy) / 2
 	local e2
 	while true do
+		-- NOTE: If you are copying this code, you may want to remove this boundary check
 		if x0 >= 0 and x0 < window_width and y0 >= 0 and y0 < window_height then
 			window:set(x0, y0, color)
 		end

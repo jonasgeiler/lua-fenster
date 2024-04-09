@@ -5,45 +5,36 @@ WIP
 ## Useful Snippets
 
 ### Basic window loop
+
 A simple window loop that runs at maximum 60 FPS and closes when the Escape key
 is pressed:
+
 ```lua
 while window:loop(60) and not window:key(27) do
-    -- Draw stuff here
+	-- Draw stuff here
 end 
 ```
 
 ### Fill buffer
+
 Fills the entire window buffer with a specific color:
+
 ```lua
-for y = 0, window_height - 1 do
-    for x = 0, window_width - 1 do
-        window:set(x, y, color)
-    end
+-- Normally you would store window:width() and window:height() in variables
+for y = 0, window:height() - 1 do
+	for x = 0, window:width() - 1 do
+		window:set(x, y, color)
+	end
 end
 ```
+
 > [!IMPORTANT]
 > Pixel coordinates are zero-based. Unlike Lua tables they start at `0`.
 
-### RGB colors
-There are many ways to calculate the 24-bit color value from RGB components.
-Here are a few examples:
-```lua
--- Simple maths (recommended in Lua 5.1/5.2 and LuaJIT)
-window:set(x, y, r * 0x10000 + g * 0x100 + b)
-
--- Native bitwise operators (recommended in Lua 5.3+)
-window:set(x, y, (r << 16) | (g << 8) | b)
-
--- Using the bit32 library (included with Lua 5.2/5.3, also backported to Lua 5.1)
-window:set(x, y, bit32.bor(bit32.lshift(r, 16), bit32.lshift(g, 8), b))
-
--- Using the bit library (included with LuaJIT, also compatible with Lua 5.1/5.2)
-window:set(x, y, bit.bor(bit.lshift(r, 16), bit.lshift(g, 8), b))
-```
-
 ### Key code map
+
 Here is a very basic key to key code map:
+
 ```lua
 local keys = {
 	backspace = 8,
@@ -51,6 +42,11 @@ local keys = {
 	enter = 10,
 	escape = 27,
 	space = 32,
+	["'"] = 39,
+	[','] = 44,
+	['-'] = 45,
+	['.'] = 46,
+	['/'] = 47,
 	['0'] = 48,
 	['1'] = 49,
 	['2'] = 50,
@@ -87,14 +83,48 @@ local keys = {
 	x = 88,
 	y = 89,
 	z = 90,
+	['['] = 91,
+	['\\'] = 92,
+	[']'] = 93,
+	['`'] = 96,
 }
 
 -- Usage
 if window:key(keys.enter) then
-    -- Enter key is pressed
+	-- Enter key is pressed
 end 
 ```
 
+Also check out the [text demo](./demos/text.lua) for a more advanced keyboard
+usage.
+
+### Drawing rectangles
+
+Check out the [moving demo](./demos/moving.lua)!
+It includes a function to draw rectangles.
+
+### Drawing circles
+
+Check out the [multi-window demo](./demos/multi-window.lua)!
+It includes a function to draw circles.
+
+### Drawing lines
+
+Check out the [paint demo](./demos/paint.lua)!
+It includes a function to draw lines.
+
 ### Drawing text
+
 Check out the [text demo](./demos/text.lua)!
 It includes the microknight font and a function to draw text.
+
+### Loading and drawing images
+
+Images are a bit more complex to load and draw. I recommend using a very simple
+image format like [Netpbm PPM (P3 or P6)](https://en.wikipedia.org/wiki/Netpbm)
+to store the image in a file.  
+To load such a PPM (P6) image, check out the [image demo](./demos/image.lua).  
+Keep in mind that the image I have included in the
+demo, [found here](./demos/assets/uv.ppm), has been cleaned of any comments in
+the header since those are a bit complicated to handle (and the code I wrote for
+the image demo won't handle them).

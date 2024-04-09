@@ -1,13 +1,13 @@
 local fenster = require('fenster')
 
----Draw a rectangle
----@param window table
+---Draw a filled rectangle
+---@param window userdata
 ---@param x number
 ---@param y number
 ---@param width number
 ---@param height number
 ---@param color number
-local function draw_rect(window, x, y, width, height, color)
+local function draw_rectangle(window, x, y, width, height, color)
 	local end_x = x + width - 1
 	local end_y = y + height - 1
 	for i = x, end_x do
@@ -51,7 +51,7 @@ while window:loop(60) and not window:key(27) do
 	last_frame_time = curr_frame_time
 
 	-- Clear the previous rectangle
-	draw_rect(window, rect_x, rect_y, rect_width, rect_height, 0x000000)
+	draw_rectangle(window, rect_x, rect_y, rect_width, rect_height, 0x000000)
 
 	-- Move the rectangle
 	rect_x = rect_x + rect_speed * rect_dir_x * delta
@@ -80,5 +80,5 @@ while window:loop(60) and not window:key(27) do
 	end
 
 	-- Draw the rectangle
-	draw_rect(window, rect_x, rect_y, rect_width, rect_height, rect_colors[rect_color_index])
+	draw_rectangle(window, rect_x, rect_y, rect_width, rect_height, rect_colors[rect_color_index])
 end

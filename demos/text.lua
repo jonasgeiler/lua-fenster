@@ -178,13 +178,13 @@ end
 local microknight_size = 8
 
 ---Draw text using the microknight font (8x8 pixels per character)
----@param window table
+---@param window userdata
 ---@param text string
----@param text_x number
----@param text_y number
-local function draw_text(window, text, text_x, text_y)
-	for c in text:gmatch('.') do
-		local index = c:byte() - 31
+---@param x number
+---@param y number
+local function draw_text(window, text, x, y)
+	for character in text:gmatch('.') do
+		local index = character:byte() - 31
 		if index > #microknight_layout then
 			index = 0
 		end
@@ -196,14 +196,14 @@ local function draw_text(window, text, text_x, text_y)
 			for fx = 0, microknight_size do
 				local texture_index = texture_offset + (fy * 128) + fx
 				window:set(
-					text_x + fx,
-					text_y + fy,
+					x + fx,
+					y + fy,
 					microknight_texture[texture_index + 1]
 				)
 			end
 		end
 
-		text_x = text_x + microknight_size
+		x = x + microknight_size
 	end
 end
 

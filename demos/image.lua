@@ -7,7 +7,7 @@ local image_path = './' .. (
 ) .. 'assets/uv.ppm'
 local image = assert(io.open(image_path, 'rb'))
 
--- Minimal PPM (P6) file format parser
+-- Minimal PPM (P6) file format parser (won't handle comments!)
 local image_type = image:read(2)
 assert(image_type == 'P6', 'Invalid image type: ' .. tostring(image_type))
 assert(image:read(1), 'Invalid image header') -- Whitespace
