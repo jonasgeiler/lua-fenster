@@ -19,10 +19,10 @@ static int lua_fenster_open(lua_State *L) {
   const char *title = luaL_checklstring(L, 1, NULL);
   const int width = (int) luaL_checknumber(L, 2);
   const int height = (int) luaL_checknumber(L, 3);
-  const uint8_t scale = (uint8_t) luaL_optnumber(L, 4, 1.0);
+  const int scale = (int) luaL_optnumber(L, 4, 1.0);
   if ((scale & (scale - 1)) != 0) {
     return luaL_error(
-        L, "invalid scale value: %d (must be a power of 2 and 1-128)",
+        L, "invalid scale value: %d (must be a power of 2)",
         scale
     );
   }
@@ -50,11 +50,12 @@ static int lua_fenster_open(lua_State *L) {
       sizeof(struct fenster)
   );
   if (p_fenster == NULL) {
+    const int error = errno;
     free(buffer);
     buffer = NULL;
     return luaL_error(
         L, "failed to allocate memory of size %d for window (%d)",
-        sizeof(struct fenster), errno
+        sizeof(struct fenster), error
     );
   }
 
@@ -144,11 +145,14 @@ static int lua_fenster_set(lua_State *L) {
         x, y, p_lf->original_width - 1, p_lf->original_height - 1
     );
   }
-  int i_max = (x + 1) * p_lf->scale;
-  int j_max = (y + 1) * p_lf->scale;
-  for (int i = x * p_lf->scale; i < i_max; i++) {
-    for (int j = y * p_lf->scale; j < j_max; j++) {
-      fenster_pixel(p_lf->p_fenster, i, j) = color;
+  int sy = y * p_lf->scale;
+  int sy_end = (y + 1) * p_lf->scale;
+  int sx;
+  int sx_start = x * p_lf->scale;
+  int sx_end = (x + 1) * p_lf->scale;
+  for (; sy < sy_end; sy++) {
+    for (sx = sx_start; sx < sx_end; sx++) {
+      fenster_pixel(p_lf->p_fenster, sx, sy) = color;
     }
   }
 
@@ -239,13 +243,11 @@ static int lua_fenster_mods(lua_State *L) {
 static int lua_fenster_mouse(lua_State *L) {
   lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
 
-  // we use the special division formula (a + b / 2) / b to round to the nearest
-  // integer - if we used the normal formula a / b, we would always round down
   lua_pushnumber( // mouse x
-      L, (int) ((p_lf->p_fenster->x + p_lf->scale / 2) / p_lf->scale)
+      L, (double) round((double) p_lf->p_fenster->x / p_lf->scale)
   );
   lua_pushnumber( // mouse y
-      L, (int) ((p_lf->p_fenster->y + p_lf->scale / 2) / p_lf->scale)
+      L, (double) round((double) p_lf->p_fenster->y / p_lf->scale)
   );
   lua_pushboolean(L, p_lf->p_fenster->mouse); // mouse button
   return 3;
