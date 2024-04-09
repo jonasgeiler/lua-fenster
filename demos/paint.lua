@@ -64,7 +64,7 @@ local window = fenster.open(
 local paint_color = key_color_map[49]
 local last_mouse_x, last_mouse_y
 while window:loop(60) and not window:key(27) do
-    local mouse_x, mouse_y, mouse_down = window:mouse()
+	local mouse_x, mouse_y, mouse_down = window:mouse()
 
 	-- Check if the mouse is pressed
 	if mouse_down then
