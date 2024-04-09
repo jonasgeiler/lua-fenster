@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-FENSTER_EXPORT int luaopen_fenster(lua_State* L);
+FENSTER_EXPORT int luaopen_fenster(lua_State *L);
 
 #ifdef __cplusplus
 }
