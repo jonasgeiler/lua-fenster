@@ -234,7 +234,7 @@ static int lua_fenster_loop(lua_State *L) {
     // sleep for the remaining frame time to reach target frame time
     fenster_sleep(p_lf->target_frame_time - last_frame_time);
   }
-  now = fenster_time();
+  now = fenster_time(); // update now after sleep
   p_lf->delta = (double) (now - p_lf->start_frame_time) / 1000.0;
   p_lf->start_frame_time = now;
 

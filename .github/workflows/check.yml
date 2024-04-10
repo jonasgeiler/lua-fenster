@@ -57,3 +57,5 @@ jobs:
         run: lua -e "local fenster = require('fenster');print(fenster.time())"
         # Currently does not work for Windows (can't import 'fenster')
         if: matrix.os != 'windows-latest'
+
+# TODO: Run something like luacheck on the demos
