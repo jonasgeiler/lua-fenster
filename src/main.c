@@ -259,10 +259,10 @@ static int lua_fenster_set(lua_State *L) {
   // TODO: pull out into a helper function
   const lua_Integer y = luaL_checkinteger(L, 3);
   if (y < 0 || y >= p_lf->original_height) {
-      return luaL_error(
-          L, "y coordinate out of bounds: %d (must be 0-%d)",
-          y, p_lf->original_height - 1
-      );
+    return luaL_error(
+        L, "y coordinate out of bounds: %d (must be 0-%d)",
+        y, p_lf->original_height - 1
+    );
   }
   const lua_Integer color = luaL_checkinteger(L, 4);
   if (color < 0 || color > MAX_COLOR) {
@@ -319,8 +319,11 @@ static int lua_fenster_clear(lua_State *L) {
     );
   }
 
-  // TODO: check if works and improve this
-  memset(p_lf->p_fenster->buf, color, sizeof(p_lf->p_fenster->buf));
+  memset(
+      p_lf->p_fenster->buf,
+      color, // TODO: improve color type
+      p_lf->p_fenster->width * p_lf->p_fenster->height * sizeof(uint32_t)
+  );
 
   return 0;
 }
@@ -383,7 +386,6 @@ static int lua_fenster___index(lua_State *L) {
   return 1;
 }
 
-
 static const struct luaL_Reg lua_fenster_functions[] = {
     {"open", lua_fenster_open},
     {"sleep", lua_fenster_sleep},
@@ -409,7 +411,6 @@ static const struct luaL_Reg lua_fenster_methods[] = {
 
     {NULL, NULL} // sentinel
 };
-
 
 FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
   if (luaL_newmetatable(L, "lua_fenster")) {

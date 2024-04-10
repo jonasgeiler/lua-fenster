@@ -50,8 +50,7 @@ local rect_color_index = 1
 while window:loop() and not window.keys[27] do
 	local delta = window.delta
 
-	-- Clear the previous rectangle
-	--draw_rectangle(window, rect_x, rect_y, rect_width, rect_height, 0x000000)
+	-- Clear the screen for redraw
 	window:clear()
 
 	-- Move the rectangle
