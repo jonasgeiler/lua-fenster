@@ -20,14 +20,14 @@ end
 local window_width = 426
 local window_height = 240
 local window1 = fenster.open(
-	'Multi-Window Demo - Press ESC to exit (1)',
-	window_width,
-	window_height
-)
-local window2 = fenster.open(
-	'Multi-Window Demo - Press ESC to exit (2)',
 	window_width,
 	window_height,
+	'Multi-Window Demo - Press ESC to exit (1)'
+)
+local window2 = fenster.open(
+	window_width,
+	window_height,
+	'Multi-Window Demo - Press ESC to exit (2)',
 	2 -- scale x 2
 )
 
@@ -36,7 +36,7 @@ draw_circle(window1, window_width / 2, window_height / 2, 30, 0xff0000)
 draw_circle(window2, window_width / 2, window_height / 2, 30, 0x0000ff)
 
 -- Draw pixels on both windows
-while window1:loop(60) and window2:loop(60) and not window1:key(27) and not window2:key(27) do
+while window1:loop() and window2:loop() and not window1.keys[27] and not window2.keys[27] do
 	local x = math.random(0, window_width - 1)
 	local y = math.random(0, window_height - 1)
 	window1:set(x, y, 0xff0000)

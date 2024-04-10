@@ -5,9 +5,9 @@ local window_width = 256
 local window_height = 144
 local window_scale = 4
 local window = fenster.open(
-	'Plasma Demo - Press ESC to exit',
 	window_width,
 	window_height,
+	'Plasma Demo - Press ESC to exit',
 	window_scale
 )
 
@@ -17,7 +17,7 @@ local plasma_x_step = 1 / window_width
 
 -- Draw plasma effect
 local time = 0
-while window:loop() and not window:key(27) do
+while window:loop() and not window.keys[27] do
 	local py = 0
 	for y = 1, window_height - 1 do
 		local px = 0
@@ -37,5 +37,5 @@ while window:loop() and not window:key(27) do
 		py = py + plasma_y_step
 	end
 
-	time = time + 1 / 60
+	time = time + 0.5 * window.delta
 end

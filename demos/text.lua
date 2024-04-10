@@ -239,7 +239,7 @@ local window_width = text_offset_x + microknight_size * max_text_line_length +
 	text_offset_x
 local window_height = text_offset_y + text_line_height * (max_text_lines - 1) +
 	microknight_size + text_offset_y
-local window = fenster.open('Text Demo', window_width, window_height)
+local window = fenster.open(window_width, window_height, 'Text Demo')
 
 -- Draw instructions
 draw_text(
@@ -260,10 +260,12 @@ draw_text(
 -- Main loop
 local typed_text_lines = {''}
 local curr_line = 1
-while window:loop() and not window:key(escape_key) do
+while window:loop() and not window.keys[escape_key] do
+	local keys = window.keys
+
 	-- Get text input and draw the new text when needed
 	local pressed_key
-	if window:key(enter_key) then
+	if keys[enter_key] then
 		pressed_key = enter_key
 
 		-- Check if we are under the line limit
@@ -272,7 +274,7 @@ while window:loop() and not window:key(escape_key) do
 			curr_line = curr_line + 1
 			typed_text_lines[curr_line] = typed_text_lines[curr_line] or ''
 		end
-	elseif window:key(backspace_key) then
+	elseif keys[backspace_key] then
 		pressed_key = backspace_key
 
 		-- Check if we are at the first position any line under the first
@@ -295,7 +297,7 @@ while window:loop() and not window:key(escape_key) do
 	else
 		-- Loop through all character keys (keys that add text)
 		for key, code in pairs(character_keys) do
-			if window:key(code) then
+			if keys[code] then
 				pressed_key = code
 
 				-- Check if line is at max length
@@ -304,8 +306,9 @@ while window:loop() and not window:key(escape_key) do
 				end
 
 				-- Get the character to print
-				local _, shift = window:mods()
-				local character = shift and (character_uppercase_map[key] or key:upper()) or key
+				local character = window.modshift
+					and (character_uppercase_map[key] or key:upper())
+					or key
 
 				-- Draw new character
 				draw_text(
@@ -324,7 +327,7 @@ while window:loop() and not window:key(escape_key) do
 
 	-- Wait until pressed key was released
 	if pressed_key then
-		while window:loop() and window:key(pressed_key) do
+		while window:loop() and window.keys[pressed_key] do
 			--
 		end
 	end

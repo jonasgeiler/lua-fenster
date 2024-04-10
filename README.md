@@ -16,53 +16,63 @@ cd lua-fenster
 luarocks make
 ```
 
-## Notes
+## Notes (WIP)
 
-API planning:
+API:
 ```
-userdata fenster.open(width, height, title)
-userdata fenster.open(width, height, title, scale)
-userdata fenster.open(width, height, title, scale, target_fps)
+-- Functions --
 
-void window:close()
+fenster.open(width: integer, height: integer, title: string?, scale: integer?, targetfps: number?): userdata
 
-boolean window:loop()
+fenster.sleep(ms: integer)
 
-void window:set(x, y, color)
+fenster.time(): integer
 
-number window:get(x, y)
+fenster.rgb(redorcolor: integer, green?: integer, blue?: integer): integer,integer?,integer?
 
-boolean window:key(key)
 
-boolean,boolean,boolean,boolean window:mods()
+-- Methods --
 
-number,number,boolean window:mouse()
+fenster.close(window: userdata)
+window:close()
 
-string window.title
+fenster.loop(window: userdata): boolean
+window:loop(): boolean
 
-number window.width
+fenster.set(window: userdata, x: integer, y: integer, color: integer)
+window:set(x: integer, y: integer, color: integer)
 
-number window.height
+fenster.get(window: userdata, x: integer, y: integer): integer
+window:get(x: integer, y: integer): integer
 
-number window.scale
+fenster.clear(window: userdata, color: integer?)
+window:clear(color: integer?)
 
-number window.delta
 
-{number: boolean} window.keys
+-- Properties --
 
-number window.mod
+window.keys: boolean[]
 
-number window.mouse_x
+window.delta: number
 
-number window.mouse_y
+window.mousex: integer
+window.mousey: integer
+window.mousedown: boolean
 
-number window.mouse_button
+window.modcontrol: boolean
+window.modshift: boolean
+window.modalt: boolean
+window.modgui: boolean
 
-void fenster.sleep(ms)
+window.width: integer
 
-number fenster.time()
+window.height: integer
 
-number,number?,number? fenster.rgb(r_or_color, g?, b?)
+window.title: string
+
+window.scale: integer
+
+window.targetfps: number
 ```
 
 ## Useful Snippets
@@ -185,9 +195,17 @@ It includes the microknight font and a function to draw text.
 
 Images are a bit more complex to load and draw. I recommend using a very simple
 image format like [Netpbm PPM (P3 or P6)](https://en.wikipedia.org/wiki/Netpbm)
-to store the image in a file.  
+to store the image in a file.
 To load such a PPM (P6) image, check out the [image demo](./demos/image.lua).  
 Keep in mind that the image I have included in the
 demo, [found here](./demos/assets/uv.ppm), has been cleaned of any comments in
 the header since those are a bit complicated to handle (and the code I wrote for
 the image demo won't handle them).
+
+Here's the command for ImageMagick to convert a PNG to PPM:
+```shell
+magick image.png -depth 8 image.ppm
+```
+You could use GIMP as well, but unfortunately GIMP adds a comment to the header 
+of the PPM file, which makes it a bit more complicated to use compared to 
+ImageMagick.

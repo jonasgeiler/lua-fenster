@@ -8,8 +8,8 @@ local fenster = require('fenster')
 ---@param y1 number
 ---@param color number
 local function draw_line(window, x0, y0, x1, y1, color)
-	local window_width = window:width()
-	local window_height = window:height()
+	local window_width = window.width
+	local window_height = window.height
 	local dx = math.abs(x1 - x0)
 	local dy = math.abs(y1 - y0)
 	local sx = x0 < x1 and 1 or -1
@@ -49,8 +49,8 @@ local function fill(window, x, y, color, old_color)
 		return
 	end
 
-	local window_width = window:width()
-	local window_height = window:height()
+	local window_width = window.width
+	local window_height = window.height
 	local stack = {(y * window_width) + x}
 	while stack[1] do
 		local pos = table.remove(stack)
@@ -96,16 +96,16 @@ local fill_key = 70 -- F Key
 local window_width = 640
 local window_height = 360
 local window = fenster.open(
-	'Paint Demo - Press ESC to exit, 0-9 to change color, F to fill',
 	window_width,
-	window_height
+	window_height,
+	'Paint Demo - Press ESC to exit, 0-9 to change color, F to fill'
 )
 
 -- Main loop
 local paint_color = key_color_map[49]
 local last_mouse_x, last_mouse_y
-while window:loop() and not window:key(27) do
-	local keys = window:keys()
+while window:loop() and not window.keys[27] do
+	local keys = window.keys
 
 	-- Check if a color key is pressed
 	for key, color in pairs(key_color_map) do
@@ -115,7 +115,9 @@ while window:loop() and not window:key(27) do
 		end
 	end
 
-	local mouse_x, mouse_y, mouse_down = window:mouse()
+	local mouse_x = window.mousex
+	local mouse_y = window.mousey
+	local mouse_down = window.mousedown
 
 	if mouse_down then
 		-- Check if the last mouse position is not set
@@ -144,7 +146,7 @@ while window:loop() and not window:key(27) do
 		fill(window, mouse_x, mouse_y, paint_color)
 
 		-- Wait until fill key released
-		while window:loop() and window:key(fill_key) do
+		while window:loop() and window.keys[fill_key] do
 			--
 		end
 	end

@@ -17,9 +17,9 @@ local window_width = 144
 local window_height = 144
 local window_scale = 4
 local window = fenster.open(
-	'Fractal Demo - Press ESC to exit',
 	window_width,
 	window_height,
+	'Fractal Demo - Press ESC to exit',
 	window_scale
 )
 
@@ -36,7 +36,7 @@ local y_max = 0 + range
 
 -- Display the fractal
 local angle = 0
-while window:loop() and not window:key(27) do
+while window:loop() and not window.keys[27] do
 	-- Draw the fractal
 	for y = 0, window_height - 1 do
 		for x = 0, window_width - 1 do
@@ -66,5 +66,5 @@ while window:loop() and not window:key(27) do
 	end
 
 	-- Rotate the fractal
-	angle = angle + 2 * window:delta()
+	angle = angle + 2 * window.delta
 end

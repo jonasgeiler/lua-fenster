@@ -40,9 +40,9 @@ end
 
 -- Open a window
 local window = fenster.open(
-	'Image Demo - Press ESC to exit',
 	image_width,
-	image_height
+	image_height,
+	'Image Demo - Press ESC to exit'
 )
 
 -- Draw the image
@@ -54,6 +54,6 @@ for y = 0, image_height - 1 do
 end
 
 -- Empty window loop
-while window:loop() and not window:key(27) do
+while window:loop() and not window.keys[27] do
 	--
 end
