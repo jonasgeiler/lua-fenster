@@ -17,10 +17,8 @@ description = {
 	issues_url = 'https://github.com/jonasgeiler/lua-fenster/issues',
 	maintainer = 'Jonas Geiler',
 	labels = {
-		'gui', 'ui', 'graphics', 'pixels', 'graphics-programming', 'window',
-		'windowing', 'framebuffer', 'cross-platform-gui', 'user-interface',
-		'gui-framework', 'c-bindings', 'gui-library', 'fenster', 'minifb',
-		'softbuffer', 'raylib',
+		'gui', 'graphics', 'pixel', 'windowing', '2d', 'drawing', 'window',
+		'framebuffer', 'gui-library',
 	},
 }
 dependencies = {
