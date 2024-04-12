@@ -83,7 +83,7 @@ A simple window loop that runs at maximum 60 FPS and closes when the Escape key
 is pressed:
 
 ```lua
-while window:loop() and not window:key(27) do
+while window:loop() and not window.keys[27] do
 	-- Draw stuff here
 end 
 ```
@@ -94,8 +94,8 @@ Fills the entire window buffer with a specific color:
 
 ```lua
 -- Normally you would store window:width() and window:height() in variables
-for y = 0, window:height() - 1 do
-	for x = 0, window:width() - 1 do
+for y = 0, window.height - 1 do
+	for x = 0, window.width - 1 do
 		window:set(x, y, color)
 	end
 end
@@ -163,7 +163,7 @@ local keys = {
 }
 
 -- Usage
-if window:key(keys.enter) then
+if window.keys[keys.enter] then
 	-- Enter key is pressed
 end 
 ```
