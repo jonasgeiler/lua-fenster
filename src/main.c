@@ -344,6 +344,7 @@ static int lua_fenster___index(lua_State *L) {
   lua_pop(L, 2); // Pop the nil and the metatable from the stack
 
   // If the key does not exist in the methods table, handle it as a property
+  // TODO: Any property that requires some form of computation (keys, mousex, etc.) should only be evaluated once in the `loop` method and then simply returned here.
   if (strcmp(key, "keys") == 0) {
     // retrieve keys table from registry and update it
     lua_pushvalue(L, 1);
