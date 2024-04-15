@@ -1,8 +1,11 @@
+-- Game of Life Demo by Paul Adam
+-- https://github.com/pauladam94
+
 local fenster = require('fenster')
 
-local window_width = 100
-local window_height = 100
-local window_scale = 4
+local window_width = 200
+local window_height = 200
+local window_scale = 2
 local window = fenster.open(
 	window_width,
 	window_height,
@@ -10,22 +13,9 @@ local window = fenster.open(
 	window_scale
 )
 
-World = {}
-for x = 1, window_width do
-	World[x] = {}
-	for y = 1, window_height do
-		World[x][y] = false
-		if x % 2 == 0 then
-			World[x][y] = true
-		end
-	end
-end
-
-Neighbours = { { -1, -1 }, { -1, 0 }, { 0, -1 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }
-
-local function count_alive_neighbours(x, y, world)
+local function count_alive_neighbours(x, y, neighbours, world)
 	local count = 0
-	for _, neighbour in pairs(Neighbours) do
+	for _, neighbour in pairs(neighbours) do
 		local dx = x + neighbour[1]
 		local dy = y + neighbour[2]
 		if dx >= 1 and dx <= window_width and dy <= window_height and dy >= 1 then
@@ -44,18 +34,30 @@ local function copy(obj)
 	return res
 end
 
+local world = {}
+for x = 1, window_width do
+	world[x] = {}
+	for y = 1, window_height do
+		world[x][y] = false
+		if x % 2 == 0 then
+			world[x][y] = true
+		end
+	end
+end
+
+local neighbours = { { -1, -1 }, { -1, 0 }, { 0, -1 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }
+
 while window:loop() and not window.keys[27] do
-	local previous_world = copy(World)
+	local previous_world = copy(world)
 	for x = 1, window_width do
 		for y = 1, window_height do
 			if previous_world[x][y] then
-				window:set(x - 1, y - 1, fenster.rgb(255, 255, 255))
+				window:set(x - 1, y - 1, 0xffffff)
 			else
-				window:set(x - 1, y - 1, fenster.rgb(0, 0, 0))
+				window:set(x - 1, y - 1, 0x000000)
 			end
-			local count = count_alive_neighbours(x, y, previous_world)
-			World[x][y] = (count == 3) or (previous_world[x][y] and count == 2)
+			local count = count_alive_neighbours(x, y, neighbours, previous_world)
+			world[x][y] = (count == 3) or (previous_world[x][y] and count == 2)
 		end
 	end
-	fenster.sleep(100)
 end
