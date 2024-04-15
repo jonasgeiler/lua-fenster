@@ -1,0 +1,5 @@
+FormatStyle: google
+Checks: 'bugprone-*,cert-*,clang-analyzer-*,google-*,misc-*,modernize-*,performance-*,portability-*,readability-*,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling'
+CheckOptions:
+  readability-identifier-length.IgnoredVariableNames: '^[xy]$' # allow coordinate variables
+  readability-identifier-length.IgnoredParameterNames: '^[L]$' # allow Lua state parameter

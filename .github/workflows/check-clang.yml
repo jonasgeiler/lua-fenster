@@ -20,8 +20,9 @@ jobs:
       - name: Run C/C++ Linter
         uses: cpp-linter/cpp-linter-action@v2
         with:
-          version: 18
-          style: llvm
-          ignore: src/vendor
-          extra-args: '-I.lua/include'
+          style: file # use .clang-format
+          tidy-checks: '' # use .clang-tidy
+          version: 18 # use clang-tools 18
+          ignore: src/vendor # ignore libraries
+          extra-args: '-I.lua/include' # include lua headers setup by gh-actions-lua
           files-changed-only: false

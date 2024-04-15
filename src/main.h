@@ -1,16 +1,15 @@
 #ifndef FENSTER_MAIN_H
 #define FENSTER_MAIN_H
 
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
 #include <math.h>
 
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-
 #ifdef _WIN32
-#define FENSTER_EXPORT __declspec (dllexport)
+#define FENSTER_EXPORT __declspec(dllexport)
 #else
-#define FENSTER_EXPORT
+#define FENSTER_EXPORT extern
 #endif
 
 #ifdef __cplusplus
@@ -23,4 +22,4 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L);
 }
 #endif
 
-#endif // FENSTER_MAIN_H
+#endif  // FENSTER_MAIN_H
