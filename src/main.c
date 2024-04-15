@@ -1,6 +1,7 @@
 #include "main.h"
-#include "vendor/fenster.h"
+
 #include "vendor/compat-5.3.h"
+#include "vendor/fenster.h"
 
 /** Default window title */
 static const char *DEFAULT_TITLE = "fenster";
@@ -15,8 +16,8 @@ static const lua_Number DEFAULT_TARGET_FPS = 60.0;
 static const lua_Number MS_PER_SEC = 1000.0;
 
 /** Length of the fenster->keys array */
-static const int KEYS_LENGTH = sizeof(((struct fenster *) 0)->keys)
-                               / sizeof(((struct fenster *) 0)->keys[0]);
+static const int KEYS_LENGTH = sizeof(((struct fenster *)0)->keys) /
+                               sizeof(((struct fenster *)0)->keys[0]);
 
 /** Maximum color value */
 static const lua_Integer MAX_COLOR = 0xffffff;
@@ -79,32 +80,27 @@ static void _dumpstack(lua_State *L) {
  */
 
 static int lfenster_open(lua_State *L) {
-  const int width = (int) luaL_checkinteger(L, 1);
-  const int height = (int) luaL_checkinteger(L, 2);
+  const int width = (int)luaL_checkinteger(L, 1);
+  const int height = (int)luaL_checkinteger(L, 2);
   const char *title = luaL_optlstring(L, 3, DEFAULT_TITLE, NULL);
-  const int scale = (int) luaL_optinteger(L, 4, DEFAULT_SCALE);
+  const int scale = (int)luaL_optinteger(L, 4, DEFAULT_SCALE);
   if ((scale & (scale - 1)) != 0) {
-    return luaL_error(
-        L,
-        "invalid scale value: %d (must be a power of 2)",
-        scale
-    );
+    return luaL_error(L, "invalid scale value: %d (must be a power of 2)",
+                      scale);
   }
   const lua_Number target_fps = luaL_optnumber(L, 5, DEFAULT_TARGET_FPS);
 
   const int scaled_width = width * scale;
   const int scaled_height = height * scale;
-  const size_t scaled_pixels = (size_t) scaled_width * scaled_height;
+  const size_t scaled_pixels = (size_t)scaled_width * scaled_height;
 
-  uint32_t *buffer = calloc(scaled_pixels,sizeof(uint32_t));
+  uint32_t *buffer = calloc(scaled_pixels, sizeof(uint32_t));
   const size_t buffer_size = scaled_pixels * sizeof(uint32_t);
   if (buffer == NULL) {
     const int error = errno;
     return luaL_error(
-        L,
-        "failed to allocate memory of size %d for window buffer (%d)",
-        buffer_size, error
-    );
+        L, "failed to allocate memory of size %d for window buffer (%d)",
+        buffer_size, error);
   }
 
   struct fenster temp_fenster = {
@@ -119,10 +115,8 @@ static int lfenster_open(lua_State *L) {
     const int error = errno;
     free(buffer);
     buffer = NULL;
-    return luaL_error(
-        L, "failed to allocate memory of size %d for window (%d)",
-        sizeof(struct fenster), error
-    );
+    return luaL_error(L, "failed to allocate memory of size %d for window (%d)",
+                      sizeof(struct fenster), error);
   }
 
   memcpy(p_fenster, &temp_fenster, sizeof(struct fenster));
@@ -143,7 +137,7 @@ static int lfenster_open(lua_State *L) {
     lua_pushboolean(L, p_fenster->keys[i]);
     lua_rawseti(L, -2, i);
   }
-  lua_pushvalue(L, -1); // copy the keys table since luaL_ref pops it
+  lua_pushvalue(L, -1);  // copy the keys table since luaL_ref pops it
   const int keys_ref = luaL_ref(L, LUA_REGISTRYINDEX);
   if (keys_ref == LUA_REFNIL || keys_ref == LUA_NOREF) {
     fenster_close(p_fenster);
@@ -210,18 +204,14 @@ static int lfenster_time(lua_State *L) {
 static lua_Integer check_color(lua_State *L, int index) {
   const lua_Integer color = luaL_checkinteger(L, index);
   if (color < 0 || color > MAX_COLOR) {
-    luaL_error(
-        L,
-        "invalid color value: %d (must be 0-%d)",
-        color, MAX_COLOR
-    );
+    luaL_error(L, "invalid color value: %d (must be 0-%d)", color, MAX_COLOR);
   }
   return color;
 }
 
 /**
- * Utility function to get a color component from the Lua stack and check if it's
- * within the allowed range.
+ * Utility function to get a color component from the Lua stack and check if
+ * it's within the allowed range.
  * @param L Lua state
  * @param index Index of the color component on the Lua stack
  * @return The color component value
@@ -229,17 +219,16 @@ static lua_Integer check_color(lua_State *L, int index) {
 static lua_Integer check_color_component(lua_State *L, int index) {
   const lua_Integer color_component = luaL_checkinteger(L, index);
   if (color_component < 0 || color_component > MAX_COLOR_COMPONENT) {
-    luaL_error(
-        L,
-        "invalid color_component component value for argument %d: %d (must be 0-%d)",
-        index, color_component, MAX_COLOR_COMPONENT
-    );
+    luaL_error(L,
+               "invalid color_component component value for argument %d: %d "
+               "(must be 0-%d)",
+               index, color_component, MAX_COLOR_COMPONENT);
   }
   return color_component;
 }
 
 /**
- * Utility function to convert a color value to its RGB components or vice versa.
+ * Utility function to convert a color value to RGB components or vice versa.
  * @param L Lua state
  * @return Number of return values on the Lua stack
  */
@@ -262,7 +251,8 @@ static int lfenster_rgb(lua_State *L) {
   const lua_Integer blue = check_color_component(L, 3);
 
   // return color value
-  lua_pushinteger(L, (red << COLOR_RED_OFFSET) | (green << COLOR_GREEN_OFFSET) | blue);
+  lua_pushinteger(
+      L, (red << COLOR_RED_OFFSET) | (green << COLOR_GREEN_OFFSET) | blue);
   return 1;
 }
 
@@ -302,7 +292,7 @@ static int window_close(lua_State *L) {
   p_window->p_fenster->buf = NULL;
   free(p_window->p_fenster);
   p_window->p_fenster = NULL;
-  luaL_unref(L, LUA_REGISTRYINDEX, p_window->keys_ref); // free keys table
+  luaL_unref(L, LUA_REGISTRYINDEX, p_window->keys_ref);  // free keys table
   p_window->keys_ref = LUA_NOREF;
 
   return 0;
@@ -322,8 +312,8 @@ static int window_loop(lua_State *L) {
     // sleep for the remaining frame time to reach target frame time
     fenster_sleep(p_window->target_frame_time - last_frame_time);
   }
-  now = fenster_time(); // update now after sleep
-  p_window->delta = (lua_Number) (now - p_window->start_frame_time) / MS_PER_SEC;
+  now = fenster_time();  // update now after sleep
+  p_window->delta = (lua_Number)(now - p_window->start_frame_time) / MS_PER_SEC;
   p_window->start_frame_time = now;
 
   if (fenster_loop(p_window->p_fenster) == 0) {
@@ -362,11 +352,8 @@ static int window_loop(lua_State *L) {
 static lua_Integer check_x(lua_State *L, window *p_window) {
   const lua_Integer x = luaL_checkinteger(L, 2);
   if (x < 0 || x >= p_window->original_width) {
-    luaL_error(
-        L,
-        "x coordinate out of bounds: %d (must be 0-%d)",
-        x, p_window->original_width - 1
-    );
+    luaL_error(L, "x coordinate out of bounds: %d (must be 0-%d)", x,
+               p_window->original_width - 1);
   }
   return x;
 }
@@ -382,11 +369,8 @@ static lua_Integer check_x(lua_State *L, window *p_window) {
 static lua_Integer check_y(lua_State *L, window *p_window) {
   const lua_Integer y = luaL_checkinteger(L, 3);
   if (y < 0 || y >= p_window->original_height) {
-    luaL_error(
-        L,
-        "y coordinate out of bounds: %d (must be 0-%d)",
-        y, p_window->original_height - 1
-    );
+    luaL_error(L, "y coordinate out of bounds: %d (must be 0-%d)", y,
+               p_window->original_height - 1);
   }
   return y;
 }
@@ -431,10 +415,8 @@ static int window_get(lua_State *L) {
   // get the color of the pixel at the scaled coordinates
   // (we don't need a loop here like in the set method because we only need
   // the color of the first pixel in the scaled area - they should all be same)
-  lua_pushinteger(
-      L,
-      fenster_pixel(p_window->p_fenster, x * p_window->scale, y * p_window->scale)
-  );
+  lua_pushinteger(L, fenster_pixel(p_window->p_fenster, x * p_window->scale,
+                                   y * p_window->scale));
   return 1;
 }
 
@@ -448,7 +430,7 @@ static int window_clear(lua_State *L) {
   const lua_Integer color = check_color(L, 2);
 
   // set the whole buffer to the given color at once
-  memset(p_window->p_fenster->buf, (int) color, p_window->buffer_size);
+  memset(p_window->p_fenster->buf, (int)color, p_window->buffer_size);
 
   return 0;
 }
@@ -497,7 +479,7 @@ static int window_index(lua_State *L) {
       lua_pushnil(L);
     }
   }
-  return 1; // return either the method or the property value
+  return 1;  // return either the method or the property value
 }
 
 /**
@@ -547,8 +529,7 @@ static const struct luaL_Reg lfenster_functions[] = {
     {"get", window_get},
     {"clear", window_clear},
 
-    {NULL, NULL}
-};
+    {NULL, NULL}};
 
 /** Methods for the window userdata */
 static const struct luaL_Reg window_methods[] = {
@@ -566,8 +547,7 @@ static const struct luaL_Reg window_methods[] = {
 #endif
     {"__tostring", window_tostring},
 
-    {NULL, NULL}
-};
+    {NULL, NULL}};
 
 /**
  * Entry point for the lua-fenster module.
