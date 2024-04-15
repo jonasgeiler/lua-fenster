@@ -1,10 +1,11 @@
 #ifndef FENSTER_MAIN_H
 #define FENSTER_MAIN_H
 
+#include <math.h>
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include <math.h>
 
 #ifdef _WIN32
 #define FENSTER_EXPORT __declspec (dllexport)

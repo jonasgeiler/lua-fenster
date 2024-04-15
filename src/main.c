@@ -2,25 +2,40 @@
 #include "vendor/fenster.h"
 #include "vendor/compat-5.3.h"
 
+/** Name of the lua_fenster userdata and metatable */
+static const char *USERDATA_NAME = "lua_fenster";
+
 /** Maximum color value */
-static const uint32_t MAX_COLOR = 0xffffff;
+static const lua_Integer MAX_COLOR = 0xffffff;
 
 /** Maximum value of a color component (r, g or b) */
-static const uint32_t MAX_COLOR_COMPONENT = 0xff;
+static const lua_Integer MAX_COLOR_COMPONENT = 0xff;
 
 /** Length of the fenster->keys array */
 static const int KEYS_LENGTH = sizeof(((struct fenster *) 0)->keys)
     / sizeof(((struct fenster *) 0)->keys[0]);
 
+/** Userdata for the lua-fenster module */
 typedef struct lua_fenster {
   struct fenster *p_fenster;
+
+  lua_Integer scale;
   lua_Integer original_width;
   lua_Integer original_height;
-  lua_Integer scale;
+  lua_Integer scaled_mouse_x;
+  lua_Integer scaled_mouse_y;
+
+  int mod_control;
+  int mod_shift;
+  int mod_alt;
+  int mod_gui;
+
   lua_Number target_fps;
-  double delta;
+  lua_Number delta;
   int64_t target_frame_time;
   int64_t start_frame_time;
+
+  size_t buffer_size;
 } lua_fenster;
 
 /*
@@ -33,9 +48,7 @@ static void _dumpstack(lua_State *L) {
         break;
       case LUA_TSTRING:printf("%s\n", lua_tostring(L, i));
         break;
-      case LUA_TBOOLEAN:
-        printf("%s\n",
-               (lua_toboolean(L, i) ? "true" : "false"));
+      case LUA_TBOOLEAN:printf("%s\n", lua_toboolean(L, i) ? "true" : "false");
         break;
       case LUA_TNIL:printf("%s\n", "nil");
         break;
@@ -53,28 +66,35 @@ static int lua_fenster_open(lua_State *L) {
   const int scale = (int) luaL_optinteger(L, 4, 1);
   if ((scale & (scale - 1)) != 0) {
     return luaL_error(
-        L, "invalid scale value: %d (must be a power of 2)",
+        L,
+        "invalid scale value: %d (must be a power of 2)",
         scale
     );
   }
   const lua_Number target_fps = luaL_optnumber(L, 5, 60.0);
 
+  const int scaled_width = width * scale;
+  const int scaled_height = height * scale;
+  const size_t scaled_pixels = scaled_width * scaled_height;
+
   uint32_t *buffer = (uint32_t *) calloc(
-      width * scale * height * scale,
+      scaled_pixels,
       sizeof(uint32_t)
   );
+  const size_t buffer_size = scaled_pixels * sizeof(uint32_t);
   if (buffer == NULL) {
     const int error = errno;
     return luaL_error(
-        L, "failed to allocate memory of size %d for frame buffer (%d)",
-        width * scale * height * scale, error
+        L,
+        "failed to allocate memory of size %d for window buffer (%d)",
+        buffer_size, error
     );
   }
 
   struct fenster temp_fenster = {
       .title = title,
-      .width = width * scale,
-      .height = height * scale,
+      .width = scaled_width,
+      .height = scaled_height,
       .buf = buffer,
   };
 
@@ -106,29 +126,38 @@ static int lua_fenster_open(lua_State *L) {
   // create lua_fenster userdata and initialize it
   lua_fenster *p_lf = lua_newuserdata(L, sizeof(lua_fenster));
   p_lf->p_fenster = p_fenster;
+  p_lf->scale = scale;
   p_lf->original_width = width;
   p_lf->original_height = height;
-  p_lf->scale = scale;
+  p_lf->scaled_mouse_x = p_fenster->x / scale;
+  p_lf->scaled_mouse_y = p_fenster->y / scale;
+  p_lf->mod_control = 0;
+  p_lf->mod_shift = 0;
+  p_lf->mod_alt = 0;
+  p_lf->mod_gui = 0;
   p_lf->target_fps = target_fps;
   p_lf->delta = 0.0;
-  p_lf->target_frame_time = lround(1000.0 / target_fps);
+  p_lf->target_frame_time = llroundl(1000.0 / target_fps);
   p_lf->start_frame_time = 0;
-  luaL_setmetatable(L, "lua_fenster");
+  p_lf->buffer_size = buffer_size;
+  luaL_setmetatable(L, USERDATA_NAME);
 
-  // initialize keys table and put it in the registry
+  // initialize the keys table and put it in the registry
   lua_pushvalue(L, -1);
   lua_createtable(L, KEYS_LENGTH, 0);
+  for (int i = 0; i < KEYS_LENGTH; i++) {
+    lua_pushboolean(L, p_fenster->keys[i]);
+    lua_rawseti(L, -2, i);
+  }
   lua_settable(L, LUA_REGISTRYINDEX);
 
   return 1;
 }
 
 /**
- * Sleep for a given number of milliseconds.
- * Lua usage: `fenster.sleep(ms: integer)`
- * @lua_param ms integer Number of milliseconds to sleep
+ * Pauses for a given number of milliseconds.
  * @param L Lua state
- * @return Number of return values on the stack
+ * @return Number of return values on the Lua stack
  */
 static int lua_fenster_sleep(lua_State *L) {
   const lua_Integer ms = luaL_checkinteger(L, 1);
@@ -139,20 +168,22 @@ static int lua_fenster_sleep(lua_State *L) {
 }
 
 /**
- * Get the current time in milliseconds.
- * Lua usage: `fenster.time(): integer`
- * @lua_return integer The current time in milliseconds
+ * Returns the current time in milliseconds.
  * @param L Lua state
- * @return Number of return values on the stack
+ * @return Number of return values on the Lua stack
  */
 static int lua_fenster_time(lua_State *L) {
   lua_pushinteger(L, fenster_time());
   return 1;
 }
 
+/**
+ * Utility function to convert a color value to its RGB components or vice versa.
+ * @param L Lua state
+ * @return Number of return values on the Lua stack
+ */
 static int lua_fenster_rgb(lua_State *L) {
   if (lua_gettop(L) < 3) {
-    // TODO: pull out into a helper function
     const lua_Integer color = luaL_checkinteger(L, 1);
     if (color < 0 || color > MAX_COLOR) {
       return luaL_error(
@@ -195,33 +226,29 @@ static int lua_fenster_rgb(lua_State *L) {
 
 /**
  * Close the window. Does nothing if the window is already closed.
- * The __gc and __close meta methods also call this, so it's unlikely you'll
- * need to use this function directly.
- * Lua usage: `fenster.close(window: window)` or `window:close()`
- * @lua_param window userdata The window to close
+ * The __gc and __close meta methods also call this function, so the user
+ * likely won't need to call this function manually.
  * @param L Lua state
- * @return Number of return values on the stack
+ * @return Number of return values on the Lua stack
  */
 static int lua_fenster_close(lua_State *L) {
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
 
-  if (p_lf->p_fenster == NULL) {
-    // window already closed
-    return 0;
+  // check if the window is already closed
+  if (p_lf->p_fenster != NULL) {
+    // close and free window
+    fenster_close(p_lf->p_fenster);
+    free(p_lf->p_fenster->buf);
+    p_lf->p_fenster->buf = NULL;
+    free(p_lf->p_fenster);
+    p_lf->p_fenster = NULL;
   }
-
-  // close and free window
-  fenster_close(p_lf->p_fenster);
-  free(p_lf->p_fenster->buf);
-  p_lf->p_fenster->buf = NULL;
-  free(p_lf->p_fenster);
-  p_lf->p_fenster = NULL;
 
   return 0;
 }
 
 static int lua_fenster_loop(lua_State *L) {
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
 
   // handle frame timing
   int64_t now = fenster_time();
@@ -235,10 +262,28 @@ static int lua_fenster_loop(lua_State *L) {
     fenster_sleep(p_lf->target_frame_time - last_frame_time);
   }
   now = fenster_time(); // update now after sleep
-  p_lf->delta = (double) (now - p_lf->start_frame_time) / 1000.0;
+  p_lf->delta = (lua_Number) (now - p_lf->start_frame_time) / 1000.0;
   p_lf->start_frame_time = now;
 
   if (fenster_loop(p_lf->p_fenster) == 0) {
+    // update the keys table in the registry
+    lua_pushvalue(L, 1);
+    lua_gettable(L, LUA_REGISTRYINDEX);
+    for (int i = 0; i < KEYS_LENGTH; i++) {
+      lua_pushboolean(L, p_lf->p_fenster->keys[i]);
+      lua_rawseti(L, -2, i);
+    }
+
+    // update the scaled mouse coordinates
+    p_lf->scaled_mouse_x = p_lf->p_fenster->x / p_lf->scale;
+    p_lf->scaled_mouse_y = p_lf->p_fenster->y / p_lf->scale;
+
+    // update the modifier keys
+    p_lf->mod_control = p_lf->p_fenster->mod & 1;
+    p_lf->mod_shift = (p_lf->p_fenster->mod >> 1) & 1;
+    p_lf->mod_alt = (p_lf->p_fenster->mod >> 2) & 1;
+    p_lf->mod_gui = (p_lf->p_fenster->mod >> 3) & 1;
+
     lua_pushboolean(L, 1);
   } else {
     lua_pushboolean(L, 0);
@@ -246,39 +291,47 @@ static int lua_fenster_loop(lua_State *L) {
   return 1;
 }
 
+/**
+ * Set a pixel at the given coordinates to the given color.
+ * @param L Lua state
+ * @return Number of return values on the Lua stack
+ */
 static int lua_fenster_set(lua_State *L) {
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
-  // TODO: pull out into a helper function
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
   const lua_Integer x = luaL_checkinteger(L, 2);
   if (x < 0 || x >= p_lf->original_width) {
-    return luaL_error(
-        L, "x coordinate out of bounds: %d (must be 0-%d)",
+    luaL_error(
+        L,
+        "x coordinate out of bounds: %d (must be 0-%d)",
         x, p_lf->original_width - 1
     );
   }
-  // TODO: pull out into a helper function
   const lua_Integer y = luaL_checkinteger(L, 3);
   if (y < 0 || y >= p_lf->original_height) {
     return luaL_error(
-        L, "y coordinate out of bounds: %d (must be 0-%d)",
+        L,
+        "y coordinate out of bounds: %d (must be 0-%d)",
         y, p_lf->original_height - 1
     );
   }
   const lua_Integer color = luaL_checkinteger(L, 4);
   if (color < 0 || color > MAX_COLOR) {
     return luaL_error(
-        L, "invalid color value: %d (must be 0-%d)",
+        L,
+        "invalid color value: %d (must be 0-%d)",
         color, MAX_COLOR
     );
   }
 
+  // set the pixel at the scaled coordinates to the given color
+  // (repeat this for each copy of the pixel in an area the size of the scale)
   lua_Integer sy = y * p_lf->scale;
-  const lua_Integer sy_end = (y + 1) * p_lf->scale;
+  const lua_Integer sy_end = sy + p_lf->scale;
   lua_Integer sx;
-  const lua_Integer sx_start = x * p_lf->scale;
-  const lua_Integer sx_end = (x + 1) * p_lf->scale;
+  const lua_Integer sx_begin = x * p_lf->scale;
+  const lua_Integer sx_end = sx_begin + p_lf->scale;
   for (; sy < sy_end; sy++) {
-    for (sx = sx_start; sx < sx_end; sx++) {
+    for (sx = sx_begin; sx < sx_end; sx++) {
       fenster_pixel(p_lf->p_fenster, sx, sy) = color;
     }
   }
@@ -286,31 +339,47 @@ static int lua_fenster_set(lua_State *L) {
   return 0;
 }
 
+/**
+ * Get the color of a pixel at the given coordinates.
+ * @param L Lua state
+ * @return Number of return values on the Lua stack
+ */
 static int lua_fenster_get(lua_State *L) {
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
   const lua_Integer x = luaL_checkinteger(L, 2);
   if (x < 0 || x >= p_lf->original_width) {
     return luaL_error(
-        L, "x coordinate out of bounds: %d (must be 0-%d)",
+        L,
+        "x coordinate out of bounds: %d (must be 0-%d)",
         x, p_lf->original_width - 1
     );
   }
   const lua_Integer y = luaL_checkinteger(L, 3);
   if (y < 0 || y >= p_lf->original_height) {
     return luaL_error(
-        L, "y coordinate out of bounds: %d (must be 0-%d)",
+        L,
+        "y coordinate out of bounds: %d (must be 0-%d)",
         y, p_lf->original_height - 1
     );
   }
 
+  // get the color of the pixel at the scaled coordinates
+  // (we don't need a loop here like in lua_fenster_set because we only need
+  // the color of the first pixel in the scaled area - they should all be same)
   lua_pushinteger(
-      L, fenster_pixel(p_lf->p_fenster, x * p_lf->scale, y * p_lf->scale)
+      L,
+      fenster_pixel(p_lf->p_fenster, x * p_lf->scale, y * p_lf->scale)
   );
   return 1;
 }
 
+/**
+ * Clear the window with the given color.
+ * @param L Lua state
+ * @return Number of return values on the Lua stack
+ */
 static int lua_fenster_clear(lua_State *L) {
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
   const lua_Integer color = luaL_optinteger(L, 2, 0);
   if (color < 0 || color > MAX_COLOR) {
     return luaL_error(
@@ -319,58 +388,48 @@ static int lua_fenster_clear(lua_State *L) {
     );
   }
 
-  memset(
-      p_lf->p_fenster->buf,
-      color, // TODO: improve color type
-      p_lf->p_fenster->width * p_lf->p_fenster->height * sizeof(uint32_t)
-  );
+  // set the whole buffer to the given color at once
+  memset(p_lf->p_fenster->buf, (int) color, p_lf->buffer_size);
 
   return 0;
 }
 
 static int lua_fenster___index(lua_State *L) {
-  // TODO: optimize and improve this function
-  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, "lua_fenster");
+  lua_fenster *p_lf = (lua_fenster *) luaL_checkudata(L, 1, USERDATA_NAME);
   const char *key = luaL_checkstring(L, 2);
 
-  // First, check if the key exists in the methods table
-  luaL_getmetatable(L, "lua_fenster");
-  lua_pushstring(L, key);
+  // check if the key exists in the methods metatable
+  luaL_getmetatable(L, USERDATA_NAME);
+  lua_pushvalue(L, 2);
   lua_rawget(L, -2);
   if (!lua_isnil(L, -1)) {
-    // If the key exists in the methods table, return the method
+    // if the key exists in the methods metatable, return the method
     return 1;
   }
-  lua_pop(L, 2); // Pop the nil and the metatable from the stack
+  // otherwise, pop the nil value and the metatable from the stack...
+  lua_pop(L, 2);
 
-  // If the key does not exist in the methods table, handle it as a property
-  // TODO: Any property that requires some form of computation (keys, mousex, etc.) should only be evaluated once in the `loop` method and then simply returned here.
+  // ...and handle the key as a property key
   if (strcmp(key, "keys") == 0) {
-    // retrieve keys table from registry and update it
+    // retrieve the keys table from the registry
     lua_pushvalue(L, 1);
     lua_gettable(L, LUA_REGISTRYINDEX);
-    for (int i = 0; i < KEYS_LENGTH; i++) {
-      lua_pushboolean(L, p_lf->p_fenster->keys[i]);
-      lua_rawseti(L, -2, i);
-    }
   } else if (strcmp(key, "delta") == 0) {
     lua_pushnumber(L, p_lf->delta);
   } else if (strcmp(key, "mousex") == 0) {
-    // TODO: improve this part
-    lua_pushinteger(L, llround((double) p_lf->p_fenster->x / p_lf->scale));
+    lua_pushinteger(L, p_lf->scaled_mouse_x);
   } else if (strcmp(key, "mousey") == 0) {
-    // TODO: improve this part
-    lua_pushinteger(L, llround((double) p_lf->p_fenster->y / p_lf->scale));
+    lua_pushinteger(L, p_lf->scaled_mouse_y);
   } else if (strcmp(key, "mousedown") == 0) {
     lua_pushboolean(L, p_lf->p_fenster->mouse);
   } else if (strcmp(key, "modcontrol") == 0) {
-    lua_pushboolean(L, p_lf->p_fenster->mod & 1);
+    lua_pushboolean(L, p_lf->mod_control);
   } else if (strcmp(key, "modshift") == 0) {
-    lua_pushboolean(L, (p_lf->p_fenster->mod >> 1) & 1);
+    lua_pushboolean(L, p_lf->mod_shift);
   } else if (strcmp(key, "modalt") == 0) {
-    lua_pushboolean(L, (p_lf->p_fenster->mod >> 2) & 1);
+    lua_pushboolean(L, p_lf->mod_alt);
   } else if (strcmp(key, "modgui") == 0) {
-    lua_pushboolean(L, (p_lf->p_fenster->mod >> 3) & 1);
+    lua_pushboolean(L, p_lf->mod_gui);
   } else if (strcmp(key, "width") == 0) {
     lua_pushinteger(L, p_lf->original_width);
   } else if (strcmp(key, "height") == 0) {
@@ -382,11 +441,13 @@ static int lua_fenster___index(lua_State *L) {
   } else if (strcmp(key, "targetfps") == 0) {
     lua_pushnumber(L, p_lf->target_fps);
   } else {
+    // when no matching key is found, return nil
     lua_pushnil(L);
   }
   return 1;
 }
 
+/** Functions for the lua-fenster module */
 static const struct luaL_Reg lua_fenster_functions[] = {
     {"open", lua_fenster_open},
     {"sleep", lua_fenster_sleep},
@@ -403,6 +464,7 @@ static const struct luaL_Reg lua_fenster_functions[] = {
     {NULL, NULL} // sentinel
 };
 
+/** Methods for the lua-fenster userdata */
 static const struct luaL_Reg lua_fenster_methods[] = {
     {"close", lua_fenster_close},
     {"loop", lua_fenster_loop},
@@ -413,8 +475,13 @@ static const struct luaL_Reg lua_fenster_methods[] = {
     {NULL, NULL} // sentinel
 };
 
+/**
+ * Entry point for the lua-fenster module.
+ * @param L Lua state
+ * @return Number of return values on the Lua stack
+ */
 FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
-  if (luaL_newmetatable(L, "lua_fenster")) {
+  if (luaL_newmetatable(L, USERDATA_NAME)) {
     luaL_setfuncs(L, lua_fenster_methods, 0);
 
     lua_pushliteral(L, "__index");
