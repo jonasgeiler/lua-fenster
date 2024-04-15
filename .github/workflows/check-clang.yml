@@ -1,0 +1,27 @@
+name: Check Clang
+
+on:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
+        with:
+          luaVersion: '5.4'
+
+      - name: Run C/C++ Linter
+        uses: cpp-linter/cpp-linter-action@v2
+        with:
+          version: 18
+          style: llvm
+          ignore: src/vendor
+          extra-args: '-I.lua/include'
+          files-changed-only: false
