@@ -11,19 +11,23 @@ describe("fenster", function()
 		end)
 
 		it('should throw when width/height are not integers', function()
-			assert.has_errors(function() fenster.open(100.5) end)
 			assert.has_errors(function() fenster.open('ERROR') end)
 			assert.has_errors(function() fenster.open(true) end)
 			assert.has_errors(function() fenster.open({}) end)
 			assert.has_errors(function() fenster.open(function() end) end)
 			assert.has_errors(function() fenster.open(io.stdout) end)
 
-			assert.has_errors(function() fenster.open(256, 100.5) end)
 			assert.has_errors(function() fenster.open(256, 'ERROR') end)
 			assert.has_errors(function() fenster.open(256, true) end)
 			assert.has_errors(function() fenster.open(256, {}) end)
 			assert.has_errors(function() fenster.open(256, function() end) end)
 			assert.has_errors(function() fenster.open(256, io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.open(100.5) end)
+				assert.has_errors(function() fenster.open(256, 100.5) end)
+			end
 		end)
 
 		it('should throw when width/height are out of range', function()
@@ -77,12 +81,16 @@ describe("fenster", function()
 		end)
 
 		it('should throw when scale is not an integer', function()
-			assert.has_errors(function() fenster.open(256, 144, 'Test', 2.5) end)
 			assert.has_errors(function() fenster.open(256, 144, 'Test', 'ERROR') end)
 			assert.has_errors(function() fenster.open(256, 144, 'Test', true) end)
 			assert.has_errors(function() fenster.open(256, 144, 'Test', {}) end)
 			assert.has_errors(function() fenster.open(256, 144, 'Test', function() end) end)
 			assert.has_errors(function() fenster.open(256, 144, 'Test', io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.open(256, 144, 'Test', 2.5) end)
+			end
 		end)
 
 		it('should throw when scale is not a power of 2', function()
@@ -132,12 +140,16 @@ describe("fenster", function()
 		end)
 
 		it('should throw when millis is not an integer', function()
-			assert.has_errors(function() fenster.sleep(2.5) end)
 			assert.has_errors(function() fenster.sleep('ERROR') end)
 			assert.has_errors(function() fenster.sleep(true) end)
 			assert.has_errors(function() fenster.sleep({}) end)
 			assert.has_errors(function() fenster.sleep(function() end) end)
 			assert.has_errors(function() fenster.sleep(io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.sleep(2.5) end)
+			end
 		end)
 
 		it('should sleep for the given amount of time', function()
@@ -161,12 +173,16 @@ describe("fenster", function()
 		end)
 
 		it('should throw when color is not an integer', function()
-			assert.has_errors(function() fenster.rgb(2.5) end)
 			assert.has_errors(function() fenster.rgb('ERROR') end)
 			assert.has_errors(function() fenster.rgb(true) end)
 			assert.has_errors(function() fenster.rgb({}) end)
 			assert.has_errors(function() fenster.rgb(function() end) end)
 			assert.has_errors(function() fenster.rgb(io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.rgb(2.5) end)
+			end
 		end)
 
 		it('should throw when color is out of range', function()
@@ -187,26 +203,30 @@ describe("fenster", function()
 		end)
 
 		it('should throw when r/g/b are not integers', function()
-			assert.has_errors(function() fenster.rgb(255.5, 0, 0) end)
 			assert.has_errors(function() fenster.rgb('ERROR', 0, 0) end)
 			assert.has_errors(function() fenster.rgb(true, 0, 0) end)
 			assert.has_errors(function() fenster.rgb({}, 0, 0) end)
 			assert.has_errors(function() fenster.rgb(function() end, 0, 0) end)
 			assert.has_errors(function() fenster.rgb(io.stdout) end)
 
-			assert.has_errors(function() fenster.rgb(0, 255.5, 0) end)
 			assert.has_errors(function() fenster.rgb(0, 'ERROR', 0) end)
 			assert.has_errors(function() fenster.rgb(0, true, 0) end)
 			assert.has_errors(function() fenster.rgb(0, {}, 0) end)
 			assert.has_errors(function() fenster.rgb(0, function() end, 0) end)
 			assert.has_errors(function() fenster.rgb(0, io.stdout, 0) end)
 
-			assert.has_errors(function() fenster.rgb(0, 0, 255.5) end)
 			assert.has_errors(function() fenster.rgb(0, 0, 'ERROR') end)
 			assert.has_errors(function() fenster.rgb(0, 0, true) end)
 			assert.has_errors(function() fenster.rgb(0, 0, {}) end)
 			assert.has_errors(function() fenster.rgb(0, 0, function() end) end)
 			assert.has_errors(function() fenster.rgb(0, 0, io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.rgb(255.5, 0, 0) end)
+				assert.has_errors(function() fenster.rgb(0, 255.5, 0) end)
+				assert.has_errors(function() fenster.rgb(0, 0, 255.5) end)
+			end
 		end)
 
 		it('should throw when r/g/b are out of range', function()
@@ -239,6 +259,7 @@ describe("fenster", function()
 		end)
 
 		it('should throw when window is not a window userdata when not using as method', function()
+			assert.has_errors(function() fenster.close(25) end)
 			assert.has_errors(function() fenster.close(2.5) end)
 			assert.has_errors(function() fenster.close('ERROR') end)
 			assert.has_errors(function() fenster.close(true) end)
@@ -272,6 +293,7 @@ describe("fenster", function()
 		end)
 
 		it('should throw when window is not a window userdata when not using as method', function()
+			assert.has_errors(function() fenster.loop(25) end)
 			assert.has_errors(function() fenster.loop(2.5) end)
 			assert.has_errors(function() fenster.loop('ERROR') end)
 			assert.has_errors(function() fenster.loop(true) end)
@@ -298,6 +320,7 @@ describe("fenster", function()
 		end)
 
 		it('should throw when window is not a window userdata when not using as method', function()
+			assert.has_errors(function() fenster.set(25, 0, 0, 0) end)
 			assert.has_errors(function() fenster.set(2.5, 0, 0, 0) end)
 			assert.has_errors(function() fenster.set('ERROR', 0, 0, 0) end)
 			assert.has_errors(function() fenster.set(true, 0, 0, 0) end)
@@ -310,50 +333,58 @@ describe("fenster", function()
 			local window = fenster.open(256, 144)
 			finally(function() window:close() end)
 
-			assert.has_errors(function() fenster.set(window, 2.5, 0, 0) end)
 			assert.has_errors(function() fenster.set(window, 'ERROR', 0, 0) end)
 			assert.has_errors(function() fenster.set(window, true, 0, 0) end)
 			assert.has_errors(function() fenster.set(window, {}, 0, 0) end)
 			assert.has_errors(function() fenster.set(window, function() end, 0, 0) end)
 			assert.has_errors(function() fenster.set(window, io.stdout, 0, 0) end)
-			assert.has_errors(function() fenster.set(window, 0, 2.5, 0) end)
 			assert.has_errors(function() fenster.set(window, 0, 'ERROR', 0) end)
 			assert.has_errors(function() fenster.set(window, 0, true, 0) end)
 			assert.has_errors(function() fenster.set(window, 0, {}, 0) end)
 			assert.has_errors(function() fenster.set(window, 0, function() end, 0) end)
 			assert.has_errors(function() fenster.set(window, 0, io.stdout, 0) end)
 
-			assert.has_errors(function() window:set(2.5, 0, 0) end)
 			assert.has_errors(function() window:set('ERROR', 0, 0) end)
 			assert.has_errors(function() window:set(true, 0, 0) end)
 			assert.has_errors(function() window:set({}, 0, 0) end)
 			assert.has_errors(function() window:set(function() end, 0, 0) end)
 			assert.has_errors(function() window:set(io.stdout, 0, 0) end)
-			assert.has_errors(function() window:set(0, 2.5, 0) end)
 			assert.has_errors(function() window:set(0, 'ERROR', 0) end)
 			assert.has_errors(function() window:set(0, true, 0) end)
 			assert.has_errors(function() window:set(0, {}, 0) end)
 			assert.has_errors(function() window:set(0, function() end, 0) end)
 			assert.has_errors(function() window:set(0, io.stdout, 0) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.set(window, 2.5, 0, 0) end)
+				assert.has_errors(function() fenster.set(window, 0, 2.5, 0) end)
+				assert.has_errors(function() window:set(2.5, 0, 0) end)
+				assert.has_errors(function() window:set(0, 2.5, 0) end)
+			end
 		end)
 
 		it('should throw when color is not an integer #needsdisplay', function()
 			local window = fenster.open(256, 144)
 			finally(function() window:close() end)
 
-			assert.has_errors(function() fenster.set(window, 0, 0, 2.5) end)
 			assert.has_errors(function() fenster.set(window, 0, 0, 'ERROR') end)
 			assert.has_errors(function() fenster.set(window, 0, 0, true) end)
 			assert.has_errors(function() fenster.set(window, 0, 0, {}) end)
 			assert.has_errors(function() fenster.set(window, 0, 0, function() end) end)
 			assert.has_errors(function() fenster.set(window, 0, 0, io.stdout) end)
 
-			assert.has_errors(function() window:set(0, 0, 2.5) end)
 			assert.has_errors(function() window:set(0, 0, 'ERROR') end)
 			assert.has_errors(function() window:set(0, 0, true) end)
 			assert.has_errors(function() window:set(0, 0, {}) end)
 			assert.has_errors(function() window:set(0, 0, function() end) end)
 			assert.has_errors(function() window:set(0, 0, io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.set(window, 0, 0, 2.5) end)
+				assert.has_errors(function() window:set(0, 0, 2.5) end)
+			end
 		end)
 
 		it('should throw when x/y are out of range #needsdisplay', function()
@@ -400,6 +431,7 @@ describe("fenster", function()
 		end)
 
 		it('should throw when window is not a window userdata when not using as method', function()
+			assert.has_errors(function() fenster.get(25, 0, 0) end)
 			assert.has_errors(function() fenster.get(2.5, 0, 0) end)
 			assert.has_errors(function() fenster.get('ERROR', 0, 0) end)
 			assert.has_errors(function() fenster.get(true, 0, 0) end)
@@ -412,31 +444,35 @@ describe("fenster", function()
 			local window = fenster.open(256, 144)
 			finally(function() window:close() end)
 
-			assert.has_errors(function() fenster.get(window, 2.5, 0) end)
 			assert.has_errors(function() fenster.get(window, 'ERROR', 0) end)
 			assert.has_errors(function() fenster.get(window, true, 0) end)
 			assert.has_errors(function() fenster.get(window, {}, 0) end)
 			assert.has_errors(function() fenster.get(window, function() end, 0) end)
 			assert.has_errors(function() fenster.get(window, io.stdout, 0) end)
-			assert.has_errors(function() fenster.get(window, 0, 2.5) end)
 			assert.has_errors(function() fenster.get(window, 0, 'ERROR') end)
 			assert.has_errors(function() fenster.get(window, 0, true) end)
 			assert.has_errors(function() fenster.get(window, 0, {}) end)
 			assert.has_errors(function() fenster.get(window, 0, function() end) end)
 			assert.has_errors(function() fenster.get(window, 0, io.stdout) end)
 
-			assert.has_errors(function() window:get(2.5, 0) end)
 			assert.has_errors(function() window:get('ERROR', 0) end)
 			assert.has_errors(function() window:get(true, 0) end)
 			assert.has_errors(function() window:get({}, 0) end)
 			assert.has_errors(function() window:get(function() end, 0) end)
 			assert.has_errors(function() window:get(io.stdout, 0) end)
-			assert.has_errors(function() window:get(0, 2.5) end)
 			assert.has_errors(function() window:get(0, 'ERROR') end)
 			assert.has_errors(function() window:get(0, true) end)
 			assert.has_errors(function() window:get(0, {}) end)
 			assert.has_errors(function() window:get(0, function() end) end)
 			assert.has_errors(function() window:get(0, io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.get(window, 2.5, 0) end)
+				assert.has_errors(function() fenster.get(window, 0, 2.5) end)
+				assert.has_errors(function() window:get(2.5, 0) end)
+				assert.has_errors(function() window:get(0, 2.5) end)
+			end
 		end)
 
 		it('should throw when x/y are out of range #needsdisplay', function()
@@ -472,6 +508,7 @@ describe("fenster", function()
 		end)
 
 		it('should throw when window is not a window userdata when not using as method', function()
+			assert.has_errors(function() fenster.clear(25) end)
 			assert.has_errors(function() fenster.clear(2.5) end)
 			assert.has_errors(function() fenster.clear('ERROR') end)
 			assert.has_errors(function() fenster.clear(true) end)
@@ -501,19 +538,23 @@ describe("fenster", function()
 			local window = fenster.open(256, 144)
 			finally(function() window:close() end)
 
-			assert.has_errors(function() fenster.clear(window, 2.5) end)
 			assert.has_errors(function() fenster.clear(window, 'ERROR') end)
 			assert.has_errors(function() fenster.clear(window, true) end)
 			assert.has_errors(function() fenster.clear(window, {}) end)
 			assert.has_errors(function() fenster.clear(window, function() end) end)
 			assert.has_errors(function() fenster.clear(window, io.stdout) end)
 
-			assert.has_errors(function() window:clear(2.5) end)
 			assert.has_errors(function() window:clear('ERROR') end)
 			assert.has_errors(function() window:clear(true) end)
 			assert.has_errors(function() window:clear({}) end)
 			assert.has_errors(function() window:clear(function() end) end)
 			assert.has_errors(function() window:clear(io.stdout) end)
+
+			if _VERSION ~= 'Lua 5.1' and _VERSION ~= 'Lua 5.2' then
+				-- Lua 5.1 and 5.2 don't throw errors when using a number as an integer
+				assert.has_errors(function() fenster.clear(window, 2.5) end)
+				assert.has_errors(function() window:clear(2.5) end)
+			end
 		end)
 
 		it('should throw when color is out of range #needsdisplay', function()

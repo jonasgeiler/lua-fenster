@@ -9,6 +9,7 @@ on:
       - .github/workflows/check.yml
       - fenster-dev-1.rockspec
       - 'src/**'
+      - 'spec/**'
 
   pull_request:
     branches:
@@ -17,6 +18,7 @@ on:
       - .github/workflows/check.yml
       - fenster-dev-1.rockspec
       - 'src/**'
+      - 'spec/**'
 
   workflow_dispatch:
   workflow_call:
