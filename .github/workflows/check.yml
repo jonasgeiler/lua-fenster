@@ -24,11 +24,28 @@ on:
   workflow_call:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
+
+      - name: Setup LuaRocks
+        uses: hishamhm/gh-actions-luarocks@master
+
+      - name: Run luacheck
+        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --exclude-files .lua .luarocks
+
   test:
     name: Test
+    needs: lint
 
     strategy:
-      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit' ]
@@ -57,8 +74,6 @@ jobs:
         if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
       - name: Run tests
-        run: luarocks test -- --exclude-tags=needsdisplay --output=TAP
+        run: luarocks test -- --verbose --output TAP --exclude-tags needsdisplay
         # Currently does not work for Windows (can't import 'fenster')
         if: matrix.os != 'windows-latest'
-
-# TODO: Run something like luacheck on the demos
