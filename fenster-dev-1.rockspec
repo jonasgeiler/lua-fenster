@@ -103,3 +103,7 @@ build = {
 		},
 	},
 }
+test = {
+	type = 'busted',
+	flags = '--verbose',
+}

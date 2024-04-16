@@ -22,8 +22,8 @@ on:
   workflow_call:
 
 jobs:
-  test-build:
-    name: Test Build
+  test:
+    name: Test
 
     strategy:
         matrix:
@@ -48,13 +48,13 @@ jobs:
       - name: Setup LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
 
-      - name: Run luarocks make
+      - name: Build
         run: luarocks make
         # Currently does not work for LuaJIT on Windows (lua library not found)
         if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
-      - name: Run a basic test
-        run: lua -e "local fenster = require('fenster');print(fenster.time())"
+      - name: Run tests
+        run: luarocks test #-- --exclude-tags=needsdisplay
         # Currently does not work for Windows (can't import 'fenster')
         if: matrix.os != 'windows-latest'
 
