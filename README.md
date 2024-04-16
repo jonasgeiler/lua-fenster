@@ -24,7 +24,7 @@ API:
 
 fenster.open(width: integer, height: integer, title: string?, scale: integer?, targetfps: number?): userdata
 
-fenster.sleep(ms: integer)
+fenster.sleep(millis: integer)
 
 fenster.time(): integer
 
@@ -170,6 +170,13 @@ end
 
 Also check out the [text demo](./demos/text.lua) for a more advanced keyboard
 usage.
+
+### Calculating FPS
+
+Calculating the FPS to measure performance is super easy with the window delta:
+```lua
+local fps = 1 / window.delta
+```
 
 ### Drawing rectangles
 
