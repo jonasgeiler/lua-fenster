@@ -336,17 +336,19 @@ static int window_loop(lua_State *L) {
   // handle fps limiting
   int64_t now = fenster_time();  // (frame ends here)
   if (p_window->start_frame_time == 0) {
-    // initialize start frame time
+    // initialize start frame time (this is the first frame)
+    p_window->start_frame_time = now;
+  } else {
+    const int64_t last_frame_time = now - p_window->start_frame_time;
+    if (p_window->target_frame_time > last_frame_time) {
+      // sleep for the remaining frame time to reach target frame time
+      fenster_sleep(p_window->target_frame_time - last_frame_time);
+    }
+    now = fenster_time();  // update timestamp after sleeping (frame starts here)
+    p_window->delta =
+        (lua_Number)(now - p_window->start_frame_time) / MS_PER_SEC;
     p_window->start_frame_time = now;
   }
-  const int64_t last_frame_time = now - p_window->start_frame_time;
-  if (p_window->target_frame_time > last_frame_time) {
-    // sleep for the remaining frame time to reach target frame time
-    fenster_sleep(p_window->target_frame_time - last_frame_time);
-  }
-  now = fenster_time();  // update timestamp after sleeping (frame stars here)
-  p_window->delta = (lua_Number)(now - p_window->start_frame_time) / MS_PER_SEC;
-  p_window->start_frame_time = now;
 
   if (fenster_loop(p_window->p_fenster) == 0) {
     // update the keys table in the registry
