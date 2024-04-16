@@ -39,8 +39,8 @@ typedef struct window {
   struct fenster *p_fenster;
 
   lua_Integer scale;
-  lua_Integer original_width;
-  lua_Integer original_height;
+  lua_Integer width;
+  lua_Integer height;
   lua_Integer scaled_mouse_x;
   lua_Integer scaled_mouse_y;
 
@@ -82,12 +82,9 @@ static void _dumpstack(lua_State *L) {
 static int lfenster_open(lua_State *L) {
   const int width = (int)luaL_checkinteger(L, 1);
   const int height = (int)luaL_checkinteger(L, 2);
-  const char *title = luaL_optlstring(L, 3, DEFAULT_TITLE, NULL);
+  const char *title = luaL_optstring(L, 3, DEFAULT_TITLE);
   const int scale = (int)luaL_optinteger(L, 4, DEFAULT_SCALE);
-  if ((scale & (scale - 1)) != 0) {
-    return luaL_error(L, "invalid scale value: %d (must be a power of 2)",
-                      scale);
-  }
+  luaL_argcheck(L, (scale & (scale - 1)) == 0, 4, "scale must be a power of 2");
   const lua_Number target_fps = luaL_optnumber(L, 5, DEFAULT_TARGET_FPS);
 
   const int scaled_width = width * scale;
@@ -153,10 +150,10 @@ static int lfenster_open(lua_State *L) {
   window *p_window = lua_newuserdata(L, sizeof(window));
   p_window->p_fenster = p_fenster;
   p_window->scale = scale;
-  p_window->original_width = width;
-  p_window->original_height = height;
-  p_window->scaled_mouse_x = p_fenster->x / scale;
-  p_window->scaled_mouse_y = p_fenster->y / scale;
+  p_window->width = width;
+  p_window->height = height;
+  p_window->scaled_mouse_x = 0;
+  p_window->scaled_mouse_y = 0;
   p_window->keys_ref = keys_ref;
   p_window->mod_control = 0;
   p_window->mod_shift = 0;
@@ -203,9 +200,8 @@ static int lfenster_time(lua_State *L) {
  */
 static lua_Integer check_color(lua_State *L, int index) {
   const lua_Integer color = luaL_checkinteger(L, index);
-  if (color < 0 || color > MAX_COLOR) {
-    luaL_error(L, "invalid color value: %d (must be 0-%d)", color, MAX_COLOR);
-  }
+  luaL_argcheck(L, color >= 0 && color <= MAX_COLOR, index,
+                "color must be in range 0x000000-0xffffff");
   return color;
 }
 
@@ -218,12 +214,9 @@ static lua_Integer check_color(lua_State *L, int index) {
  */
 static lua_Integer check_color_component(lua_State *L, int index) {
   const lua_Integer color_component = luaL_checkinteger(L, index);
-  if (color_component < 0 || color_component > MAX_COLOR_COMPONENT) {
-    luaL_error(L,
-               "invalid color_component component value for argument %d: %d "
-               "(must be 0-%d)",
-               index, color_component, MAX_COLOR_COMPONENT);
-  }
+  luaL_argcheck(L,
+                color_component >= 0 && color_component <= MAX_COLOR_COMPONENT,
+                index, "color component must be in range 0-255");
   return color_component;
 }
 
@@ -351,10 +344,8 @@ static int window_loop(lua_State *L) {
  */
 static lua_Integer check_x(lua_State *L, window *p_window) {
   const lua_Integer x = luaL_checkinteger(L, 2);
-  if (x < 0 || x >= p_window->original_width) {
-    luaL_error(L, "x coordinate out of bounds: %d (must be 0-%d)", x,
-               p_window->original_width - 1);
-  }
+  luaL_argcheck(L, x >= 0 && x < p_window->width, 2,
+                "x coordinate must be in range 0-[width-1]");
   return x;
 }
 
@@ -368,10 +359,8 @@ static lua_Integer check_x(lua_State *L, window *p_window) {
  */
 static lua_Integer check_y(lua_State *L, window *p_window) {
   const lua_Integer y = luaL_checkinteger(L, 3);
-  if (y < 0 || y >= p_window->original_height) {
-    luaL_error(L, "y coordinate out of bounds: %d (must be 0-%d)", y,
-               p_window->original_height - 1);
-  }
+  luaL_argcheck(L, y >= 0 && y < p_window->height, 3,
+                "y coordinate must be in range 0-[height-1]");
   return y;
 }
 
@@ -465,9 +454,9 @@ static int window_index(lua_State *L) {
     } else if (strcmp(key, "modgui") == 0) {
       lua_pushboolean(L, p_window->mod_gui);
     } else if (strcmp(key, "width") == 0) {
-      lua_pushinteger(L, p_window->original_width);
+      lua_pushinteger(L, p_window->width);
     } else if (strcmp(key, "height") == 0) {
-      lua_pushinteger(L, p_window->original_height);
+      lua_pushinteger(L, p_window->height);
     } else if (strcmp(key, "title") == 0) {
       lua_pushstring(L, p_window->p_fenster->title);
     } else if (strcmp(key, "scale") == 0) {
@@ -508,9 +497,9 @@ static int window_tostring(lua_State *L) {
   window *p_window = check_window(L);
 
   if (is_window_closed(p_window)) {
-    lua_pushfstring(L, "%s (closed)", WINDOW_METATABLE);
+    lua_pushliteral(L, "window (closed)");
   } else {
-    lua_pushfstring(L, "%s (%p)", WINDOW_METATABLE, p_window->p_fenster);
+    lua_pushfstring(L, "window (%p)", p_window);
   }
   return 1;
 }
@@ -555,10 +544,14 @@ static const struct luaL_Reg window_methods[] = {
  * @return Number of return values on the Lua stack
  */
 FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
-  luaL_newmetatable(L, WINDOW_METATABLE);
+  // create the window metatable
+  const int result = luaL_newmetatable(L, WINDOW_METATABLE);
+  if (result == 0) {
+    luaL_error(L, "metatable already exists: %s", WINDOW_METATABLE);
+  }
   luaL_setfuncs(L, window_methods, 0);
-  lua_pop(L, 1);
 
+  // create and return the lua-fenster module
   luaL_newlib(L, lfenster_functions);
   return 1;
 }
