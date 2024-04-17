@@ -1,5 +1,13 @@
 #include "main.h"
 
+#include <errno.h>
+#include <lauxlib.h>
+#include <lua.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "vendor/compat-5.3.h"
 #include "vendor/fenster.h"
 
@@ -334,7 +342,7 @@ static int window_loop(lua_State *L) {
   window *p_window = check_open_window(L);
 
   // handle fps limiting
-  int64_t now = fenster_time();  // (frame ends here)
+  int64_t now = fenster_time();
   if (p_window->start_frame_time == 0) {
     // initialize start frame time (this is the first frame)
     p_window->start_frame_time = now;
@@ -344,7 +352,7 @@ static int window_loop(lua_State *L) {
       // sleep for the remaining frame time to reach target frame time
       fenster_sleep(p_window->target_frame_time - last_frame_time);
     }
-    now = fenster_time();  // update timestamp after sleeping (frame starts here)
+    now = fenster_time();  // update timestamp after sleeping
     p_window->delta =
         (lua_Number)(now - p_window->start_frame_time) / MS_PER_SEC;
     p_window->start_frame_time = now;

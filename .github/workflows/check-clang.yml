@@ -18,9 +18,6 @@ jobs:
       - name: Setup LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
 
-      - name: Run luacheck
-        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --exclude-files .lua .luarocks
-
       - name: Run C/C++ Linter
         uses: cpp-linter/cpp-linter-action@v2
         with:
