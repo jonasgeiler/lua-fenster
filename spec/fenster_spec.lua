@@ -139,7 +139,7 @@ describe('fenster', function()
 			assert.has_errors(function() fenster.sleep() end)
 		end)
 
-		it('should throw when millis is not an integer', function()
+		it('should throw when milliseconds is not an integer', function()
 			assert.has_errors(function() fenster.sleep('ERROR') end)
 			assert.has_errors(function() fenster.sleep(true) end)
 			assert.has_errors(function() fenster.sleep({}) end)

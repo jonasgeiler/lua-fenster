@@ -24,7 +24,7 @@ API:
 
 fenster.open(width: integer, height: integer, title: string?, scale: integer?, targetfps: number?): userdata
 
-fenster.sleep(millis: integer)
+fenster.sleep(milliseconds: integer)
 
 fenster.time(): integer
 

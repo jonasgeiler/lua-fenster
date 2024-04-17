@@ -214,9 +214,9 @@ static int lfenster_open(lua_State *L) {
  * @return Number of return values on the Lua stack
  */
 static int lfenster_sleep(lua_State *L) {
-  const lua_Integer millis = luaL_checkinteger(L, 1);
+  const lua_Integer milliseconds = luaL_checkinteger(L, 1);
 
-  fenster_sleep(millis);
+  fenster_sleep(milliseconds);
 
   return 0;
 }
