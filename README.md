@@ -168,7 +168,7 @@ if window.keys[keys.enter] then
 end 
 ```
 
-Also check out the [text demo](./demos/text.lua) for a more advanced keyboard
+Also check out the [text demo](./demos/text-editor.lua) for a more advanced keyboard
 usage.
 
 ### Calculating FPS
@@ -180,7 +180,7 @@ local fps = 1 / window.delta
 
 ### Drawing rectangles
 
-Check out the [moving demo](./demos/moving.lua)!
+Check out the [moving-box demo](./demos/moving-box.lua)!
 It includes a function to draw rectangles.
 
 ### Drawing circles
@@ -195,7 +195,7 @@ It includes a function to draw lines.
 
 ### Drawing text
 
-Check out the [text demo](./demos/text.lua)!
+Check out the [text-editor demo](./demos/text-editor.lua)!
 It includes the microknight font and a function to draw text.
 
 ### Loading and drawing images
