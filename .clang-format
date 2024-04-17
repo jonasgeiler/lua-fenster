@@ -1,1 +1,4 @@
+# clang-format configuration
+# See: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
 BasedOnStyle: Google

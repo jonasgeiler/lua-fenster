@@ -1,3 +1,6 @@
+# clang-tidy configuration
+# See: https://clang.llvm.org/extra/clang-tidy/
+
 Checks: >-
   -*,
   bugprone-*,

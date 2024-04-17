@@ -51,7 +51,7 @@ local function fill(window, x, y, color, old_color)
 
 	local window_width = window.width
 	local window_height = window.height
-	local stack = {(y * window_width) + x}
+	local stack = { (y * window_width) + x }
 	while stack[1] do
 		local pos = table.remove(stack)
 		x = pos % window_width

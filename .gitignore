@@ -1,3 +1,6 @@
+# Git ignore file
+# See: https://git-scm.com/docs/gitignore
+
 # IDE
 .idea
 .vscode
