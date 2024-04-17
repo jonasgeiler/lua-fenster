@@ -33,21 +33,21 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Update fenster
-        run: wget https://raw.githubusercontent.com/zserge/fenster/main/fenster.h -O src/vendor/fenster.h
+        run: wget https://raw.githubusercontent.com/zserge/fenster/main/fenster.h -O lib/fenster/fenster.h
 
       - name: Update compat-5.3
         run: |
-          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.h -O src/vendor/compat-5.3.h
-          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.c -O src/vendor/compat-5.3.c
+          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.h -O lib/compat-5.3/compat-5.3.h
+          wget https://raw.githubusercontent.com/lunarmodules/lua-compat-5.3/master/c-api/compat-5.3.c -O lib/compat-5.3/compat-5.3.c
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@c55203cfde3e5c11a452d352b4393e68b85b4533 # v6.0.3
         with:
-          commit-message: 'chore(libs): update libraries'
+          commit-message: 'chore(lib): update libraries'
           signoff: true
           branch: maintenance/update-libraries
           delete-branch: true
-          title: 'chore(libs): update libraries'
+          title: 'chore(lib): update libraries'
           body: |
               This PR updates the libraries used by the project.
           labels: libraries

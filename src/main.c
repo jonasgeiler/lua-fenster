@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../include/main.h"
 
 #include <errno.h>
 #include <lauxlib.h>
@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "vendor/compat-5.3.h"
-#include "vendor/fenster.h"
+#include "../lib/compat-5.3/compat-5.3.h"
+#include "../lib/fenster/fenster.h"
 
 /** Default window title */
 static const char *DEFAULT_TITLE = "fenster";
