@@ -1,24 +1,80 @@
 # lua-fenster
 
-WIP
+> The most minimal cross-platform GUI library - now in Lua!
+
+[![LuaRocks](https://img.shields.io/luarocks/v/jonasgeiler/fenster?style=for-the-badge&color=%232c3e67)](https://luarocks.org/modules/jonasgeiler/fenster)
+[![Downloads](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fluarocks.org%2Fmodules%2Fjonasgeiler%2Ffenster&query=%2F%2Fdiv%5B%40class%3D%22metadata_columns_inner%22%5D%2Fdiv%5B%40class%3D%22column%22%5D%5Blast()%5D%2Ftext()&style=for-the-badge&label=Downloads&color=%23099dff)](https://luarocks.org/modules/jonasgeiler/fenster)
+[![Projects using lua-fenster](https://img.shields.io/badge/Projects_using_lua--fenster-1%2B-2c3e67?style=for-the-badge)](#projects-using-lua-fenster)
+[![License](https://img.shields.io/github/license/jonasgeiler/lua-fenster?style=for-the-badge&color=%23099dff)](./LICENSE.md)
+
+A Lua binding for the [fenster](https://github.com/zserge/fenster) GUI library,
+providing the most minimal and highly opinionated way to display a
+cross-platform 2D canvas. It's basic idea is to give you the simplest means
+possible to "just put pixels on the screen" without any of the fancy stuff. As a
+nice bonus you also get cross-platform keyboard/mouse input and frame timing in
+only a few lines of code.
+
+Read more about the idea behind fenster here:
+[Minimal cross-platform graphics - zserge.com](https://zserge.com/posts/fenster/)
+
+> [!NOTE]
+> This library is primarily intended for educational purposes and prototyping
+> and may not include all the features you would expect from a full-fledged GUI
+> library. If you're looking for a more feature-rich library, you might want to
+> check out [LÖVE](https://love2d.org/) or [raylib](https://www.raylib.com/).
 
 ## Installation
 
 From LuaRocks server:
+
 ```shell
 luarocks install fenster
 ```
 
 From source:
+
 ```shell
 git clone https://github.com/jonasgeiler/lua-fenster.git
 cd lua-fenster
 luarocks make
 ```
 
-## Notes (WIP)
+## Usage
 
-API:
+Here is a simple example that opens a 500x300 window and draws a red rectangle:
+
+```lua
+-- rectangle.lua
+local fenster = require("fenster")
+
+local window = fenster.open(500, 300, "Hello fenster!")
+
+while window:loop() and not window.keys[27] do
+	window:clear()
+
+	for y = 100, 200 do
+		for x = 200, 300 do
+			window:set(x, y, 0xff0000)
+		end
+	end
+end
+```
+
+To run the example:
+
+```shell
+lua rectangle.lua
+```
+
+Check out the [demos](./demos) folder for more examples!  
+Also, I have compiled a collection of useful snippets in
+[this discussion (#11)](https://github.com/jonasgeiler/lua-fenster/discussions/11).
+Check them out!
+
+# API
+
+TODO
+
 ```
 -- Functions --
 
@@ -75,144 +131,16 @@ window.scale: integer
 window.targetfps: number
 ```
 
-## Useful Snippets
+# Projects using lua-fenster
 
-### Basic window loop
+<!--
+If you add your project here, make sure to increase the number in the badge at
+the top! It's a little finicky to find the right character in the URL, but
+you'll get there eventually.
+-->
 
-A simple window loop that runs at maximum 60 FPS and closes when the Escape key
-is pressed:
+Here is a list of projects using lua-fenster:
 
-```lua
-while window:loop() and not window.keys[27] do
-	-- Draw stuff here
-end 
-```
+- [jonasgeiler/3d-rasterizer-lua](https://github.com/jonasgeiler/3d-rasterizer-lua)
 
-### Fill buffer
-
-Fills the entire window buffer with a specific color:
-
-```lua
--- Normally you would store window:width() and window:height() in variables
-for y = 0, window.height - 1 do
-	for x = 0, window.width - 1 do
-		window:set(x, y, color)
-	end
-end
-```
-
-> [!IMPORTANT]
-> Pixel coordinates are zero-based. Unlike Lua tables they start at `0`.
-
-### Key code map
-
-Here is a very basic key to key code map:
-
-```lua
-local keys = {
-	backspace = 8,
-	tab = 9,
-	enter = 10,
-	escape = 27,
-	space = 32,
-	["'"] = 39,
-	[','] = 44,
-	['-'] = 45,
-	['.'] = 46,
-	['/'] = 47,
-	['0'] = 48,
-	['1'] = 49,
-	['2'] = 50,
-	['3'] = 51,
-	['4'] = 52,
-	['5'] = 53,
-	['6'] = 54,
-	['7'] = 55,
-	['8'] = 56,
-	['9'] = 57,
-	a = 65,
-	b = 66,
-	c = 67,
-	d = 68,
-	e = 69,
-	f = 70,
-	g = 71,
-	h = 72,
-	i = 73,
-	j = 74,
-	k = 75,
-	l = 76,
-	m = 77,
-	n = 78,
-	o = 79,
-	p = 80,
-	q = 81,
-	r = 82,
-	s = 83,
-	t = 84,
-	u = 85,
-	v = 86,
-	w = 87,
-	x = 88,
-	y = 89,
-	z = 90,
-	['['] = 91,
-	['\\'] = 92,
-	[']'] = 93,
-	['`'] = 96,
-}
-
--- Usage
-if window.keys[keys.enter] then
-	-- Enter key is pressed
-end 
-```
-
-Also check out the [text demo](./demos/text-editor.lua) for a more advanced keyboard
-usage.
-
-### Calculating FPS
-
-Calculating the FPS to measure performance is super easy with the window delta:
-```lua
-local fps = 1 / window.delta
-```
-
-### Drawing rectangles
-
-Check out the [moving-box demo](./demos/moving-box.lua)!
-It includes a function to draw rectangles.
-
-### Drawing circles
-
-Check out the [multi-window demo](./demos/multi-window.lua)!
-It includes a function to draw circles.
-
-### Drawing lines
-
-Check out the [paint demo](./demos/paint.lua)!
-It includes a function to draw lines.
-
-### Drawing text
-
-Check out the [text-editor demo](./demos/text-editor.lua)!
-It includes the microknight font and a function to draw text.
-
-### Loading and drawing images
-
-Images are a bit more complex to load and draw. I recommend using a very simple
-image format like [Netpbm PPM (P3 or P6)](https://en.wikipedia.org/wiki/Netpbm)
-to store the image in a file.
-To load such a PPM (P6) image, check out the [image demo](./demos/image.lua).  
-Keep in mind that the image I have included in the
-demo, [found here](./demos/assets/uv.ppm), has been cleaned of any comments in
-the header since those are a bit complicated to handle (and the code I wrote for
-the image demo won't handle them).
-
-Here's the command for ImageMagick to convert a PNG to PPM:
-```shell
-magick image.png -depth 8 image.ppm
-```
-You could use GIMP as well, but unfortunately GIMP adds a comment to the header 
-of the PPM file, which makes it a bit more complicated to use compared to 
-ImageMagick.
+Feel free to add your project to the list by creating a pull request!
