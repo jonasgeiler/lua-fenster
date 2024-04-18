@@ -41,7 +41,8 @@ luarocks make
 
 ## Usage
 
-Here is a simple example that opens a 500x300 window and draws a red rectangle:
+Here is a simple example that opens a 500x300 window, draws a red rectangle and
+exits when pressing the Escape key:
 
 ```lua
 -- rectangle.lua

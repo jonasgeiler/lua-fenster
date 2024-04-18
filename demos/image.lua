@@ -3,7 +3,7 @@ local fenster = require('fenster')
 -- Load image
 local image_path = './' .. (
 -- Get the relative directory of the script
-	debug.getinfo(1, 'S').source:match('^@?(.*/)') or ''
+	debug.getinfo(1, 'S').source:match('^@?(.*[/\\])') or ''
 ) .. 'assets/uv.ppm'
 local image = assert(io.open(image_path, 'rb'))
 
