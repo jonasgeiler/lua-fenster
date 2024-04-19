@@ -5,7 +5,7 @@ local fenster = require('fenster')
 
 local window_width = 200
 local window_height = 200
-local window_scale = 2
+local window_scale = 4
 local window = fenster.open(
 	window_width,
 	window_height,
@@ -13,7 +13,9 @@ local window = fenster.open(
 	window_scale
 )
 
-local function count_alive_neighbours(x, y, neighbours, world)
+local neighbours = { { -1, -1 }, { -1, 0 }, { 0, -1 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }
+
+local function count_alive_neighbours(x, y, world)
 	local count = 0
 	for _, neighbour in pairs(neighbours) do
 		local dx = x + neighbour[1]
@@ -45,8 +47,6 @@ for x = 1, window_width do
 	end
 end
 
-local neighbours = { { -1, -1 }, { -1, 0 }, { 0, -1 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }
-
 while window:loop() and not window.keys[27] do
 	local previous_world = copy(world)
 	for x = 1, window_width do
@@ -56,7 +56,7 @@ while window:loop() and not window.keys[27] do
 			else
 				window:set(x - 1, y - 1, 0x000000)
 			end
-			local count = count_alive_neighbours(x, y, neighbours, previous_world)
+			local count = count_alive_neighbours(x, y, previous_world)
 			world[x][y] = (count == 3) or (previous_world[x][y] and count == 2)
 		end
 	end
