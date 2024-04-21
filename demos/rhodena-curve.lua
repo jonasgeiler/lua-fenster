@@ -1,3 +1,5 @@
+-- Rhodonea Curves by Jakob Kruse
+-- https://github.com/jakob-kruse
 -- You can read more here https://en.wikipedia.org/wiki/Rose_(mathematics)
 
 local fenster = require("fenster")
