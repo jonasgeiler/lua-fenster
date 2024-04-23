@@ -11,6 +11,20 @@
 #include "../lib/compat-5.3/compat-5.3.h"
 #include "../lib/fenster/fenster.h"
 
+// Macros that ensure the same integer argument behavior in Lua 5.1/5.2
+// and 5.3/5.4. In Lua 5.1/5.2 luaL_checkinteger/luaL_optinteger normally floor
+// decimal numbers, while in Lua 5.3/5.4 they throw an error. These macros make
+// sure to always throw an error if the number has a decimal part.
+#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM <= 502
+#define luaL_checkinteger(L, arg)                                              \
+  (luaL_argcheck(L,                                                            \
+                 floorl(luaL_checknumber(L, arg)) == luaL_checknumber(L, arg), \
+                 arg, "number has no integer representation"),                 \
+   luaL_checkinteger(L, arg))
+#define luaL_optinteger(L, arg, def) \
+  (lua_isnoneornil(L, arg) ? def : luaL_checkinteger(L, arg))
+#endif
+
 /** Default window title */
 static const char *DEFAULT_TITLE = "fenster";
 
