@@ -4,8 +4,8 @@
 
 local fenster = require("fenster")
 
-local windowSize = 1000
-local window = fenster.open(windowSize, windowSize, "Math Roses", 1, 1000)
+local windowSize = 900
+local window = fenster.open(windowSize, windowSize, "Math Roses - R to reset + ESC to exit", 1, 0)
 
 local function generateRoseValue(delta, variant)
     return 100 * math.sin(variant(delta))
@@ -13,8 +13,8 @@ end
 
 local function drawRose(window, offsetX, offsetY, delta, variant, generator)
     local radius = generator(delta, variant)
-    local x = radius * math.cos(delta) + offsetX
-    local y = radius * math.sin(delta) + offsetY
+    local x = math.floor(radius * math.cos(delta) + offsetX)
+    local y = math.floor(radius * math.sin(delta) + offsetY)
 
     x = math.max(0, math.min(windowSize - 1, x))
     y = math.max(0, math.min(windowSize - 1, y))
@@ -70,8 +70,6 @@ local variantValues = {
 local gridSize = math.ceil(math.sqrt(#variantValues))
 local cellSize = windowSize / gridSize
 local delta = 0
-
-print "Press R to reset and ESC to exit."
 
 while window:loop() and not window.keys[27] do
     if window.keys[82] then
