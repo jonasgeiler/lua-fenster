@@ -11,7 +11,7 @@ local function generateRoseValue(delta, variant)
     return 100 * math.sin(variant(delta))
 end
 
-local function drawRose(window, offsetX, offsetY, delta, variant, generator)
+local function drawRose(offsetX, offsetY, delta, variant, generator)
     local radius = generator(delta, variant)
     local x = math.floor(radius * math.cos(delta) + offsetX)
     local y = math.floor(radius * math.sin(delta) + offsetY)
@@ -61,7 +61,7 @@ local variantValues = {
     function(delta)
         return math.rad(delta) * 10
     end,
-    
+
     function(delta)
         return math.fmod(delta, 2)
     end
