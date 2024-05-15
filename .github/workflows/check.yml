@@ -4,25 +4,22 @@ on:
   push:
     branches:
       - main
-      - 'renovate/**'
     paths:
-      - .github/workflows/check.yml
-      - 'src/**'
       - 'include/**'
       - 'lib/**'
+      - 'spec/**'
+      - 'src/**'
       - '**.rockspec'
-      - '**.lua'
 
   pull_request:
     branches:
       - main
     paths:
-      - .github/workflows/check.yml
-      - 'src/**'
       - 'include/**'
       - 'lib/**'
+      - 'spec/**'
+      - 'src/**'
       - '**.rockspec'
-      - '**.lua'
 
   workflow_dispatch:
   workflow_call:
@@ -75,7 +72,7 @@ jobs:
         uses: hishamhm/gh-actions-luarocks@master
 
       - name: Run luacheck
-        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --include-files "**/*.lua" "**/*.rockspec" --exclude-files .lua .luarocks
+        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --include-files "spec/**/*.lua" "**/*.rockspec" --exclude-files .lua .luarocks
 
   test:
     name: Test
