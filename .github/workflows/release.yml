@@ -43,7 +43,6 @@ jobs:
           fi
           luarocks install dkjson
           luarocks upload --temp-key "${{ secrets.LUAROCKS_API_KEY }}" "$rockspec"
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
 
       - name: Draft release on GitHub
         uses: softprops/action-gh-release@69320dbe05506a9a39fc8ae11030b214ec2d1f87 # v2.0.5
@@ -53,4 +52,3 @@ jobs:
           files: |
             fenster-*-1.rockspec
             fenster-*-1.src.rock
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')

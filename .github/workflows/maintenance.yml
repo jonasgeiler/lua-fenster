@@ -39,5 +39,3 @@ jobs:
               This PR updates the libraries used by the project.
           labels: libraries
           reviewers: ${{ github.repository_owner }}
-        # Don't run for pull requests and pushes to renovate branches
-        if: github.event_name != 'pull_request' && (github.event_name != 'push' || !startsWith(github.ref, 'refs/heads/renovate/'))
