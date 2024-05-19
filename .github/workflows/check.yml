@@ -94,7 +94,7 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - name: Setup Lua
-        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
+        uses: hishamhm/gh-actions-lua@master
         with:
           luaVersion: ${{ matrix.lua_version }}
 
@@ -107,6 +107,6 @@ jobs:
         if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
       - name: Run tests
-        run: luarocks test -- --verbose --output TAP --exclude-tags needsdisplay
-        # Currently does not work for Windows (can't import 'fenster')
-        if: matrix.os != 'windows-latest'
+        run: luarocks test -- --exclude-tags needsdisplay --verbose --output TAP
+        # Currently does not work for LuaJIT on Windows (see above)
+        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
