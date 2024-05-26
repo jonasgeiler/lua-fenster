@@ -9,7 +9,7 @@
 
 A Lua binding for the [fenster](https://github.com/zserge/fenster) GUI library,
 providing the most minimal and highly opinionated way to display a
-cross-platform 2D canvas. It's basic idea is to give you the simplest means
+cross-platform 2D canvas. It's basic idea is giving you the simplest means
 possible to "just put pixels on the screen" without any of the fancy stuff. As a
 nice bonus you also get cross-platform keyboard/mouse input and frame timing in
 only a few lines of code.
@@ -279,8 +279,6 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Close the window immediately
 window:close()
--- (or alternatively) --
-fenster.close(window)
 ```
 
 **Note:**
@@ -293,12 +291,12 @@ to immediately close the window when the `window` variable goes out of scope:
 local fenster = require('fenster')
 
 function main()
-	-- Open a new window (note the <close> attribute!)
-	local window <close> = fenster.open(500, 300, 'My Application', 2, 60)
+  -- Open a new window (note the <close> attribute!)
+  local window <close> = fenster.open(500, 300, 'My Application', 2, 60)
 
-	-- The window will be immediately closed when this function returns
-	-- (Normally, garbage collection will also close the window but only at an
-	-- undetermined time later on)
+  -- The window will be immediately closed when this function returns
+  -- (Normally, garbage collection will also close the window but only at an
+  -- undetermined time later on)
 end
 ```
 
@@ -327,11 +325,7 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Handle the main loop for the window
 while window:loop() do
-	-- Your code here...
-end
--- (or alternatively) --
-while fenster.loop(window) do
-	-- Your code here...
+  -- ... Your code here...
 end
 ```
 
@@ -358,8 +352,6 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Set the pixel at coordinates (10, 20) to red
 window:set(10, 20, 0xff0000)
--- (or alternatively) --
-fenster.set(window, 10, 20, 0xff0000)
 ```
 
 ### `window:get(x: integer, y: integer): integer`
@@ -390,8 +382,6 @@ window:set(10, 20, 0x00ff00)
 
 -- Get the color of the pixel at coordinates (10, 20)
 local color = window:get(10, 20) -- Returns: 0x00ff00 (65280 in decimal)
--- (or alternatively) --
-local color = fenster.get(window, 10, 20) -- Returns: 0x00ff00 (65280 in decimal)
 ```
 
 ### `window:clear(color: integer | nil)`
@@ -414,8 +404,6 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Clear the window buffer with the color blue
 window:clear(0x0000ff)
--- (or alternatively) --
-fenster.clear(window, 0x0000ff)
 ```
 
 ### `window.keys: boolean[]`
@@ -434,13 +422,16 @@ local fenster = require('fenster')
 -- Open a new window
 local window = fenster.open(500, 300, 'My Application', 2, 60)
 
--- Get the ASCII code for the "G" key (71)
-local gkey = string.byte('G')
+-- Get the ASCII code for the "F" key (70)
+local fkey = string.byte('F')
 
 -- Handle the main loop for the window
 while window:loop() do
-	-- Print the state of the "G" key
-	print(window.keys[gkey])
+  -- Check if the "F" key is pressed
+  if window.keys[fkey] then
+    -- Print a message
+    print('F is pressed.')
+  end
 end
 ```
 
@@ -459,13 +450,48 @@ Read more about delta time here:
 ```lua
 local fenster = require('fenster')
 
--- Open a new window
-local window = fenster.open(500, 300, 'My Application', 2, 60)
+-- Try out these values and notice the difference:
+local targetfps = 60
+--local targetfps = 30
+--local targetfps = 15
+
+-- Open a new window (very wide and scaled to see the pixels moving)
+local window = fenster.open(100, 40, 'My Application', 4, targetfps)
+
+-- Calculate the y position of the first pixel (center minus 10)
+local pixel1y = window.height / 2 - 10
+
+-- Initialize the x position of the first pixel
+local pixel1x = 0
+
+-- Calculate the x position of the second pixel (center plus 10)
+local pixel2y = window.height / 2 + 10
+
+-- Initialize the x position of the second pixel
+local pixel2x = 0
 
 -- Handle the main loop for the window
 while window:loop() do
-	-- Print the time passed since the last frame
-	print(window.delta)
+  -- Clear the screen for redraw
+  window:clear()
+
+  -- Draw the first pixel in red (we have to floor the x position, because it has to be an integer)
+  window:set(math.floor(pixel1x), pixel1y, 0xff0000)
+
+  -- Move the first pixel to the right (no delta time)
+  pixel1x = pixel1x + 0.35
+
+  -- Reset the first pixel if it reaches the right edge of the window
+  if pixel1x >= window.width then pixel1x = 0 end
+
+  -- Draw the second pixel in green (also floor here)
+  window:set(math.floor(pixel2x), pixel2y, 0x00ff00)
+
+  -- Move the second pixel to the right (with delta time)
+  pixel2x = pixel2x + 20 * window.delta
+
+  -- Reset the second pixel if it reaches the right edge of the window
+  if pixel2x >= window.width then pixel2x = 0 end
 end
 ```
 
@@ -485,8 +511,8 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Handle the main loop for the window
 while window:loop() do
-	-- Print the coordinates of the mouse cursor
-	print(window.mousex, window.mousey)
+  -- Draw a cyan pixel at the mouse position
+  window:set(window.mousex, window.mousey, 0x00ffff)
 end
 ```
 
@@ -512,18 +538,24 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 
 -- Handle the main loop for the window
 while window:loop() do
-	-- Print the state of the mouse button
-	print(window.mousedown)
+  -- Check if the mouse is pressed
+  if window.mousedown then
+    -- Draw a yellow pixel at the mouse position
+    window:set(window.mousex, window.mousey, 0xffff00)
+  end
 end
 ```
 
 ### `window.modcontrol: boolean`
 
-This property contains the state of the Control key. If the Control key is
-currently pressed, the value will be `true`, otherwise it will be `false`.
-In my experience, the state of the Control key is only updated when another
-key is pressed simultaneously, so you might not get the expected behavior if
-you only check this property.
+This property contains the state of the Control key, also known as the Ctrl key.
+If the Control key is currently pressed, the value will be `true`, otherwise it
+will be `false`.
+
+> [!IMPORTANT]
+> In my experience, the states of the modifier keys are only updated when
+> another key is pressed simultaneously, so you might not get the expected
+> behavior if you only check the modifier property.
 
 **Example:**
 
@@ -533,10 +565,35 @@ local fenster = require('fenster')
 -- Open a new window
 local window = fenster.open(500, 300, 'My Application', 2, 60)
 
+-- Get the ASCII code for the "G" key (71)
+local gkey = string.byte('G')
+
 -- Handle the main loop for the window
 while window:loop() do
-	-- Print the state of the modifier keys
-	print(window.modcontrol, window.modshift, window.modalt, window.modgui)
+  -- Check if the "G" key is pressed
+  if window.keys[gkey] then
+    local keycombination = {}
+
+    -- Check which modifier key is pressed and add it to the key combination
+    if window.modcontrol then
+      keycombination[#keycombination + 1] = 'Ctrl'
+    end
+    if window.modshift then
+      keycombination[#keycombination + 1] = 'Shift'
+    end
+    if window.modalt then
+      keycombination[#keycombination + 1] = 'Alt'
+    end
+    if window.modgui then
+      keycombination[#keycombination + 1] = 'GUI'
+    end
+
+    -- Add the "G" key to the key combination
+    keycombination[#keycombination + 1] = 'G'
+
+    -- Print the key combination that is pressed
+    print(table.concat(keycombination, ' + ') .. ' is pressed.')
+  end
 end
 ```
 
