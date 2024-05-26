@@ -103,15 +103,15 @@ fenster Lua module:
 
 - [`fenster.rgb(redorcolor: integer, green: integer | nil, blue: integer | nil): integer, integer | nil, integer | nil`](#fensterrgbredorcolor-integer-green-integer--nil-blue-integer--nil-integer-integer--nil-integer--nil)
 
-- [`window:close()` / `fenster.close(window: userdata)`](#windowclose--fensterclosewindow-userdata)
+- [`window:close()`](#windowclose)
 
-- [`window:loop()` / `fenster.loop(window: userdata)`](#windowloop--fensterloopwindow-userdata)
+- [`window:loop()`](#windowloop)
 
-- [`window:set(x: integer, y: integer, color: integer)` / `fenster.set(window: userdata, x: integer, y: integer, color: integer)`](#windowsetx-integer-y-integer-color-integer--fenstersetwindow-userdata-x-integer-y-integer-color-integer)
+- [`window:set(x: integer, y: integer, color: integer)`](#windowsetx-integer-y-integer-color-integer)
 
-- [`window:get(x: integer, y: integer): integer` / `fenster.get(window: userdata, x: integer, y: integer): integer`](#windowgetx-integer-y-integer-integer--fenstergetwindow-userdata-x-integer-y-integer-integer)
+- [`window:get(x: integer, y: integer): integer`](#windowgetx-integer-y-integer-integer)
 
-- [`window:clear(color: integer | nil)` / `fenster.clear(window: userdata, color: integer | nil)`](#windowclearcolor-integer--nil--fensterclearwindow-userdata-color-integer--nil)
+- [`window:clear(color: integer | nil)`](#windowclearcolor-integer--nil)
 
 - [`window.keys: boolean[]`](#windowkeys-boolean)
 
@@ -261,17 +261,13 @@ local color = fenster.rgb(255, 0, 0) -- Returns: 0xff0000 (16711680 in decimal)
 local red, green, blue = fenster.rgb(0xff0000) -- Returns: 255, 0, 0
 ```
 
-### `window:close()` / `fenster.close(window: userdata)`
+### `window:close()`
 
 This method is used to close a window that was previously opened
 with `fenster.open`.
 The `__gc` and `__close` (Lua 5.4) metamethods call this function internally to
 automatically close the window when it goes out of scope, so you won't
 have to call this function manually in most cases.
-
-**Parameters:**
-
-- `window` (userdata, "self"): The window to be closed.
 
 **Example:**
 
@@ -306,16 +302,11 @@ function main()
 end
 ```
 
-### `window:loop()` / `fenster.loop(window: userdata)`
+### `window:loop()`
 
 This method is used to handle the main loop for the window. It takes care of
 FPS limiting, updates delta time, keys, mouse coordinates, modifier keys, and
 the whole screen.
-
-**Parameters:**
-
-- `window` (userdata, "self"): The window for which the main loop is to be
-  handled.
 
 **Returns:**
 
@@ -340,14 +331,12 @@ while fenster.loop(window) do
 end
 ```
 
-### `window:set(x: integer, y: integer, color: integer)` / `fenster.set(window: userdata, x: integer, y: integer, color: integer)`
+### `window:set(x: integer, y: integer, color: integer)`
 
 This method is used to set a pixel in the window buffer at the given
 coordinates to the given color.
 
 **Parameters:**
-
-- `window` (userdata, "self"): The window in which the pixel is to be set.
 
 - `x` (integer): The x-coordinate of the pixel.
 
@@ -369,15 +358,12 @@ window:set(10, 20, 0xff0000)
 fenster.set(window, 10, 20, 0xff0000)
 ```
 
-### `window:get(x: integer, y: integer): integer` / `fenster.get(window: userdata, x: integer, y: integer): integer`
+### `window:get(x: integer, y: integer): integer`
 
 This method is used to get the color of a pixel in the window buffer at the
 given coordinates.
 
 **Parameters:**
-
-- `window` (userdata, "self"): The window from which the pixel color is to be
-  retrieved.
 
 - `x` (integer): The x-coordinate of the pixel.
 
@@ -404,14 +390,12 @@ local color = window:get(10, 20) -- Returns: 0x00ff00 (65280 in decimal)
 local color = fenster.get(window, 10, 20) -- Returns: 0x00ff00 (65280 in decimal)
 ```
 
-### `window:clear(color: integer | nil)` / `fenster.clear(window: userdata, color: integer | nil)`
+### `window:clear(color: integer | nil)`
 
 This method is used to clear the window buffer with a given color. This can
 also be used to set a background color for the window.
 
 **Parameters:**
-
-- `window` (userdata, "self"): The window which buffer is to be cleared.
 
 - `color` (integer, optional): The color to fill the window buffer with. If not
   provided, the default color `0x000000` (black) is used.
