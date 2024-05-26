@@ -313,6 +313,10 @@ the whole screen.
 A boolean value indicating whether the window is still open. It returns true if
 the window is still open and false if it's closed.
 
+> [!WARNING]
+> Currently it looks like only Windows returns false when the window is closed.
+> On Linux and macOS `fenster` just throws an error when closing the window...
+
 **Example:**
 
 ```lua
