@@ -705,6 +705,19 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 print(window.targetfps) -- Output: 60.0
 ```
 
+## Type definitions
+
+I have created type definitions for lua-fenster for the
+[Teal Programming Language](https://github.com/teal-language/tl) and
+[Sumneko's Lua Language Server](https://github.com/LuaLS/lua-language-server).
+You can find the Teal type definitions in the
+[teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
+repository and the Lua Language Server type definitions in the
+[LLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons)
+repository.
+Consult their respective documentation on how to use these type definitions in
+your projects.
+
 ## Projects using lua-fenster
 
 Here is a list of projects that use lua-fenster:
