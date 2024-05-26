@@ -6,12 +6,11 @@ source = {
 	branch = 'main', -- this will be replaced by the release workflow
 }
 description = {
-	summary = 'The most minimal cross-platform GUI library - now in Lua! (WIP)',
+	summary = 'The most minimal cross-platform GUI library - now in Lua!',
 	detailed = '' ..
 		'A Lua binding for the fenster (https://github.com/zserge/fenster) ' ..
 		'C library, providing a minimal cross-platform GUI library for ' ..
-		'creating windows and drawing pixels. This binding is currently in ' ..
-		'development and not feature-complete.',
+		'creating windows and drawing pixels.',
 	license = 'MIT',
 	homepage = 'https://github.com/jonasgeiler/lua-fenster',
 	issues_url = 'https://github.com/jonasgeiler/lua-fenster/issues',
