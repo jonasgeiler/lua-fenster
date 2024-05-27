@@ -61,16 +61,16 @@ local function fill(window, x, y, color, old_color)
 			window:set(x, y, color)
 
 			if x > 0 then
-				table.insert(stack, pos - 1)
+				stack[#stack + 1] = pos - 1
 			end
 			if x < window_width - 1 then
-				table.insert(stack, pos + 1)
+				stack[#stack + 1] = pos + 1
 			end
 			if y > 0 then
-				table.insert(stack, pos - window_width)
+				stack[#stack + 1] = pos - window_width
 			end
 			if y < window_height - 1 then
-				table.insert(stack, pos + window_width)
+				stack[#stack + 1] = pos + window_width
 			end
 		end
 	end

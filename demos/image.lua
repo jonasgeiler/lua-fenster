@@ -36,7 +36,7 @@ local function load_image(path)
 		local r = string.byte(r_raw)
 		local g = string.byte(g_raw)
 		local b = string.byte(b_raw)
-		table.insert(image_buffer, fenster.rgb(r, g, b))
+		image_buffer[#image_buffer + 1] = fenster.rgb(r, g, b)
 	end
 
 	return image_buffer, image_width, image_height
