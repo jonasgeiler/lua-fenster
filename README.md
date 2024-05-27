@@ -40,7 +40,7 @@ cd lua-fenster
 luarocks make
 ```
 
-## Usage
+## Simple Example
 
 Here is a simple example that opens a 500x300 window, draws a red rectangle and
 exits when pressing the Escape key:
@@ -72,7 +72,7 @@ Here is what you should see:
 
 ![rectangle screenshot](https://github.com/jonasgeiler/lua-fenster/assets/10259118/7c9e495e-409b-4b3b-b232-c20da1ebfc88)
 
-### Demos
+## Demos
 
 Check out the [./demos](./demos) folder for a few example applications!  
 To run a demo use:
@@ -84,11 +84,24 @@ lua demos/<demo>.lua
 Some of the demos are user-contributed. If you have a demo you'd like to share,
 feel free to create a pull request!
 
-### Useful Snippets
+## Useful Snippets
 
-I have also compiled a collection of useful snippets in
+I have compiled a collection of useful snippets in
 [this discussion (#11)](https://github.com/jonasgeiler/lua-fenster/discussions/11).  
 Check them out and maybe add your own!
+
+## Type Definitions
+
+I have created type definitions for lua-fenster for the
+[Teal Programming Language](https://github.com/teal-language/tl) and
+[Sumneko's Lua Language Server](https://github.com/LuaLS/lua-language-server).
+You can find the Teal type definitions in the
+[teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
+repository and the Lua Language Server type definitions in the
+[LLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons)
+repository.
+Consult their respective documentation on how to use these type definitions in
+your projects.
 
 ## API Documentation
 
@@ -105,7 +118,7 @@ fenster Lua module:
 
 - [`window:close()`](#windowclose)
 
-- [`window:loop()`](#windowloop)
+- [`window:loop()`](#windowloop-boolean)
 
 - [`window:set(x: integer, y: integer, color: integer)`](#windowsetx-integer-y-integer-color-integer)
 
@@ -300,7 +313,7 @@ function main()
 end
 ```
 
-### `window:loop()`
+### `window:loop(): boolean`
 
 This method is used to handle the main loop for the window. It takes care of
 FPS limiting, updates delta time, keys, mouse coordinates, modifier keys, and
@@ -704,19 +717,6 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 -- Print the target FPS of the window
 print(window.targetfps) -- Output: 60.0
 ```
-
-## Type definitions
-
-I have created type definitions for lua-fenster for the
-[Teal Programming Language](https://github.com/teal-language/tl) and
-[Sumneko's Lua Language Server](https://github.com/LuaLS/lua-language-server).
-You can find the Teal type definitions in the
-[teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
-repository and the Lua Language Server type definitions in the
-[LLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons)
-repository.
-Consult their respective documentation on how to use these type definitions in
-your projects.
 
 ## Projects using lua-fenster
 
