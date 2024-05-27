@@ -3,8 +3,8 @@
 > The most minimal cross-platform GUI library - now in Lua!
 
 [![LuaRocks](https://img.shields.io/luarocks/v/jonasgeiler/fenster?style=for-the-badge&color=%232c3e67)](https://luarocks.org/modules/jonasgeiler/fenster)
-[![Downloads](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fluarocks.org%2Fmodules%2Fjonasgeiler%2Ffenster&query=%2F%2Fdiv%5B%40class%3D%22metadata_columns_inner%22%5D%2Fdiv%5B%40class%3D%22column%22%5D%5Blast()%5D%2Ftext()&style=for-the-badge&label=Downloads&color=099dff)](https://luarocks.org/modules/jonasgeiler/fenster)
-[![Projects using lua-fenster](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fgithub.com%2Fjonasgeiler%2Flua-fenster%3Ftab%3Dreadme-ov-file&query=count%28%2F%2Farticle%5Bcontains%28concat%28'%20'%2Cnormalize-space%28%40class%29%2C'%20'%29%2C'%20entry-content%20'%29%5D%2Ful%5Blast%28%29%5D%2Fli%29&suffix=%2B&style=for-the-badge&label=Projects%20using%20lua-fenster&color=2c3e67)](#projects-using-lua-fenster)
+[![Downloads](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fluarocks.org%2Fmodules%2Fjonasgeiler%2Ffenster&query=%2F%2Fdiv%5B%40class%3D%22metadata_columns_inner%22%5D%2Fdiv%5B%40class%3D%22column%22%5D%5Blast()%5D%2Ftext()&style=for-the-badge&label=Downloads&color=099dff&cacheSeconds=86400)](https://luarocks.org/modules/jonasgeiler/fenster)
+[![Projects using lua-fenster](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fgithub.com%2Fjonasgeiler%2Flua-fenster%3Ftab%3Dreadme-ov-file&query=count%28%2F%2Farticle%5Bcontains%28concat%28'%20'%2Cnormalize-space%28%40class%29%2C'%20'%29%2C'%20entry-content%20'%29%5D%2Ful%5Blast%28%29%5D%2Fli%29&suffix=%2B&style=for-the-badge&label=Projects%20using%20lua-fenster&color=2c3e67&cacheSeconds=86400)](#projects-using-lua-fenster)
 [![License](https://img.shields.io/github/license/jonasgeiler/lua-fenster?style=for-the-badge&color=%23099dff)](./LICENSE.md)
 
 A Lua binding for the [fenster](https://github.com/zserge/fenster) GUI library,
