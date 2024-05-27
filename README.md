@@ -98,7 +98,7 @@ I have created type definitions for lua-fenster for the
 You can find the Teal type definitions in the
 [teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
 repository and the Lua Language Server type definitions in the
-[LLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons)
+[LuaLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons/tree/main/addons/fenster)
 repository.
 Consult their respective documentation on how to use these type definitions in
 your projects.
