@@ -1,20 +1,17 @@
 local fenster = require('fenster')
 
 ---Draw a filled rectangle
----@param window userdata
----@param x number
----@param y number
----@param width number
----@param height number
----@param color number
+---@param window window*
+---@param x integer
+---@param y integer
+---@param width integer
+---@param height integer
+---@param color integer
 local function draw_rectangle(window, x, y, width, height, color)
-	local start_x = math.floor(x)
-	local start_y = math.floor(y)
-	local end_x = math.floor(x + width - 1)
-	local end_y = math.floor(y + height - 1)
-	for i = start_x, end_x do
-		for j = start_y, end_y do
-			window:set(i, j, color)
+	local dx_end = x + width - 1
+	for dy = y, y + height - 1 do
+		for dx = x, dx_end do
+			window:set(dx, dy, color)
 		end
 	end
 end
@@ -80,5 +77,12 @@ while window:loop() and not window.keys[27] do
 	end
 
 	-- Draw the rectangle
-	draw_rectangle(window, rect_x, rect_y, rect_width, rect_height, rect_colors[rect_color_index])
+	draw_rectangle(
+		window,
+		math.floor(rect_x),
+		math.floor(rect_y),
+		rect_width,
+		rect_height,
+		rect_colors[rect_color_index]
+	)
 end

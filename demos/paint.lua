@@ -1,12 +1,12 @@
 local fenster = require('fenster')
 
 ---Draw a line between two points (window boundary version)
----@param window userdata
----@param x0 number
----@param y0 number
----@param x1 number
----@param y1 number
----@param color number
+---@param window window*
+---@param x0 integer
+---@param y0 integer
+---@param x1 integer
+---@param y1 integer
+---@param color integer
 local function draw_line(window, x0, y0, x1, y1, color)
 	local window_width = window.width
 	local window_height = window.height
@@ -39,10 +39,11 @@ local function draw_line(window, x0, y0, x1, y1, color)
 end
 
 ---Fill an area with a specific color
----@param x number
----@param y number
----@param color number
----@param old_color number?
+---@param window window*
+---@param x integer
+---@param y integer
+---@param color integer
+---@param old_color integer?
 local function fill(window, x, y, color, old_color)
 	old_color = old_color or window:get(x, y)
 	if old_color == color then

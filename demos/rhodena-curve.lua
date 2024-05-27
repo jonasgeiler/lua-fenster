@@ -2,69 +2,69 @@
 -- https://github.com/jakob-kruse
 -- You can read more here https://en.wikipedia.org/wiki/Rose_(mathematics)
 
-local fenster = require("fenster")
+local fenster = require('fenster')
 
 local windowSize = 900
-local window = fenster.open(windowSize, windowSize, "Math Roses - R to reset + ESC to exit", 1, 0)
+local window = fenster.open(windowSize, windowSize, 'Math Roses - R to reset + ESC to exit', 1, 0)
 
 local function generateRoseValue(delta, variant)
-    return 100 * math.sin(variant(delta))
+	return 100 * math.sin(variant(delta))
 end
 
 local function drawRose(offsetX, offsetY, delta, variant, generator)
-    local radius = generator(delta, variant)
-    local x = math.floor(radius * math.cos(delta) + offsetX)
-    local y = math.floor(radius * math.sin(delta) + offsetY)
+	local radius = generator(delta, variant)
+	local x = math.floor(radius * math.cos(delta) + offsetX)
+	local y = math.floor(radius * math.sin(delta) + offsetY)
 
-    x = math.max(0, math.min(windowSize - 1, x))
-    y = math.max(0, math.min(windowSize - 1, y))
+	x = math.max(0, math.min(windowSize - 1, x))
+	y = math.max(0, math.min(windowSize - 1, y))
 
-    window:set(x, y, 0xffffff)
+	window:set(x, y, 0xffffff)
 end
 
 local variantValues = {
-    -- Circle
-    function(delta)
-        return delta / delta
-    end,
+	-- Circle
+	function(delta)
+		return delta / delta
+	end,
 
-    -- 4-leaf rose
-    function(delta)
-        return math.sin(delta * 2)
-    end,
+	-- 4-leaf rose
+	function(delta)
+		return math.sin(delta * 2)
+	end,
 
-    -- 12-leaf rose
-    function(delta)
-        return math.sin(delta * 6)
-    end,
+	-- 12-leaf rose
+	function(delta)
+		return math.sin(delta * 6)
+	end,
 
-    -- Butterfly
-    function(delta)
-        return math.sin(delta) + math.sin(delta * 4)
-    end,
+	-- Butterfly
+	function(delta)
+		return math.sin(delta) + math.sin(delta * 4)
+	end,
 
-    -- Biker Glasses
-    function(delta)
-        return math.sin(delta) + math.sin(delta * 3)
-    end,
+	-- Biker Glasses
+	function(delta)
+		return math.sin(delta) + math.sin(delta * 3)
+	end,
 
-    -- Neutron Star
-    function(delta)
-        return math.tan(delta)
-    end,
+	-- Neutron Star
+	function(delta)
+		return math.tan(delta)
+	end,
 
-    -- Logarithmic Spiral
-    function(delta)
-        return math.log(delta)
-    end,
+	-- Logarithmic Spiral
+	function(delta)
+		return math.log(delta)
+	end,
 
-    function(delta)
-        return math.rad(delta) * 10
-    end,
+	function(delta)
+		return math.rad(delta) * 10
+	end,
 
-    function(delta)
-        return math.fmod(delta, 2)
-    end
+	function(delta)
+		return math.fmod(delta, 2)
+	end,
 }
 
 local gridSize = math.ceil(math.sqrt(#variantValues))
@@ -72,26 +72,25 @@ local cellSize = windowSize / gridSize
 local delta = 0
 
 while window:loop() and not window.keys[27] do
-    if window.keys[82] then
-        delta = 0
-        window:clear()
-    end
+	if window.keys[82] then
+		delta = 0
+		window:clear()
+	end
 
-    for i = 0, gridSize - 1 do
-        for j = 0, gridSize - 1 do
-            local variant = variantValues[i * gridSize + j + 1]
-            if variant then
-                drawRose(
-                    window,
-                    i * cellSize + cellSize / 2,
-                    j * cellSize + cellSize / 2,
-                    delta,
-                    variant,
-                    generateRoseValue
-                )
-            end
-        end
-    end
+	for i = 0, gridSize - 1 do
+		for j = 0, gridSize - 1 do
+			local variant = variantValues[i * gridSize + j + 1]
+			if variant then
+				drawRose(
+					i * cellSize + cellSize / 2,
+					j * cellSize + cellSize / 2,
+					delta,
+					variant,
+					generateRoseValue
+				)
+			end
+		end
+	end
 
-    delta = delta + 0.0005
+	delta = delta + 0.0005
 end

@@ -183,10 +183,10 @@ end
 local microknight_size = 8
 
 ---Draw text using the microknight font (8x8 pixels per character)
----@param window userdata
+---@param window window*
 ---@param text string
----@param x number
----@param y number
+---@param x integer
+---@param y integer
 local function draw_text(window, text, x, y)
 	for character in text:gmatch('.') do
 		local index = character:byte() - 31
