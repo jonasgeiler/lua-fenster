@@ -74,7 +74,7 @@ Here is what you should see:
 
 ## Demos
 
-Check out the [./demos](./demos) folder for a few example applications!  
+Check out the [./demos](./demos) folder for more elaborate example applications!  
 To run a demo use:
 
 ```shell
