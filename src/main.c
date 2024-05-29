@@ -184,7 +184,7 @@ static int lfenster_open(lua_State *L) {
   // initialize the keys table and put it in the registry
   lua_createtable(L, KEYS_LENGTH, 0);
   for (int i = 0; i < KEYS_LENGTH; i++) {
-    lua_pushboolean(L, p_fenster->keys[i]);
+    lua_pushboolean(L, 0);
     lua_rawseti(L, -2, i);
   }
   lua_pushvalue(L, -1);  // copy the keys table since luaL_ref pops it

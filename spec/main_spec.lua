@@ -564,6 +564,7 @@ describe('fenster', function()
 			local index = 0
 			while window.keys[index] ~= nil do
 				assert.is_boolean(window.keys[index])
+				assert.is_false(window.keys[index])
 				index = index + 1
 			end
 			assert.is_equal(index, 256)
