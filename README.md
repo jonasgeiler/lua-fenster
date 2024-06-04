@@ -722,7 +722,7 @@ print(window.targetfps) -- Output: 60.0
 
 Here is a list of projects that use lua-fenster:
 
-- [3d-rasterizer-lua](https://github.com/jonasgeiler/3d-rasterizer-lua) - A simple 3D rasterizer written in Lua, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
+- [3d-soft-engine-lua](https://github.com/jonasgeiler/3d-soft-engine-lua) - A simple 3D engine written in Lua, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
 
 <!--
 If you want to add your own projects here, please format the entries as follows,
