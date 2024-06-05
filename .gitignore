@@ -1,9 +1,19 @@
 # Git ignore file
 # See: https://git-scm.com/docs/gitignore
 
+# OS
+.DS_Store
+
 # IDE
 .idea
 .vscode
+
+# LuaRocks
+/luarocks
+/lua
+/lua_modules
+/.luarocks
+/luarocks.lock
 
 # Output
 *.o
@@ -14,3 +24,6 @@
 *.obj
 *.def
 *.rock
+
+# Temp Files
+test.lua

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "codeLens.enable": true,
+  "completion.callSnippet": "Replace",
+  "hint.enable": true,
+  "hint.semicolon": "Disable",
+  "hint.setType": true,
+  "hover.enumsLimit": 10,
+  "runtime.pathStrict": true,
+  "type.castNumberToInteger": false,
+  "diagnostics.neededFileStatus": {
+    "codestyle-check": "Any",
+    "no-unknown": "Any"
+  }
+}

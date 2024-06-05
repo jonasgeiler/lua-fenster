@@ -17,14 +17,17 @@ max_line_length          = 80
 indent_style = space
 indent_size  = 2
 
-[*.json]
+[*.{json,ppm}]
 insert_final_newline = false
 
 [*.{md,mdx}]
 trim_trailing_whitespace = false
 
 [*.{lua,rockspec}]
-max_line_length                   = 120
+max_line_length = 120
+
+# Custom options for EmmyLuaCodeStyle
+# See: https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/docs/format_config_EN.md
 quote_style                       = single
 trailing_table_separator          = smart
 align_continuous_assign_statement = false
