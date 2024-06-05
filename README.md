@@ -90,6 +90,19 @@ I have compiled a collection of useful snippets in
 [this discussion (#11)](https://github.com/jonasgeiler/lua-fenster/discussions/11).  
 Check them out and maybe add your own!
 
+## Type Definitions
+
+I have created type definitions for lua-fenster for the
+[Teal Programming Language](https://github.com/teal-language/tl) and
+[Sumneko's Lua Language Server](https://github.com/LuaLS/lua-language-server).
+You can find the Teal type definitions in the
+[teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
+repository and the Lua Language Server type definitions in the
+[LuaLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons/tree/main/addons/fenster)
+repository.
+Consult their respective documentation on how to use these type definitions in
+your projects.
+
 ## Projects using lua-fenster
 
 Here is a list of projects that use lua-fenster:
@@ -109,19 +122,6 @@ including the extra newline between each entry:
 -->
 
 Feel free to add your own projects to this list by creating a pull request!
-
-## Type Definitions
-
-I have created type definitions for lua-fenster for the
-[Teal Programming Language](https://github.com/teal-language/tl) and
-[Sumneko's Lua Language Server](https://github.com/LuaLS/lua-language-server).
-You can find the Teal type definitions in the
-[teal-language/teal-types](https://github.com/teal-language/teal-types/tree/master/types/fenster)
-repository and the Lua Language Server type definitions in the
-[LuaLS/LLS-Addons](https://github.com/LuaLS/LLS-Addons/tree/main/addons/fenster)
-repository.
-Consult their respective documentation on how to use these type definitions in
-your projects.
 
 ## API Documentation
 
