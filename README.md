@@ -4,7 +4,7 @@
 
 [![LuaRocks](https://img.shields.io/luarocks/v/jonasgeiler/fenster?style=for-the-badge&color=%232c3e67)](https://luarocks.org/modules/jonasgeiler/fenster)
 [![Downloads](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fluarocks.org%2Fmodules%2Fjonasgeiler%2Ffenster&query=%2F%2Fdiv%5B%40class%3D%22metadata_columns_inner%22%5D%2Fdiv%5B%40class%3D%22column%22%5D%5Blast()%5D%2Ftext()&style=for-the-badge&label=Downloads&color=099dff&cacheSeconds=86400)](https://luarocks.org/modules/jonasgeiler/fenster)
-[![Projects using lua-fenster](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fgithub.com%2Fjonasgeiler%2Flua-fenster%3Ftab%3Dreadme-ov-file&query=count%28%2F%2Farticle%5Bcontains%28concat%28'%20'%2Cnormalize-space%28%40class%29%2C'%20'%29%2C'%20entry-content%20'%29%5D%2Ful%5Blast%28%29%5D%2Fli%29&suffix=%2B&style=for-the-badge&label=Projects%20using%20lua-fenster&color=2c3e67&cacheSeconds=86400)](#projects-using-lua-fenster)
+[![Projects using lua-fenster](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fgithub.com%2Fjonasgeiler%2Flua-fenster%3Ftab%3Dreadme-ov-file&query=count%28%2F%2Farticle%5Bcontains%28concat%28'%20'%2Cnormalize-space%28%40class%29%2C'%20'%29%2C'%20entry-content%20'%29%5D%2Ful%5B1%28%29%5D%2Fli%29&suffix=%2B&style=for-the-badge&label=Projects%20using%20lua-fenster&color=2c3e67&cacheSeconds=86400)](#projects-using-lua-fenster)
 [![License](https://img.shields.io/github/license/jonasgeiler/lua-fenster?style=for-the-badge&color=%23099dff)](./LICENSE.md)
 
 A Lua binding for the [fenster](https://github.com/zserge/fenster) GUI library,
@@ -89,6 +89,26 @@ feel free to create a pull request!
 I have compiled a collection of useful snippets in
 [this discussion (#11)](https://github.com/jonasgeiler/lua-fenster/discussions/11).  
 Check them out and maybe add your own!
+
+## Projects using lua-fenster
+
+Here is a list of projects that use lua-fenster:
+
+- [3d-soft-engine-lua](https://github.com/jonasgeiler/3d-soft-engine-lua) - A simple 3D engine written in Lua, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
+
+<!--
+If you want to add your own projects here, please format the entries as follows,
+including the extra newline between each entry:
+
+- [Name](Link) - Description, by Author.
+
+- [Name](Link) - Description, by [Full Name (@Username)](https://github.com/Username).
+
+- [Name](Link) - Description, by [@Username](https://github.com/Username).
+
+-->
+
+Feel free to add your own projects to this list by creating a pull request!
 
 ## Type Definitions
 
@@ -717,26 +737,6 @@ local window = fenster.open(500, 300, 'My Application', 2, 60)
 -- Print the target FPS of the window
 print(window.targetfps) -- Output: 60.0
 ```
-
-## Projects using lua-fenster
-
-Here is a list of projects that use lua-fenster:
-
-- [3d-soft-engine-lua](https://github.com/jonasgeiler/3d-soft-engine-lua) - A simple 3D engine written in Lua, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
-
-<!--
-If you want to add your own projects here, please format the entries as follows,
-including the extra newline between each entry:
-
-- [Name](Link) - Description, by Author.
-
-- [Name](Link) - Description, by [Full Name (@Username)](https://github.com/Username).
-
-- [Name](Link) - Description, by [@Username](https://github.com/Username).
-
--->
-
-Feel free to add your own projects to this list by creating a pull request!
 
 ## Credits
 
