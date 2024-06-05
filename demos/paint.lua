@@ -15,7 +15,7 @@ local function draw_line(window, x0, y0, x1, y1, color)
 	local sx = x0 < x1 and 1 or -1
 	local sy = y0 < y1 and 1 or -1
 	local err = (dx > dy and dx or -dy) / 2
-	local e2
+	local e2 ---@type number
 	while true do
 		-- NOTE: If you are copying this code, you may want to remove this boundary check
 		if x0 >= 0 and x0 < window_width and y0 >= 0 and y0 < window_height then
@@ -55,7 +55,7 @@ local function fill(window, x, y, color, old_color)
 	local stack = { (y * window_width) + x }
 	while stack[1] do
 		local pos = table.remove(stack)
-		x = pos % window_width
+		x = pos % window_width ---@type integer
 		y = math.floor(pos / window_width)
 		if window:get(x, y) == old_color then
 			window:set(x, y, color)
@@ -104,7 +104,8 @@ local window = fenster.open(
 
 -- Main loop
 local paint_color = key_color_map[49]
-local last_mouse_x, last_mouse_y
+local last_mouse_x ---@type integer?
+local last_mouse_y ---@type integer?
 while window:loop() and not window.keys[27] do
 	local keys = window.keys
 
@@ -121,17 +122,12 @@ while window:loop() and not window.keys[27] do
 	local mouse_down = window.mousedown
 
 	if mouse_down then
-		-- Check if the last mouse position is not set
-		if not last_mouse_x and not last_mouse_y then
-			-- Use the current mouse position as the "last mouse position" (line starting point)
-			last_mouse_x, last_mouse_y = mouse_x, mouse_y
-		end
-
 		-- Draw a line between the last mouse position and the current mouse position
+		-- (Uses current mouse position if last mouse position is not set)
 		draw_line(
 			window,
-			last_mouse_x,
-			last_mouse_y,
+			last_mouse_x or mouse_x,
+			last_mouse_y or mouse_y,
 			mouse_x,
 			mouse_y,
 			paint_color

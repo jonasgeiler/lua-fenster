@@ -15,6 +15,10 @@ local window = fenster.open(
 
 local neighbours = { { -1, -1 }, { -1, 0 }, { 0, -1 }, { -1, 1 }, { 1, -1 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }
 
+---@param x integer
+---@param y integer
+---@param world boolean[][]
+---@return integer
 local function count_alive_neighbours(x, y, world)
 	local count = 0
 	for _, neighbour in pairs(neighbours) do
@@ -29,14 +33,16 @@ local function count_alive_neighbours(x, y, world)
 	return count
 end
 
+---@param obj any
+---@return any
 local function copy(obj)
 	if type(obj) ~= 'table' then return obj end
-	local res = {}
+	local res = {} ---@type table<any, any>
 	for k, v in pairs(obj) do res[copy(k)] = copy(v) end
 	return res
 end
 
-local world = {}
+local world = {} ---@type boolean[][]
 for x = 1, window_width do
 	world[x] = {}
 	for y = 1, window_height do

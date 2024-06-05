@@ -24,7 +24,7 @@ local function load_image(path)
 	)
 	assert(image:read(1), 'Invalid image header') -- Whitespace
 
-	local image_buffer = {}
+	local image_buffer = {} ---@type integer[]
 	while true do
 		local r_raw = image:read(1)
 		local g_raw = image:read(1)
@@ -60,11 +60,9 @@ local function draw_image(window, x, y, image_buffer, image_width, image_height)
 	end
 end
 
--- Load image
-local image_path = './' .. (
--- Get the relative directory of the script
-	debug.getinfo(1, 'S').source:match('^@?(.*[/\\])') or ''
-) .. 'assets/uv.ppm'
+-- Load the image
+local dirname = './' .. (debug.getinfo(1, 'S').source:match('^@?(.*[/\\])') or '') ---@type string
+local image_path = dirname .. 'assets/uv.ppm'
 local image_buffer, image_width, image_height = load_image(image_path)
 
 -- Open a window

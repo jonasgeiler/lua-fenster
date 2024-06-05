@@ -63,7 +63,7 @@ while window:loop() and not window.keys[27] do
 		rect_color_index = (rect_color_index % #rect_colors) + 1
 
 		-- Recalculate the x position with the new direction
-		rect_x = rect_x + rect_speed * rect_dir_x * delta
+		rect_x = rect_x + rect_speed * rect_dir_x * delta ---@type number
 	end
 	if rect_y < 0 or rect_y + rect_height >= window_height then
 		-- Flip the y direction
@@ -73,7 +73,7 @@ while window:loop() and not window.keys[27] do
 		rect_color_index = (rect_color_index % #rect_colors) + 1
 
 		-- Recalculate the y position with the new direction
-		rect_y = rect_y + rect_speed * rect_dir_y * delta
+		rect_y = rect_y + rect_speed * rect_dir_y * delta ---@type number
 	end
 
 	-- Draw the rectangle

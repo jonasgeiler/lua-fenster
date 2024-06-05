@@ -7,10 +7,18 @@ local fenster = require('fenster')
 local windowSize = 900
 local window = fenster.open(windowSize, windowSize, 'Math Roses - R to reset + ESC to exit', 1, 0)
 
+---@param delta number
+---@param variant fun(delta:number):number
+---@return number
 local function generateRoseValue(delta, variant)
 	return 100 * math.sin(variant(delta))
 end
 
+---@param offsetX number
+---@param offsetY number
+---@param delta number
+---@param variant fun(delta:number):number
+---@param generator fun(delta:number,variant:fun(delta:number):number):number
 local function drawRose(offsetX, offsetY, delta, variant, generator)
 	local radius = generator(delta, variant)
 	local x = math.floor(radius * math.cos(delta) + offsetX)
@@ -23,45 +31,63 @@ local function drawRose(offsetX, offsetY, delta, variant, generator)
 end
 
 local variantValues = {
-	-- Circle
+	---Circle
+	---@param delta number
+	---@return number
 	function(delta)
 		return delta / delta
 	end,
 
-	-- 4-leaf rose
+	---4-leaf rose
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.sin(delta * 2)
 	end,
 
-	-- 12-leaf rose
+	---12-leaf rose
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.sin(delta * 6)
 	end,
 
-	-- Butterfly
+	---Butterfly
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.sin(delta) + math.sin(delta * 4)
 	end,
 
-	-- Biker Glasses
+	---Biker Glasses
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.sin(delta) + math.sin(delta * 3)
 	end,
 
-	-- Neutron Star
+	---Neutron Star
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.tan(delta)
 	end,
 
-	-- Logarithmic Spiral
+	---Logarithmic Spiral
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.log(delta)
 	end,
 
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.rad(delta) * 10
 	end,
 
+	---@param delta number
+	---@return number
 	function(delta)
 		return math.fmod(delta, 2)
 	end,

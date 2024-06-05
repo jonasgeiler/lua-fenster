@@ -161,9 +161,9 @@ local microknight_layout = {
 }
 
 -- Calculate the microknight texture
-local microknight_texture = {}
+local microknight_texture = {} ---@type integer[]
 for _, t in ipairs(microknight_font) do
-	local bits = {}
+	local bits = {} ---@type number[]
 	for b = 8, 1, -1 do
 		bits[b] = math.fmod(t, 2)
 		t = math.floor((t - bits[b]) / 2)
@@ -327,7 +327,7 @@ while window:loop() and not window.keys[escape_key] do
 	local keys = window.keys
 
 	-- Get text input and draw the new text when needed
-	local pressed_key
+	local pressed_key ---@type integer
 	if keys[enter_key] then
 		pressed_key = enter_key
 
