@@ -95,11 +95,11 @@ local variantValues = {
 
 local gridSize = math.ceil(math.sqrt(#variantValues))
 local cellSize = windowSize / gridSize
-local delta = 0
+local delta = 1
 
 while window:loop() and not window.keys[27] do
 	if window.keys[82] then
-		delta = 0
+		delta = 1
 		window:clear()
 	end
 

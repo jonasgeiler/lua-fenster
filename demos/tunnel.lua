@@ -6,6 +6,25 @@ local math = math
 -- Lua 5.3+ compatibility (math.atan2 can be replaced with math.atan)
 local atan2 = math.atan2 or math.atan
 
+---Returns the bitwise XOR of two numbers
+---(added for cross-Lua-version compatibility)
+---@param a number
+---@param b number
+---@return integer
+local function xor(a, b)
+	local result = 0
+	local bitval = 1
+	while a > 0 or b > 0 do
+		if a % 2 ~= b % 2 then
+			result = result + bitval
+		end
+		bitval = bitval * 2
+		a = math.floor(a / 2)
+		b = math.floor(b / 2)
+	end
+	return result
+end
+
 -- Open a window
 local window_width = 256
 local window_height = 144
@@ -24,7 +43,7 @@ local texture = {} ---@type integer[][]
 for y = 0, texture_height - 1 do
 	texture[y] = {}
 	for x = 0, texture_width - 1 do
-		texture[y][x] = (x * 256 / texture_width) ~ (y * 256 / texture_height)
+		texture[y][x] = xor((x * 256 / texture_width), (y * 256 / texture_height))
 	end
 end
 
