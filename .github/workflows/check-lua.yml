@@ -27,10 +27,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Setup Lua
+      - name: Set up Lua
         uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
 
-      - name: Setup LuaRocks
+      - name: Set up LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
 
       - name: Run luacheck
