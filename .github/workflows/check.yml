@@ -10,6 +10,8 @@ on:
       - 'spec/**'
       - 'src/**'
       - '**.rockspec'
+      - '.clang-format'
+      - '.clang-tidy'
 
   pull_request:
     branches:
@@ -20,6 +22,8 @@ on:
       - 'spec/**'
       - 'src/**'
       - '**.rockspec'
+      - '.clang-format'
+      - '.clang-tidy'
 
   workflow_dispatch:
   workflow_call:
