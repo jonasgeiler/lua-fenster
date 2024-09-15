@@ -34,6 +34,7 @@ jobs:
           signoff: true
           branch: maintenance/update-libraries
           delete-branch: true
+          sign-commits: true
           title: 'chore(lib): update libraries'
           body: |
               This PR updates the libraries used by the project.
