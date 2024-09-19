@@ -12,5 +12,9 @@
   "diagnostics.neededFileStatus": {
     "codestyle-check": "Any",
     "no-unknown": "Any"
+  },
+  "diagnostics.groupSeverity": {
+    "unused": "Information",
+    "redefined": "Warning"
   }
 }
