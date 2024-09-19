@@ -26,13 +26,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Run actionlint
+      - name: Run actionlint on GitHub Actions workflows
+        env:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          ACTIONLINT_VERSION: v1.7.0
         run: |
-          # add problem matcher for actionlint
-          wget https://raw.githubusercontent.com/rhysd/actionlint/main/.github/actionlint-matcher.json \
-            -O actionlint-matcher.json
-          echo "::add-matcher::actionlint-matcher.json"
-          
-          # download and run actionlint
-          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          IFS=$' \t\n'; set -euxo pipefail
+
+          # download, extract and setup actionlint
+          wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \
+            -O actionlint.tar.gz
+          tar -xzf actionlint.tar.gz
+          chmod +x actionlint
+
+          # download and setup problem matcher for actionlint
+          wget -q "https://raw.githubusercontent.com/rhysd/actionlint/${ACTIONLINT_VERSION}/.github/actionlint-matcher.json" \
+            -O actionlint-problem-matcher.json
+          echo "::add-matcher::actionlint-problem-matcher.json"
+
+          # run actionlint
           ./actionlint -verbose -color
