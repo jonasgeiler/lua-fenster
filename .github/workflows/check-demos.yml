@@ -1,19 +1,17 @@
-name: Check Lua
+name: Check Demos
 
 on:
   push:
     branches:
       - main
     paths:
-      - '**.lua'
-      - '!spec/**'
+      - 'demos/**'
 
   pull_request:
     branches:
       - main
     paths:
-      - '**.lua'
-      - '!spec/**'
+      - 'demos/**'
 
   workflow_dispatch:
   workflow_call:
@@ -33,5 +31,5 @@ jobs:
       - name: Set up LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
 
-      - name: Run luacheck
-        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --include-files "**/*.lua" --exclude-files spec .lua .luarocks
+      - name: Run luacheck on demos
+        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --include-files "demos/**/*.lua"
