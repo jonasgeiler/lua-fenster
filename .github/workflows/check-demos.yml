@@ -32,4 +32,19 @@ jobs:
         uses: hishamhm/gh-actions-luarocks@master
 
       - name: Run luacheck on demos
-        run: luarocks install luacheck && luacheck . --no-cache --formatter TAP --include-files "demos/**/*.lua"
+        env:
+          # renovate: datasource=github-releases depName=ammaraskar/msvc-problem-matcher
+          MSCV_PROBLEM_MATCHER_VERSION: 0.3.0
+        run: |
+          IFS=$' \t\n'; set -euxo pipefail
+
+          # install luacheck
+          luarocks install luacheck
+
+          # download and setup problem matcher for luacheck's visual_studio formatter
+          wget -q "https://raw.githubusercontent.com/ammaraskar/msvc-problem-matcher/${MSCV_PROBLEM_MATCHER_VERSION}/msvc_matcher.json" \
+            -O visual-studio-problem-matcher.json
+          echo "::add-matcher::visual-studio-problem-matcher.json"
+
+          # run luacheck
+          luacheck ./demos/ --no-cache --formatter visual_studio
