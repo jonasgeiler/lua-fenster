@@ -29,7 +29,7 @@ jobs:
       - name: Run actionlint on GitHub Actions workflows
         env:
           # renovate: datasource=github-releases depName=rhysd/actionlint
-          ACTIONLINT_VERSION: v1.7.1
+          ACTIONLINT_VERSION: v1.7.3
         run: |
           IFS=$' \t\n'; set -euxo pipefail
 
