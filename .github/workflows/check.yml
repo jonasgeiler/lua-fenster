@@ -40,8 +40,8 @@ jobs:
       - name: Run clang-format on C files and headers
         run: |
           # "notify" me of newer clang-format version
-          if command -v clang-format-16 &> /dev/null; then
-            echo "clang-format-16 is available"
+          if command -v clang-format-19 &> /dev/null; then
+            echo "clang-format-19 is available"
             exit 2
           fi
 
@@ -51,7 +51,7 @@ jobs:
             echo "No files found"
             exit 1
           fi
-          clang-format-15 --verbose --dry-run --Werror "${files[@]}"
+          clang-format-18 --verbose --dry-run --Werror "${files[@]}"
 
       - name: Set up Lua
         uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
@@ -59,8 +59,8 @@ jobs:
       - name: Run clang-tidy on C files and headers
         run: |
           # "notify" me of newer clang-tidy version
-          if command -v clang-tidy-16 &> /dev/null; then
-            echo "clang-tidy-16 is available"
+          if command -v clang-tidy-19 &> /dev/null; then
+            echo "clang-tidy-19 is available"
             exit 2
           fi
           
@@ -70,7 +70,7 @@ jobs:
             echo "No files found"
             exit 1
           fi
-          clang-tidy-15 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
+          clang-tidy-18 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
 
       - name: Set up LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
