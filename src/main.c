@@ -318,7 +318,7 @@ static int lfenster_rgb(lua_State *L) {
 static window *check_open_window(lua_State *L) {
   window *p_window = check_window(L);
   if (is_window_closed(p_window)) {
-    luaL_error(L, "attempt to use a closed window");
+    return luaL_error(L, "attempt to use a closed window");
   }
   return p_window;
 }
@@ -622,7 +622,8 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
   // create the window metatable
   const int result = luaL_newmetatable(L, WINDOW_METATABLE);
   if (result == 0) {
-    luaL_error(L, "fenster metatable already exists (%s)", WINDOW_METATABLE);
+    return luaL_error(L, "fenster metatable already exists (%s)",
+                      WINDOW_METATABLE);
   }
   luaL_setfuncs(L, window_methods, 0);
 
