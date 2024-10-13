@@ -82,7 +82,7 @@ lua demos/<demo>.lua
 ```
 
 Some of the demos are user-contributed. If you have a demo you'd like to share,
-feel free to create a pull request!
+feel free to [create a pull request](https://github.com/jonasgeiler/lua-fenster/new/main/demos)!
 
 ## Useful Snippets
 
