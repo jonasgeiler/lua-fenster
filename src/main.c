@@ -318,7 +318,7 @@ static int lfenster_rgb(lua_State *L) {
 static window *check_open_window(lua_State *L) {
   window *p_window = check_window(L);
   if (is_window_closed(p_window)) {
-    return luaL_error(L, "attempt to use a closed window");
+    luaL_error(L, "attempt to use a closed window");
   }
   return p_window;
 }
