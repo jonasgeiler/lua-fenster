@@ -30,4 +30,5 @@ max_line_length = 120
 # See: https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/docs/format_config_EN.md
 quote_style                       = single
 trailing_table_separator          = smart
+align_function_params             = false
 align_continuous_assign_statement = false
