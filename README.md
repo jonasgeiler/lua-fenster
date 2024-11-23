@@ -121,7 +121,7 @@ including the extra newline between each entry:
 
 -->
 
-Feel free to add your own projects to this list by creating a pull request!
+Feel free to add your own projects to this list by [creating a pull request](https://github.com/jonasgeiler/lua-fenster/edit/main/README.md)!
 
 ## API Documentation
 
