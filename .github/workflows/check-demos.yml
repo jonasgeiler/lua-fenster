@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Lua
-        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
+        uses: leafo/gh-actions-lua@8aace3457a2fcf3f3c4e9007ecc6b869ff6d74d6 # v11.0.0
 
       - name: Set up LuaRocks
         uses: hishamhm/gh-actions-luarocks@master
