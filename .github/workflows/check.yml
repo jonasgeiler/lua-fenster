@@ -63,7 +63,7 @@ jobs:
             echo "clang-tidy-16 is available"
             exit 2
           fi
-          
+
           shopt -s nullglob
           files=(src/*.c src/**/*.c include/*.h include/**/*.h)
           if [[ "${#files[@]}" -eq 0 ]]; then
@@ -80,7 +80,7 @@ jobs:
           # renovate: datasource=github-releases depName=ammaraskar/msvc-problem-matcher
           MSCV_PROBLEM_MATCHER_VERSION: 0.3.0
         run: |
-          IFS=$' \t\n'; set -euxo pipefail
+          IFS=$' \n\t'; set -euxo pipefail
 
           # install luacheck
           luarocks install luacheck

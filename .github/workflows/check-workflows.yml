@@ -31,7 +31,7 @@ jobs:
           # renovate: datasource=github-releases depName=rhysd/actionlint
           ACTIONLINT_VERSION: v1.7.7
         run: |
-          IFS=$' \t\n'; set -euxo pipefail
+          IFS=$' \n\t'; set -euxo pipefail
 
           # download, extract and setup actionlint
           wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \
