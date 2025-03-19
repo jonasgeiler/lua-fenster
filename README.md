@@ -347,6 +347,8 @@ the window is still open and false if it's closed.
 > [!WARNING]
 > Currently it looks like only Windows returns false when the window is closed.
 > On Linux and macOS `fenster` just throws an error when closing the window...
+>
+> I am currently contemplating forking fenster in #24 to fix this problem.
 
 **Example:**
 
@@ -585,10 +587,12 @@ This property contains the state of the Control key, also known as the Ctrl key.
 If the Control key is currently pressed, the value will be `true`, otherwise it
 will be `false`.
 
-> [!IMPORTANT]
+> [!WARNING]
 > In my experience, the states of the modifier keys are only updated when
 > another key is pressed simultaneously, so you might not get the expected
 > behavior if you only check the modifier property.
+>
+> I am currently contemplating forking fenster in #24 to fix this problem.
 
 **Example:**
 
