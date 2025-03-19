@@ -401,7 +401,6 @@ static int window_loop(lua_State *L) {
  * Utility function to get the x coordinate from the Lua stack and check if it's
  * within bounds.
  * @param L Lua state
- * @param index Index of the x coordinate on the Lua stack
  * @param p_window The window userdata
  * @return The x coordinate
  */
@@ -416,7 +415,6 @@ static lua_Integer check_x(lua_State *L, window *p_window) {
  * Utility function to get the y coordinate from the Lua stack and check if it's
  * within bounds.
  * @param L Lua state
- * @param index Index of the y coordinate on the Lua stack
  * @param p_window The window userdata
  * @return The y coordinate
  */
