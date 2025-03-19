@@ -402,7 +402,7 @@ static int window_loop(lua_State *L) {
  * within bounds.
  * @param L Lua state
  * @param index Index of the x coordinate on the Lua stack
- * @param p_window The lua-fenster userdata
+ * @param p_window The window userdata
  * @return The x coordinate
  */
 static lua_Integer check_x(lua_State *L, window *p_window) {
@@ -417,7 +417,7 @@ static lua_Integer check_x(lua_State *L, window *p_window) {
  * within bounds.
  * @param L Lua state
  * @param index Index of the y coordinate on the Lua stack
- * @param p_window The lua-fenster userdata
+ * @param p_window The window userdata
  * @return The y coordinate
  */
 static lua_Integer check_y(lua_State *L, window *p_window) {
@@ -579,7 +579,7 @@ static int window_tostring(lua_State *L) {
   return 1;
 }
 
-/** Functions for the lua-fenster module */
+/** Functions for the fenster Lua module */
 static const struct luaL_Reg lfenster_functions[] = {
     {"open", lfenster_open},
     {"sleep", lfenster_sleep},
@@ -614,7 +614,7 @@ static const struct luaL_Reg window_methods[] = {
     {NULL, NULL}};
 
 /**
- * Entry point for the lua-fenster module.
+ * Entry point for the fenster Lua module.
  * @param L Lua state
  * @return Number of return values on the Lua stack
  */
@@ -627,7 +627,7 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
   }
   luaL_setfuncs(L, window_methods, 0);
 
-  // create and return the lua-fenster module
+  // create and return the fenster Lua module
   luaL_newlib(L, lfenster_functions);
   return 1;
 }
