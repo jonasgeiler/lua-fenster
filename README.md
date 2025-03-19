@@ -107,7 +107,8 @@ your projects.
 
 Here is a list of projects that use lua-fenster:
 
-- [3d-soft-engine-lua](https://github.com/jonasgeiler/3d-soft-engine-lua) - A simple 3D engine written in Lua, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
+- [3d-soft-engine-lua](https://github.com/jonasgeiler/3d-soft-engine-lua) - A simple 3D engine, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
+- [3d-raycaster-lua](https://github.com/jonasgeiler/3d-raycaster-lua) - A Wolfenstein-like 3D raycaster, by [Jonas Geiler (@jonasgeiler)](https://github.com/jonasgeiler).
 
 <!--
 If you want to add your own projects here, please format the entries as follows,
