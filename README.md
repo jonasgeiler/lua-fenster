@@ -348,7 +348,9 @@ the window is still open and false if it's closed.
 > Currently it looks like only Windows returns false when the window is closed.
 > On Linux and macOS `fenster` just throws an error when closing the window...
 >
-> I am currently contemplating forking fenster in #24 to fix this problem.
+> I am currently contemplating forking fenster in
+> [#24](https://github.com/jonasgeiler/lua-fenster/issues/24)
+> to fix this problem.
 
 **Example:**
 
@@ -592,7 +594,9 @@ will be `false`.
 > another key is pressed simultaneously, so you might not get the expected
 > behavior if you only check the modifier property.
 >
-> I am currently contemplating forking fenster in #24 to fix this problem.
+> I am currently contemplating forking fenster in
+> [#24](https://github.com/jonasgeiler/lua-fenster/issues/24)
+> to fix this problem.
 
 **Example:**
 
