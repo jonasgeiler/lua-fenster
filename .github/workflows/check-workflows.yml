@@ -46,7 +46,7 @@ jobs:
           # download and setup problem matcher for actionlint
           wget -q "https://raw.githubusercontent.com/rhysd/actionlint/${ACTIONLINT_VERSION}/.github/actionlint-matcher.json" \
             -O actionlint-problem-matcher.json
-          echo "::add-matcher::actionlint-problem-matcher.json"
+          echo '::add-matcher::actionlint-problem-matcher.json'
 
           # run actionlint
           ./actionlint -verbose -color

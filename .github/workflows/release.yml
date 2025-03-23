@@ -38,16 +38,16 @@ jobs:
           
           version="${GITHUB_REF_NAME}"
           rockspec="fenster-${version#v}-1.rockspec"
-          git mv fenster-dev-1.rockspec "$rockspec"
-          sed -i -E "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "$rockspec"
-          sed -i -E "s/\bbranch\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-_\/]+\s*('|\"|\]\])/tag = '$version'/" "$rockspec"
+          git mv fenster-dev-1.rockspec "${rockspec}"
+          sed -i -E "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "${rockspec}"
+          sed -i -E "s/\bbranch\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-_\/]+\s*('|\"|\]\])/tag = '$version'/" "${rockspec}"
           git diff
-          if [[ -z "$(git status --porcelain "$rockspec")" ]]; then
-            echo "Rockspec not modified"
+          if [[ -z "$(git status --porcelain "${rockspec}")" ]]; then
+            echo 'Rockspec not modified'
             exit 1
           fi
           luarocks install dkjson
-          luarocks upload --temp-key "${{ secrets.LUAROCKS_API_KEY }}" "$rockspec"
+          luarocks upload --temp-key "${{ secrets.LUAROCKS_API_KEY }}" "${rockspec}"
 
       - name: Draft release on GitHub
         uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9

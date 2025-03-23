@@ -49,14 +49,14 @@ jobs:
           
           # "notify" me of newer clang-format version
           if command -v clang-format-19 &> /dev/null; then
-            echo "clang-format-19 is available"
+            echo 'clang-format-19 is available'
             exit 2
           fi
 
           shopt -s nullglob
           files=(src/*.c src/**/*.c include/*.h include/**/*.h)
           if [[ "${#files[@]}" -eq 0 ]]; then
-            echo "No files found"
+            echo 'No files found'
             exit 1
           fi
           clang-format-18 --verbose --dry-run --Werror "${files[@]}"
@@ -67,7 +67,7 @@ jobs:
           
           # "notify" me of newer clang-tidy version
           if command -v clang-tidy-19 &> /dev/null; then
-            echo "clang-tidy-19 is available"
+            echo 'clang-tidy-19 is available'
             exit 2
           fi
           
@@ -83,14 +83,14 @@ jobs:
           shopt -s nullglob
           files=(src/*.c src/**/*.c include/*.h include/**/*.h)
           if [[ "${#files[@]}" -eq 0 ]]; then
-            echo "No files found"
+            echo 'No files found'
             exit 1
           fi
-          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.1" "${files[@]}"
-          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.2" "${files[@]}"
-          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.3" "${files[@]}"
-          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.4" "${files[@]}"
-          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/luajit-2.1" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/lua5.1' "${files[@]}"
+          clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/lua5.2' "${files[@]}"
+          clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/lua5.3' "${files[@]}"
+          clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/lua5.4' "${files[@]}"
+          clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/luajit-2.1' "${files[@]}"
 
       - name: Set up Lua
         uses: luarocks/gh-actions-lua@master
@@ -111,10 +111,10 @@ jobs:
           # download and setup problem matcher for luacheck's visual_studio formatter
           wget -q "https://raw.githubusercontent.com/ammaraskar/msvc-problem-matcher/${MSCV_PROBLEM_MATCHER_VERSION}/msvc_matcher.json" \
             -O visual-studio-problem-matcher.json
-          echo "::add-matcher::visual-studio-problem-matcher.json"
+          echo '::add-matcher::visual-studio-problem-matcher.json'
 
           # run luacheck
-          luacheck . --no-cache --formatter visual_studio --include-files "spec/**/*.lua" "**/*.rockspec" --exclude-files .lua .luarocks
+          luacheck . --no-cache --formatter visual_studio --include-files 'spec/**/*.lua' '**/*.rockspec' --exclude-files .lua .luarocks
 
 
   test:

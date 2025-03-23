@@ -48,7 +48,7 @@ jobs:
           # download and setup problem matcher for luacheck's visual_studio formatter
           wget -q "https://raw.githubusercontent.com/ammaraskar/msvc-problem-matcher/${MSCV_PROBLEM_MATCHER_VERSION}/msvc_matcher.json" \
             -O visual-studio-problem-matcher.json
-          echo "::add-matcher::visual-studio-problem-matcher.json"
+          echo '::add-matcher::visual-studio-problem-matcher.json'
 
           # run luacheck
           luacheck ./demos/ --no-cache --formatter visual_studio

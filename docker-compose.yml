@@ -9,17 +9,17 @@ x-build-preset: &build_preset
     SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
     RUN IFS=$$' \n\t'; \
         \
-        echo "**** install system packages ****"; \
+        echo '**** install system packages ****'; \
         apt-get update; \
         apt-get install --no-install-recommends --yes \
           build-essential \
           libx11-dev \
         ; \
-        echo "**** install luarocks packages ****"; \
+        echo '**** install luarocks packages ****'; \
         luarocks install --no-doc \
           busted \
         ; \
-        echo "**** cleanup ****"; \
+        echo '**** cleanup ****'; \
         rm -rf \
           /tmp/* \
           /var/lib/apt/lists/* \
