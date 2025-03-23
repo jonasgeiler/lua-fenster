@@ -36,7 +36,7 @@ x-service-preset: &service_preset
   restart: no
   environment:
     TZ: ${TZ:-${TIMEZONE:-Europe/Vienna}}
-    DISPLAY: ${DISPLAY:-:0}
+    DISPLAY: ${DISPLAY:-:0} # TODO: Operate on virtual display?
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix
   command: |-

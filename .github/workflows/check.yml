@@ -93,10 +93,10 @@ jobs:
           clang-tidy-18 --warnings-as-errors='*' --extra-arg='-I/usr/include/luajit-2.1' "${files[@]}"
 
       - name: Set up Lua
-        uses: luarocks/gh-actions-lua@master
+        uses: luarocks/gh-actions-lua@master # TODO: Check if leafo/gh-actions-lua is same
 
       - name: Set up LuaRocks
-        uses: luarocks/gh-actions-luarocks@master
+        uses: luarocks/gh-actions-luarocks@master # TODO: Check if leafo/gh-actions-luarocks is same
 
       - name: Run luacheck on rockspecs and tests
         env:
