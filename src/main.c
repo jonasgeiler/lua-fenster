@@ -17,14 +17,12 @@
 // sure to always throw an error if the number has a decimal part.
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM <= 502
 
-#define luaL_checkinteger(L, arg)                                              \
-  (luaL_argcheck(L,                                                            \
-                 floorl(luaL_checknumber(L, arg)) == luaL_checknumber(L, arg), \
-                 arg, "number has no integer representation"),                 \
-   luaL_checkinteger(L, arg))
+#define luaL_checkinteger(L, narg)                                         \
+  (luaL_argcheck(L, lua_tointeger(L, narg) == lua_tonumber(L, narg), narg, \
+                 "number has no integer representation"),                  \
+   luaL_checkinteger(L, narg))
 
-#define luaL_optinteger(L, arg, def) \
-  (lua_isnoneornil(L, arg) ? (def) : luaL_checkinteger(L, arg))
+#define luaL_optinteger(L, narg, def) luaL_opt(L, luaL_checkinteger, narg, def)
 
 #endif
 
