@@ -12,8 +12,12 @@ jobs:
 
   luarocks-upload-and-github-release:
     name: LuaRocks Upload & GitHub Release
-    runs-on: ubuntu-latest
     needs: check
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     permissions:
       contents: write
@@ -30,8 +34,9 @@ jobs:
 
       - name: Modify rockspec & upload to LuaRocks server
         run: |
-          set -x
-          version="${{ github.ref_name }}"
+          IFS=$' \n\t'; set -ux
+          
+          version="${GITHUB_REF_NAME}"
           rockspec="fenster-${version#v}-1.rockspec"
           git mv fenster-dev-1.rockspec "$rockspec"
           sed -i -E "s/\bversion\s*=\s*('|\"|\[\[)\s*[a-zA-Z0-9.-]+\s*('|\"|\]\])/version = '${version#v}-1'/" "$rockspec"

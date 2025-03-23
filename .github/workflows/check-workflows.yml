@@ -20,7 +20,11 @@ on:
 jobs:
   lint:
     name: Lint
+
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
@@ -31,7 +35,7 @@ jobs:
           # renovate: datasource=github-releases depName=rhysd/actionlint
           ACTIONLINT_VERSION: v1.7.7
         run: |
-          IFS=$' \n\t'; set -euxo pipefail
+          IFS=$' \n\t'; set -ux
 
           # download, extract and setup actionlint
           wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \

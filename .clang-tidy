@@ -21,6 +21,10 @@ Checks: >-
   portability-*,
   
   readability-*,
+  
+  thread-safety-*,
+  
+  security-*,
 
 CheckOptions:
   misc-header-include-cycle.IgnoredFilesList: '\/lib\/compat-5\.3\/compat-5\.3\.h$'
@@ -28,5 +32,4 @@ CheckOptions:
   readability-identifier-length.IgnoredVariableNames: '^[xy]$' # allow coordinate variables
   readability-identifier-length.IgnoredParameterNames: '^[L]$' # allow Lua state parameter
 
-FormatStyle: file
-WarningsAsErrors: ''
+FormatStyle: file # use .clang-format file

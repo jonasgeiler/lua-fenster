@@ -9,7 +9,11 @@ on:
 jobs:
   update-libraries:
     name: Update Libraries
+
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     permissions:
       contents: write
