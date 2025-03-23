@@ -71,8 +71,14 @@ jobs:
             exit 2
           fi
           
-          # install X11 headers
-          sudo apt-get install --yes --no-install-recommends libx11-dev
+          # get required header files
+          sudo apt-get install --yes --no-install-recommends \
+            libx11-dev \
+            liblua5.1-dev \
+            liblua5.2-dev \
+            liblua5.3-dev \
+            liblua5.4-dev \
+            libluajit-5.1-dev
 
           shopt -s nullglob
           files=(src/*.c src/**/*.c include/*.h include/**/*.h)
@@ -80,7 +86,11 @@ jobs:
             echo "No files found"
             exit 1
           fi
-          clang-tidy-18 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.1" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.2" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.3" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/lua5.4" "${files[@]}"
+          clang-tidy-18 --warnings-as-errors="*" --extra-arg="-I/usr/include/luajit-2.1" "${files[@]}"
 
       - name: Set up Lua
         uses: luarocks/gh-actions-lua@master
@@ -135,6 +145,10 @@ jobs:
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         # Will be ignored on non-Windows platforms anyway, but it's better to just skip it
         if: matrix.os == 'windows-latest'
+
+      - name: Set up X11
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install --yes --no-install-recommends libx11-dev
 
       - name: Set up Lua
         uses: luarocks/gh-actions-lua@master

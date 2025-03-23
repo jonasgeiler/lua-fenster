@@ -24,7 +24,7 @@
    luaL_checkinteger(L, arg))
 
 #define luaL_optinteger(L, arg, def) \
-  (lua_isnoneornil(L, arg) ? def : luaL_checkinteger(L, arg))
+  (lua_isnoneornil(L, arg) ? (def) : luaL_checkinteger(L, arg))
 
 #endif
 
@@ -629,6 +629,7 @@ FENSTER_EXPORT int luaopen_fenster(lua_State *L) {
   luaL_setfuncs(L, window_methods, 0);
 
   // create and return the fenster Lua module
-  luaL_newlib(L, lfenster_functions);
+  luaL_newlib(  // NOLINT(readability-math-missing-parentheses)
+      L, lfenster_functions);
   return 1;
 }
