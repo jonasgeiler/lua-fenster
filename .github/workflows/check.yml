@@ -56,7 +56,7 @@ jobs:
           clang-format-15 --verbose --dry-run --Werror "${files[@]}"
 
       - name: Set up Lua
-        uses: leafo/gh-actions-lua@35bcb06abec04ec87df82e08caa84d545348536e # v10.0.0
+        uses: luarocks/gh-actions-lua@master
 
       - name: Run clang-tidy on C files and headers
         run: |
@@ -75,7 +75,7 @@ jobs:
           clang-tidy-15 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
 
       - name: Set up LuaRocks
-        uses: hishamhm/gh-actions-luarocks@master
+        uses: luarocks/gh-actions-luarocks@master
 
       - name: Run luacheck on rockspecs and tests
         env:
@@ -100,13 +100,10 @@ jobs:
     name: Test
     needs: lint
 
-    # TODO: Fix this job...
-    continue-on-error: true
-
     strategy:
       matrix:
         os: [ ubuntu-22.04, windows-latest, macos-latest ]
-        lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit' ]
+        lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit-2.0', 'luajit-2.1' ]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -119,34 +116,50 @@ jobs:
         if: matrix.os == 'windows-latest'
 
       - name: Set up Lua
-        uses: hishamhm/gh-actions-lua@master
+        uses: luarocks/gh-actions-lua@master
         with:
           luaVersion: ${{ matrix.lua_version }}
 
       - name: Set up LuaRocks
-        uses: hishamhm/gh-actions-luarocks@master
+        uses: luarocks/gh-actions-luarocks@master
 
       - name: Build fenster
         run: luarocks make
         # Currently does not work for LuaJIT on Windows (lua library not found)
-        #if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
+        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
       - name: Run tests
         run: luarocks test -- --exclude-tags needsdisplay --verbose --output TAP
         # Currently does not work for LuaJIT on Windows (see above)
-        #if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
+        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
 
   test-docker:
     name: Test (Docker)
     needs: lint
+
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Run Docker Compose
+      - name: Run Tests in Docker
         env:
           EXCLUDE_TAGS: needsdisplay
-        run: docker compose up --abort-on-container-failure --yes --quiet-pull
+          # renovate: datasource=github-releases depName=docker/compose
+          COMPOSE_VERSION: v2.34.0
+        run: |
+          IFS=$' \n\t'; set -ux
+
+          # Download newest version of Docker Compose plugin.
+          compose_plugin_path="$(docker info --format='{{range .ClientInfo.Plugins}}{{if eq .Name "compose"}}{{.Path}}{{break}}{{end}}{{end}}')"
+          sudo wget -q "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+            -O "${compose_plugin_path}"
+          docker compose version
+          
+          # Run docker compose
+          docker compose up --abort-on-container-failure --yes --quiet-pull
