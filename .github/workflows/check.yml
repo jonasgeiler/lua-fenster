@@ -33,7 +33,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -42,8 +42,8 @@ jobs:
       - name: Run clang-format on C files and headers
         run: |
           # "notify" me of newer clang-format version
-          if command -v clang-format-16 &> /dev/null; then
-            echo "clang-format-16 is available"
+          if command -v clang-format-19 &> /dev/null; then
+            echo "clang-format-19 is available"
             exit 2
           fi
 
@@ -53,7 +53,7 @@ jobs:
             echo "No files found"
             exit 1
           fi
-          clang-format-15 --verbose --dry-run --Werror "${files[@]}"
+          clang-format-18 --verbose --dry-run --Werror "${files[@]}"
 
       - name: Set up Lua
         uses: luarocks/gh-actions-lua@master
@@ -61,8 +61,8 @@ jobs:
       - name: Run clang-tidy on C files and headers
         run: |
           # "notify" me of newer clang-tidy version
-          if command -v clang-tidy-16 &> /dev/null; then
-            echo "clang-tidy-16 is available"
+          if command -v clang-tidy-19 &> /dev/null; then
+            echo "clang-tidy-19 is available"
             exit 2
           fi
 
@@ -72,7 +72,7 @@ jobs:
             echo "No files found"
             exit 1
           fi
-          clang-tidy-15 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
+          clang-tidy-18 --extra-arg="-I.lua/include" --warnings-as-errors="*" "${files[@]}"
 
       - name: Set up LuaRocks
         uses: luarocks/gh-actions-luarocks@master
@@ -101,9 +101,19 @@ jobs:
     needs: lint
 
     strategy:
+      fail-fast: false
       matrix:
-        os: [ ubuntu-22.04, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
         lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit-2.0', 'luajit-2.1' ]
+        exclude:
+          # Currently does not work for LuaJIT on Windows (Lua library not found)
+          - os: windows-latest
+            lua_version: 'luajit-2.0'
+          - os: windows-latest
+            lua_version: 'luajit-2.1'
+          # Currently does not work for LuaJIT 2.0 on macOS (Architecture not supported)
+          - os: macos-latest
+            lua_version: 'luajit-2.0'
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -125,17 +135,13 @@ jobs:
 
       - name: Build fenster
         run: luarocks make
-        # Currently does not work for LuaJIT on Windows (lua library not found)
-        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
       - name: Run tests
         run: luarocks test -- --exclude-tags needsdisplay --verbose --output TAP
-        # Currently does not work for LuaJIT on Windows (see above)
-        if: matrix.os != 'windows-latest' || matrix.lua_version != 'luajit'
 
 
   test-docker:
-    name: Test (Docker)
+    name: Test (docker)
     needs: lint
 
     runs-on: ubuntu-latest
