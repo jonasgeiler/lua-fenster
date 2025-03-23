@@ -1,0 +1,125 @@
+name: lua-fenster
+
+
+x-build-preset: &build_preset
+  dockerfile_inline: |-
+    ARG BASE_IMAGE=nickblah/lua:5.4-luarocks
+    FROM $${BASE_IMAGE}
+    
+    SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+    RUN IFS=$$' \n\t'; \
+        \
+        echo "**** install system packages ****"; \
+        apt-get update; \
+        apt-get install --no-install-recommends --yes \
+          build-essential \
+          libx11-dev \
+        ; \
+        echo "**** install luarocks packages ****"; \
+        luarocks install --no-doc \
+          busted \
+        ; \
+        echo "**** cleanup ****"; \
+        rm -rf \
+          /tmp/* \
+          /var/lib/apt/lists/* \
+          /var/tmp/* \
+          /var/cache/luarocks/*
+    
+    WORKDIR /project
+    COPY . .
+    
+    ENTRYPOINT ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+
+x-service-preset: &service_preset
+  restart: no
+  environment:
+    TZ: ${TZ:-${TIMEZONE:-Europe/Vienna}}
+    DISPLAY: ${DISPLAY:-:0}
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix
+  command: |-
+    '
+    luarocks make
+    luarocks test -- --verbose ${EXCLUDE_TAGS:+--exclude-tags ${EXCLUDE_TAGS:-}}
+    '
+
+
+services:
+  lua-5_1:
+    <<: *service_preset
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/lua:5.1-luarocks
+
+  lua-5_2:
+    <<: *service_preset
+    depends_on:
+      lua-5_1:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/lua:5.2-luarocks
+
+  lua-5_3:
+    <<: *service_preset
+    depends_on:
+      lua-5_2:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/lua:5.3-luarocks
+
+  lua-5_4:
+    <<: *service_preset
+    depends_on:
+      lua-5_3:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/lua:5.4-luarocks
+
+  luajit-2_0:
+    <<: *service_preset
+    depends_on:
+      lua-5_4:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/luajit:2.0-luarocks
+
+  luajit-2_1:
+    <<: *service_preset
+    depends_on:
+      luajit-2_0:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/luajit:2.1-luarocks
+
+  luajit-2_0-compat:
+    <<: *service_preset
+    depends_on:
+      luajit-2_1:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/luajit:2.0-lua52compat-luarocks
+
+  luajit-2_1-compat:
+    <<: *service_preset
+    depends_on:
+      luajit-2_0-compat:
+        condition: service_completed_successfully
+    build:
+      <<: *build_preset
+      args:
+        BASE_IMAGE: nickblah/luajit:2.1-lua52compat-luarocks

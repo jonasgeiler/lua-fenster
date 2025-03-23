@@ -1,0 +1,48 @@
+# Git ignore file
+# See: https://git-scm.com/docs/gitignore
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# LuaRocks
+luarocks/
+lua/
+lua_modules/
+.luarocks/
+*.src.rock
+*.zip
+*.tar.gz
+
+# Output
+*.o
+*.so
+*.dll
+*.exp
+*.lib
+*.obj
+*.def
+*.rock
+
+# Temp Files
+/test.lua
+
+# Not needed in Testing Docker Container
+.git/
+.github/
+/demos/
+.clang-format
+.clang-tidy
+.dockerignore
+.editorconfig
+.gitignore
+.luarc.json
+*.md
+Makefile
+docker-compose.yml
+docker-compose.yaml
+compose.yml
+compose.yaml
