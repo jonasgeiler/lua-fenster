@@ -801,23 +801,11 @@ If you don't want to install the dependencies above on your system, or want to
 test on all Lua versions simultaneously in a clean environment, you can use
 Docker with Docker Compose.
 
-Firstly, you might need to open up X11 forwarding on your host system:
-
-```shell
-xhost +
-```
-
-Then, just run the following command to build the Docker images for all Lua
+Just run the following command to build the Docker images for all Lua
 versions and run the tests on each:
 
 ```shell
 docker compose up --build --force-recreate --abort-on-container-failure
-```
-
-When, you are done, you can close the X11 forwarding on your host system:
-
-```shell
-xhost -
 ```
 
 ## Credits
