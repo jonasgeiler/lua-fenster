@@ -14,6 +14,8 @@ x-build-preset: &build_preset
         apt-get install --no-install-recommends --yes \
           build-essential \
           libx11-dev \
+          xvfb \
+          xauth \
         ; \
         echo '**** install luarocks packages ****'; \
         luarocks install --no-doc \
@@ -36,13 +38,11 @@ x-service-preset: &service_preset
   restart: no
   environment:
     TZ: ${TZ:-${TIMEZONE:-Europe/Vienna}}
-    DISPLAY: ${DISPLAY:-:0} # TODO: Operate on virtual display?
-  volumes:
-    - /tmp/.X11-unix:/tmp/.X11-unix
   command: |-
     '
     luarocks make
-    luarocks test -- --verbose ${EXCLUDE_TAGS:+--exclude-tags ${EXCLUDE_TAGS:-}}
+    trap "cat /tmp/xvfb-run-error.txt && rm --force /tmp/xvfb-run-error.txt" EXIT INT TERM QUIT
+    xvfb-run --auto-servernum --error-file=/tmp/xvfb-run-error.txt luarocks test -- --verbose
     '
 
 
