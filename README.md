@@ -813,7 +813,7 @@ docker compose up --build --force-recreate --abort-on-container-failure
 Many thanks to [Serge Zaitsev (@zserge)](https://github.com/zserge) for creating
 the original [fenster](https://github.com/zserge/fenster) library and making it
 available to the public. This Lua binding wouldn't have been possible without
-his work.
+their work.
 
 ## License
 
