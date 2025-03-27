@@ -1,5 +1,5 @@
-# Git ignore file
-# See: https://git-scm.com/docs/gitignore
+# Docker ignore file
+# See: https://docs.docker.com/build/concepts/context/#dockerignore-files
 
 # OS
 .DS_Store
