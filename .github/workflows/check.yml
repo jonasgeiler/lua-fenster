@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest, macos-latest, macos-13 ]
         lua_version: [ '5.1', '5.2', '5.3', '5.4', 'luajit-2.0', 'luajit-2.1' ]
         exclude:
           # Currently does not work for LuaJIT on Windows (Lua library not found)
@@ -132,7 +132,7 @@ jobs:
             lua_version: 'luajit-2.0'
           - os: windows-latest
             lua_version: 'luajit-2.1'
-          # Currently does not work for LuaJIT 2.0 on macOS (Architecture not supported)
+          # Currently does not work for LuaJIT 2.0 on macOS with ARM64 (Architecture not supported)
           - os: macos-latest
             lua_version: 'luajit-2.0'
     runs-on: ${{ matrix.os }}
@@ -142,9 +142,8 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Microsoft Visual C++ Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-        # Will be ignored on non-Windows platforms anyway, but it's better to just skip it
         if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
       - name: Set up X11
         if: matrix.os == 'ubuntu-latest'
