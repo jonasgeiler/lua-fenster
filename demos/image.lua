@@ -5,7 +5,7 @@ local dirname = './' .. (debug.getinfo(1, 'S').source:match('^@?(.*[/\\])') or '
 -- Add the project root directory to the package path
 package.path = dirname .. '../?.lua;' .. package.path
 
-local ppm = require('demos.lib.ppm')
+local ppm = require('demos.lib.ppmnew')
 
 ---Draw a loaded image.
 ---@param window window*
