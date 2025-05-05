@@ -8,7 +8,7 @@ ppm.INT_MAX = 0x7fffffff
 ppm.CHAR_0 = 48 -- '0' in ASCII
 ppm.CHAR_9 = 57 -- '9' in ASCII
 
----Load a PPM file.
+---Load a PPM file. (Adapted from Netbpm library v10.86.45)
 ---@param path string
 ---@return integer[][]? pixels
 ---@return integer? width
@@ -21,7 +21,7 @@ function ppm.load(path)
 		return nil, nil, nil, 'Failed to open file: ' .. ppm_file_err
 	end
 
-	--[[ Read magic number ]]
+	-- Read magic number
 	local char1 = ppm_file:read(1) ---@type string?
 	if not char1 then
 		return nil, nil, nil, 'File is empty or invalid: missing magic number'
@@ -35,8 +35,14 @@ function ppm.load(path)
 	end
 	local format = char1 .. char2
 	if format ~= 'P3' and format ~= 'P6' then
-		return nil, nil, nil,
-			string.format('Invalid magic number 0x%x: not a PPM file (P3/P6)', string.byte(char1) * 256 + string.byte(char2))
+		if char1 == 'P' then
+			-- Pressumably another Netpbm format...
+			return nil, nil, nil,
+				string.format('Invalid magic number 0x%x (%s): not a PPM file (P3/P6)', string.byte(char1) * 256 + string.byte(char2), format)
+		else
+			return nil, nil, nil,
+				string.format('Invalid magic number 0x%x: not a PPM file', string.byte(char1) * 256 + string.byte(char2))
+		end
 	end
 
 	---@return string? char
@@ -85,15 +91,14 @@ function ppm.load(path)
 			uint = uint + digit_val ---@type integer
 
 			char, char_err = read_char()
-			if not char then
-				return nil, char_err
-			end
+			if not char then return nil, char_err end
 			char_byte = string.byte(char)
 		until char_byte < ppm.CHAR_0 or char_byte > ppm.CHAR_9
 
 		return uint, nil
 	end
 
+	-- Read width
 	local cols, cols_err = read_uint()
 	if not cols then
 		return nil, nil, nil, 'Failed to read image width: ' .. cols_err
@@ -101,6 +106,8 @@ function ppm.load(path)
 	if cols > ppm.INT_MAX - 2 then
 		return nil, nil, nil, string.format('Image width (%u) exceeds the maximum supported size', cols)
 	end
+
+	-- Read height
 	local rows, rows_err = read_uint()
 	if not rows then
 		return nil, nil, nil, 'Failed to read image height: ' .. rows_err
@@ -109,6 +116,7 @@ function ppm.load(path)
 		return nil, nil, nil, string.format('Image height (%u) exceeds the maximum supported size', rows)
 	end
 
+	-- Read max value
 	local maxval, maxval_err = read_uint()
 	if not maxval then
 		return nil, nil, nil, 'Failed to read max color value: ' .. maxval_err
@@ -120,14 +128,17 @@ function ppm.load(path)
 		return nil, nil, nil, 'Max color value cannot be zero'
 	end
 
-	---@param r any
-	---@param g any
-	---@param b any
+	---Scale RGB values from 0 to maxval, to 0 to 255, and then turn them into a single integer.
+	---@param r integer
+	---@param g integer
+	---@param b integer
 	---@return integer
+	---@nodiscard
 	local function scaled_rgb(r, g, b)
 		if maxval == 255 then
 			return fenster.rgb(r, g, b)
 		end
+
 		return fenster.rgb(
 			math.floor(r * 255 / maxval),
 			math.floor(g * 255 / maxval),
@@ -141,17 +152,24 @@ function ppm.load(path)
 	local function read_ppm_row(pixelrow)
 		for col = 1, cols do
 			local r, r_err = read_uint()
-			if not r then return 'Failed to read red value: ' .. r_err end
-			local g, g_err = read_uint()
-			if not g then return 'Failed to read green value: ' .. g_err end
-			local b, b_err = read_uint()
-			if not b then return 'Failed to read blue value: ' .. b_err end
-
+			if not r then
+				return 'Failed to read red value: ' .. r_err
+			end
 			if r > maxval then
 				return string.format('Red value (%u) exceeds max color value (%u)', r, maxval)
 			end
+
+			local g, g_err = read_uint()
+			if not g then
+				return 'Failed to read green value: ' .. g_err
+			end
 			if g > maxval then
 				return string.format('Green value (%u) exceeds max color value (%u)', g, maxval)
+			end
+
+			local b, b_err = read_uint()
+			if not b then
+				return 'Failed to read blue value: ' .. b_err
 			end
 			if b > maxval then
 				return string.format('Blue value (%u) exceeds max color value (%u)', b, maxval)
@@ -159,10 +177,13 @@ function ppm.load(path)
 
 			pixelrow[col] = scaled_rgb(r, g, b)
 		end
+
+		return nil
 	end
 
 	---@param pixelrow integer[]
 	---@return string? errmsg
+	---@nodiscard
 	local function read_raw_ppm_row(pixelrow)
 		local bytes_per_sample = maxval < 256 and 1 or 2
 		local bytes_per_row = cols * 3 * bytes_per_sample
@@ -175,42 +196,27 @@ function ppm.load(path)
 		end
 
 		-- Read the row buffer
-		local buffer_cursor = 1 -- Start at beginning of row_buffer[]
-		if bytes_per_sample == 1 then
-			for col = 1, cols do
-				local r = string.byte(row_buffer, buffer_cursor)
-				buffer_cursor = buffer_cursor + 1
-				local g = string.byte(row_buffer, buffer_cursor)
-				buffer_cursor = buffer_cursor + 1
-				local b = string.byte(row_buffer, buffer_cursor)
-				buffer_cursor = buffer_cursor + 1
-
-				pixelrow[col] = scaled_rgb(r, g, b)
-			end
-		else
-			-- Two byte samples
-			for col = 1, cols do
-				local r = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
-				buffer_cursor = buffer_cursor + 2
-				local g = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
-				buffer_cursor = buffer_cursor + 2
-				local b = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
-				buffer_cursor = buffer_cursor + 2
-
-				pixelrow[col] = scaled_rgb(r, g, b)
-			end
-		end
-
-		-- Validate raw PPM row
-		if maxval == 255 or maxval == 65535 then
-			-- There's no way a sample can be invalid, so we don't need to look at the samples individually.
-			return nil
-		end
+		local buffer_cursor = 1 -- Starts at beginning of row_buffer
 		for col = 1, cols do
-			local r = fenster.rgb(pixelrow[col])
-			local _, g = fenster.rgb(pixelrow[col])
-			local _, _, b = fenster.rgb(pixelrow[col])
+			local r, g, b ---@type integer, integer, integer
+			if bytes_per_sample == 1 then
+				r = string.byte(row_buffer, buffer_cursor)
+				buffer_cursor = buffer_cursor + 1 ---@type integer
+				g = string.byte(row_buffer, buffer_cursor)
+				buffer_cursor = buffer_cursor + 1
+				b = string.byte(row_buffer, buffer_cursor)
+				buffer_cursor = buffer_cursor + 1
+			else
+				-- Two byte samples
+				r = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
+				buffer_cursor = buffer_cursor + 2 ---@type integer
+				g = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
+				buffer_cursor = buffer_cursor + 2
+				b = string.byte(row_buffer, buffer_cursor) * 256 + string.byte(row_buffer, buffer_cursor + 1)
+				buffer_cursor = buffer_cursor + 2
+			end
 
+			-- Validate colors
 			if r > maxval then
 				return string.format('Red value (%u) exceeds max color value (%u)', r, maxval)
 			end
@@ -220,7 +226,10 @@ function ppm.load(path)
 			if b > maxval then
 				return string.format('Blue value (%u) exceeds max color value (%u)', b, maxval)
 			end
+
+			pixelrow[col] = scaled_rgb(r, g, b)
 		end
+
 		return nil
 	end
 
