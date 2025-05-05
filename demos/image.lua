@@ -1,3 +1,5 @@
+#!/usr/bin/env lua
+
 local fenster = require('fenster')
 
 -- Hack to get the current script directory
@@ -5,7 +7,7 @@ local dirname = './' .. (debug.getinfo(1, 'S').source:match('^@?(.*[/\\])') or '
 -- Add the project root directory to the package path
 package.path = dirname .. '../?.lua;' .. package.path
 
-local ppm = require('demos.lib.ppmnew')
+local ppm = require('demos.lib.ppm')
 
 ---Draw a loaded image.
 ---@param window window*
@@ -23,19 +25,26 @@ local function draw_image(window, x, y, image_pixels, image_width, image_height)
 	end
 end
 
--- Load the image
-local image_path = dirname .. 'assets/uv.ppm'
+-- Load either a user-specified image or the default image
+local image_path = arg[1] or dirname .. 'assets/uv.ppm'
 local image_pixels, image_width, image_height, image_err = ppm.load(image_path)
 if not image_pixels or not image_width or not image_height then
 	print('Failed to load image: ' .. tostring(image_err))
 	return
 end
 
+-- Calculate the window scale
+local window_scale = 1
+while image_width * window_scale < 512 and image_height * window_scale < 512 do
+	window_scale = window_scale * 2
+end
+
 -- Open a window
 local window = fenster.open(
 	image_width,
 	image_height,
-	'Image Demo - Press ESC to exit'
+	'Image Demo - Press ESC to exit',
+	window_scale
 )
 
 -- Draw the image
