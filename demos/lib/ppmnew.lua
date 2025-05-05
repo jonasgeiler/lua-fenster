@@ -4,6 +4,9 @@ local math = math
 local fenster = require('fenster')
 
 local ppm = {}
+ppm.INT_MAX = 0x7fffffff
+ppm.CHAR_0 = 48 -- '0' in ASCII
+ppm.CHAR_9 = 57 -- '9' in ASCII
 
 ---Load a PPM file.
 ---@param path string
@@ -15,26 +18,25 @@ local ppm = {}
 function ppm.load(path)
 	local ppm_file, ppm_file_err = io.open(path, 'rb')
 	if not ppm_file then
-		return nil, nil, nil, 'Error opening file: ' .. ppm_file_err
+		return nil, nil, nil, 'Failed to open file: ' .. ppm_file_err
 	end
 
 	--[[ Read magic number ]]
 	local char1 = ppm_file:read(1) ---@type string?
 	if not char1 then
-		return nil, nil, nil,
-			'Error reading first byte of what is expected to be a Netpbm magic number. Most often, this means your input file is empty'
+		return nil, nil, nil, 'File is empty or invalid: missing magic number'
 	end
 	local char2 = ppm_file:read(1) ---@type string?
 	if not char2 then
-		return nil, nil, nil,
-			string.format(
-				'Error reading second byte of what is expected to be a Netpbm magic number (the first byte was successfully read as 0x%02x). Most often, this means your input file ended early',
-				string.byte(char1))
+		return nil, nil, nil, string.format(
+			'Incomplete magic number: first byte read as 0x%02x, but second byte is missing',
+			string.byte(char1)
+		)
 	end
 	local format = char1 .. char2
 	if format ~= 'P3' and format ~= 'P6' then
 		return nil, nil, nil,
-			string.format('bad magic number 0x%x - not a PPM file', string.byte(char1) * 256 + string.byte(char2))
+			string.format('Invalid magic number 0x%x: not a PPM file (P3/P6)', string.byte(char1) * 256 + string.byte(char2))
 	end
 
 	---@return string? char
@@ -43,13 +45,13 @@ function ppm.load(path)
 	local function read_char()
 		local char = ppm_file:read(1) ---@type string?
 		if not char then
-			return nil, 'EOF / read error reading a byte'
+			return nil, 'Unexpected end of file while reading a byte'
 		end
 		if char == '#' then
 			repeat
 				char = ppm_file:read(1) ---@type string?
 				if not char then
-					return nil, 'EOF / read error reading a byte'
+					return nil, 'Unexpected end of file while reading a comment'
 				end
 			until char == '\n' or char == '\r'
 		end
@@ -63,24 +65,22 @@ function ppm.load(path)
 		local char, char_err ---@type string?, string?
 		repeat
 			char, char_err = read_char()
-			if not char then
-				return nil, char_err
-			end
+			if not char then return nil, char_err end
 		until char ~= ' ' and char ~= '\t' and char ~= '\n' and char ~= '\r'
 		local char_byte = string.byte(char)
-		if char_byte < 48 --[['0']] or char_byte > 57 --[['9']] then
-			return nil, 'junk in file where an unsigned integer should be'
+		if char_byte < ppm.CHAR_0 or char_byte > ppm.CHAR_9 then
+			return nil, 'Expected an unsigned integer but found invalid data'
 		end
 
 		local uint = 0
 		repeat
-			local digit_val = char_byte - 48 --[['0']]
-			if uint > 0x7fffffff / 10 then
-				return nil, 'ASCII decimal integer in file is too large to be processed.'
+			local digit_val = char_byte - ppm.CHAR_0
+			if uint > ppm.INT_MAX / 10 then
+				return nil, 'Integer value is too large to process'
 			end
 			uint = uint * 10
-			if uint > 0x7fffffff - digit_val then
-				return nil, 'ASCII decimal integer in file is too large to be processed.'
+			if uint > ppm.INT_MAX - digit_val then
+				return nil, 'Integer value is too large to process'
 			end
 			uint = uint + digit_val ---@type integer
 
@@ -89,37 +89,35 @@ function ppm.load(path)
 				return nil, char_err
 			end
 			char_byte = string.byte(char)
-		until char_byte < 48 --[['0']] or char_byte > 57 --[['9']]
+		until char_byte < ppm.CHAR_0 or char_byte > ppm.CHAR_9
 
 		return uint, nil
 	end
 
 	local cols, cols_err = read_uint()
 	if not cols then
-		return nil, nil, nil, 'Error reading width: ' .. cols_err
+		return nil, nil, nil, 'Failed to read image width: ' .. cols_err
 	end
-	if cols > 0x7ffffffd then
-		return nil, nil, nil, string.format('image width (%u) too large to be processed', cols)
+	if cols > ppm.INT_MAX - 2 then
+		return nil, nil, nil, string.format('Image width (%u) exceeds the maximum supported size', cols)
 	end
 	local rows, rows_err = read_uint()
 	if not rows then
-		return nil, nil, nil, 'Error reading height: ' .. rows_err
+		return nil, nil, nil, 'Failed to read image height: ' .. rows_err
 	end
-	if rows > 0x7ffffffd then
-		return nil, nil, nil, string.format('image height (%u) too large to be processed', rows)
+	if rows > ppm.INT_MAX - 2 then
+		return nil, nil, nil, string.format('Image height (%u) exceeds the maximum supported size', rows)
 	end
 
 	local maxval, maxval_err = read_uint()
 	if not maxval then
-		return nil, nil, nil, 'Error reading maxval: ' .. maxval_err
+		return nil, nil, nil, 'Failed to read max color value: ' .. maxval_err
 	end
 	if maxval > 65535 then
-		return nil, nil, nil,
-			string.format('maxval of input image (%u) is too large. The maximum allowed by the PPM format is 65535.',
-				maxval)
+		return nil, nil, nil, string.format('Max color value (%u) exceeds the PPM format limit of 65535', maxval)
 	end
 	if maxval == 0 then
-		return nil, nil, nil, 'maxval of input image is zero.'
+		return nil, nil, nil, 'Max color value cannot be zero'
 	end
 
 	---@param r any
@@ -143,20 +141,20 @@ function ppm.load(path)
 	local function read_ppm_row(pixelrow)
 		for col = 1, cols do
 			local r, r_err = read_uint()
-			if not r then return 'Error reading red sample value: ' .. r_err end
+			if not r then return 'Failed to read red value: ' .. r_err end
 			local g, g_err = read_uint()
-			if not g then return 'Error reading green sample value: ' .. g_err end
+			if not g then return 'Failed to read green value: ' .. g_err end
 			local b, b_err = read_uint()
-			if not b then return 'Error reading blue sample value: ' .. b_err end
+			if not b then return 'Failed to read blue value: ' .. b_err end
 
 			if r > maxval then
-				return string.format('Red sample value %u is greater than maxval (%u)', r, maxval)
+				return string.format('Red value (%u) exceeds max color value (%u)', r, maxval)
 			end
 			if g > maxval then
-				return string.format('Green sample value %u is greater than maxval (%u)', g, maxval)
+				return string.format('Green value (%u) exceeds max color value (%u)', g, maxval)
 			end
 			if b > maxval then
-				return string.format('Blue sample value %u is greater than maxval (%u)', b, maxval)
+				return string.format('Blue value (%u) exceeds max color value (%u)', b, maxval)
 			end
 
 			pixelrow[col] = scaled_rgb(r, g, b)
@@ -170,10 +168,10 @@ function ppm.load(path)
 		local bytes_per_row = cols * 3 * bytes_per_sample
 		local row_buffer = ppm_file:read(bytes_per_row) ---@type string?
 		if not row_buffer then
-			return 'Unexpected EOF reading row of PPM image.'
+			return 'Unexpected end of file while reading a row of pixel data'
 		end
 		if #row_buffer ~= bytes_per_row then
-			return string.format('Error reading row. Short read of %u bytes instead of %u', #row_buffer, bytes_per_row)
+			return string.format('Incomplete row: expected %u bytes but got %u', bytes_per_row, #row_buffer)
 		end
 
 		-- Read the row buffer
@@ -214,13 +212,13 @@ function ppm.load(path)
 			local _, _, b = fenster.rgb(pixelrow[col])
 
 			if r > maxval then
-				return string.format('Red sample value %u is greater than maxval (%u)', r, maxval)
+				return string.format('Red value (%u) exceeds max color value (%u)', r, maxval)
 			end
 			if g > maxval then
-				return string.format('Green sample value %u is greater than maxval (%u)', g, maxval)
+				return string.format('Green value (%u) exceeds max color value (%u)', g, maxval)
 			end
 			if b > maxval then
-				return string.format('Blue sample value %u is greater than maxval (%u)', b, maxval)
+				return string.format('Blue value (%u) exceeds max color value (%u)', b, maxval)
 			end
 		end
 		return nil
