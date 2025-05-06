@@ -244,10 +244,10 @@ function ppm.load(path)
 			if row_err then
 				return nil, nil, nil, 'Error reading pixel data: ' .. row_err
 			end
-		elseif format == 'P6' then
+		else -- format == 'P6'
 			local row_err = read_raw_ppm_row(pixels[row])
 			if row_err then
-				return nil, nil, nil, 'Error reading pixel data: ' .. row_err
+				return nil, nil, nil, 'Error reading raw pixel data: ' .. row_err
 			end
 		end
 	end
