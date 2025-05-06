@@ -29,23 +29,18 @@ function ppm.load(path)
 	local char2 = ppm_file:read(1) ---@type string?
 	if not char2 then
 		return nil, nil, nil, string.format(
-			'Incomplete magic number: first byte read as 0x%02x, but second byte is missing',
-			string.byte(char1)
+			'Incomplete magic number: first byte read as 0x%02x ("%s"), but second byte is missing',
+			string.byte(char1),
+			char1
 		)
 	end
 	local format = char1 .. char2
 	if format ~= 'P3' and format ~= 'P6' then
-		if char1 == 'P' then
-			-- Pressumably another Netpbm format...
-			return nil, nil, nil, string.format(
-				'Invalid magic number 0x%x (%s): not a PPM file (P3/P6)',
-				string.byte(char1) * 256 + string.byte(char2),
-				format
-			)
-		else
-			return nil, nil, nil,
-				string.format('Invalid magic number 0x%x: not a PPM file', string.byte(char1) * 256 + string.byte(char2))
-		end
+		return nil, nil, nil, string.format(
+			'Invalid magic number 0x%04x ("%s"): not a PPM file, expected 0x5033 ("P3") or 0x5036 ("P6")',
+			string.byte(char1) * 256 + string.byte(char2),
+			format
+		)
 	end
 
 	---@return string? char
@@ -244,7 +239,7 @@ function ppm.load(path)
 			if row_err then
 				return nil, nil, nil, 'Error reading pixel data: ' .. row_err
 			end
-		else -- format == 'P6'
+		else --if format == 'P6' then
 			local row_err = read_raw_ppm_row(pixels[row])
 			if row_err then
 				return nil, nil, nil, 'Error reading raw pixel data: ' .. row_err
