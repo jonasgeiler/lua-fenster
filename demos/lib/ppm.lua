@@ -37,8 +37,11 @@ function ppm.load(path)
 	if format ~= 'P3' and format ~= 'P6' then
 		if char1 == 'P' then
 			-- Pressumably another Netpbm format...
-			return nil, nil, nil,
-				string.format('Invalid magic number 0x%x (%s): not a PPM file (P3/P6)', string.byte(char1) * 256 + string.byte(char2), format)
+			return nil, nil, nil, string.format(
+				'Invalid magic number 0x%x (%s): not a PPM file (P3/P6)',
+				string.byte(char1) * 256 + string.byte(char2),
+				format
+			)
 		else
 			return nil, nil, nil,
 				string.format('Invalid magic number 0x%x: not a PPM file', string.byte(char1) * 256 + string.byte(char2))
