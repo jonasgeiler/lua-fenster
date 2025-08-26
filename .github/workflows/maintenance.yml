@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Update fenster
-        run: wget https://raw.githubusercontent.com/zserge/fenster/main/fenster.h -O lib/fenster/fenster.h
+        run: wget https://raw.githubusercontent.com/jonasgeiler/fenster/main/fenster.h -O lib/fenster/fenster.h
 
       - name: Update compat-5.3
         run: |
