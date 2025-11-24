@@ -33,7 +33,7 @@ jobs:
       - name: Run actionlint on GitHub Actions workflows
         env:
           # renovate: datasource=github-releases depName=rhysd/actionlint
-          ACTIONLINT_VERSION: v1.7.8
+          ACTIONLINT_VERSION: v1.7.9
         run: |
           IFS=$' \n\t'; set -ux
 
