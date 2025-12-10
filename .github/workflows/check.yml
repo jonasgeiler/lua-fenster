@@ -185,7 +185,7 @@ jobs:
       - name: Run Tests in Docker
         env:
           # renovate: datasource=github-releases depName=docker/compose
-          COMPOSE_VERSION: v2.35.1
+          COMPOSE_VERSION: v2.40.3
         run: |
           IFS=$' \n\t'; set -ux
 
