@@ -10,7 +10,7 @@ jobs:
   update-libraries:
     name: Update Libraries
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     defaults:
       run:
         shell: bash
