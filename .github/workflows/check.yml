@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euxo pipefail {0}
 
     steps:
       - name: Checkout
@@ -45,8 +45,6 @@ jobs:
 
       - name: Run clang-format on C files and headers
         run: |
-          IFS=$' \n\t'; set -ux
-          
           # "notify" me of newer clang-format version
           if command -v clang-format-19 &> /dev/null; then
             echo 'clang-format-19 is available'
@@ -63,8 +61,6 @@ jobs:
 
       - name: Run clang-tidy on C files and headers
         run: |
-          IFS=$' \n\t'; set -ux
-          
           # "notify" me of newer clang-tidy version
           if command -v clang-tidy-19 &> /dev/null; then
             echo 'clang-tidy-19 is available'
@@ -103,8 +99,6 @@ jobs:
           # renovate: datasource=github-releases depName=ammaraskar/msvc-problem-matcher
           MSCV_PROBLEM_MATCHER_VERSION: 0.3.0
         run: |
-          IFS=$' \n\t'; set -ux
-
           # install luacheck
           luarocks install luacheck
 
@@ -176,7 +170,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euxo pipefail {0}
 
     steps:
       - name: Checkout
@@ -187,8 +181,6 @@ jobs:
           # renovate: datasource=github-releases depName=docker/compose
           COMPOSE_VERSION: v2.35.1
         run: |
-          IFS=$' \n\t'; set -ux
-
           # Download newest version of Docker Compose plugin.
           compose_plugin_path="$(docker info --format='{{range .ClientInfo.Plugins}}{{if eq .Name "compose"}}{{.Path}}{{break}}{{end}}{{end}}')"
           sudo wget -q "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" \

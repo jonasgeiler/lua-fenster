@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        shell: bash --noprofile --norc -euxo pipefail {0}
 
     permissions:
       contents: write
@@ -34,8 +34,6 @@ jobs:
 
       - name: Modify rockspec & upload to LuaRocks server
         run: |
-          IFS=$' \n\t'; set -ux
-          
           version="${GITHUB_REF_NAME}"
           rockspec="fenster-${version#v}-1.rockspec"
           git mv fenster-dev-1.rockspec "${rockspec}"
