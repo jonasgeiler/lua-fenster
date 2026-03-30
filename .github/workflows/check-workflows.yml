@@ -33,7 +33,7 @@ jobs:
       - name: Run actionlint on GitHub Actions workflows
         env:
           # renovate: datasource=github-releases depName=rhysd/actionlint
-          ACTIONLINT_VERSION: v1.7.9
+          ACTIONLINT_VERSION: v1.7.12
         run: |
           # download, extract and setup actionlint
           wget -q "https://github.com/rhysd/actionlint/releases/download/${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz" \
