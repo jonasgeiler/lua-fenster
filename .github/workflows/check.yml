@@ -179,7 +179,7 @@ jobs:
       - name: Run Tests in Docker
         env:
           # renovate: datasource=github-releases depName=docker/compose
-          COMPOSE_VERSION: v2.35.1
+          COMPOSE_VERSION: v5.5.1
         run: |
           # Download newest version of Docker Compose plugin.
           compose_plugin_path="$(docker info --format='{{range .ClientInfo.Plugins}}{{if eq .Name "compose"}}{{.Path}}{{break}}{{end}}{{end}}')"
