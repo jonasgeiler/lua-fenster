@@ -48,7 +48,7 @@ jobs:
           luarocks upload --temp-key "${{ secrets.LUAROCKS_API_KEY }}" "${rockspec}"
 
       - name: Draft release on GitHub
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           draft: true
           generate_release_notes: true
